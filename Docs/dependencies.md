@@ -7,6 +7,8 @@ Versions checked against nuget.org on 2026-10-19.
 |---|---|---|---|---|
 | Avalonia | 12.1.4 | MIT | App | UI framework |
 | Avalonia.Desktop | 12.1.4 | MIT | Desktop | Windowing on macOS/Windows/Linux |
+| Avalonia.Android | 12.1.4 | MIT | Android | Android head (A15); brings Xamarin.AndroidX.AppCompat, DocumentFile and Window (MIT) |
+| Avalonia.iOS | 12.1.4 | MIT | iOS | iOS head (A15) |
 | Avalonia.Themes.Fluent | 12.1.4 | MIT | App | Base theme, restyled by our tokens |
 | Avalonia.Fonts.Inter | 12.1.4 | MIT (font: OFL) | App | Same font on every OS (D13) |
 | CommunityToolkit.Mvvm | 8.4.2 | MIT | App | View-models (A7) |

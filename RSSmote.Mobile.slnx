@@ -1,0 +1,11 @@
+<Solution>
+  <!-- The mobile heads need the android and ios workloads, so they stay out of RSSmote.slnx (A15). -->
+  <Folder Name="/src/">
+    <Project Path="src/RSSmote.Core/RSSmote.Core.csproj" />
+    <Project Path="src/RSSmote.Data/RSSmote.Data.csproj" />
+    <Project Path="src/RSSmote.App/RSSmote.App.csproj" />
+    <Project Path="src/RSSmote.Mobile/RSSmote.Mobile.csproj" />
+    <Project Path="src/RSSmote.Android/RSSmote.Android.csproj" />
+    <Project Path="src/RSSmote.iOS/RSSmote.iOS.csproj" />
+  </Folder>
+</Solution>

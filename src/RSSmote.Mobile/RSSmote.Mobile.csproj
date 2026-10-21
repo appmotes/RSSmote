@@ -1,0 +1,7 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Phone and tablet screens, shared by the Android and iOS heads. Plain net10.0, so it builds and tests without
+       mobile workloads (A15). -->
+  <ItemGroup>
+    <ProjectReference Include="..\RSSmote.App\RSSmote.App.csproj" />
+  </ItemGroup>
+</Project>

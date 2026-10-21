@@ -27,3 +27,4 @@ menu button show the checked items.
 the card with its rounded corners intact; the 8 pt band above the cards and the card strips drag the window; on
 Windows the caption buttons clear the article card's actions (P3, N2); panels show their shadow and scrim; and the ten
 palettes switch from the menus.
+

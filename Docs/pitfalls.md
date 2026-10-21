@@ -103,3 +103,19 @@ behaviour itself needs a check by hand.
 **L14 — A `UserControl` clips to its own bounds.** A card that sits flush with its view's edge draws its ring or
 shadow outside those bounds, and it was cut off: the list and article cards had no left edge in the ring palettes. The
 two card views set `ClipToBounds="False"`. Measured with `The_card_ring_shows_on_every_edge`.
+
+**P12 — A Debug Android APK installed with `adb install` closes at once.** Debug builds use Fast Deployment: the
+assemblies are not in the APK but pushed separately by `dotnet build -t:Install`. Installed on its own, the APK
+aborts on launch (`monodroid: No assemblies found … Assuming this is part of Fast Deployment`), visible only in
+logcat. Install Debug with `-t:Install`; a Release APK carries its assemblies and installs with `adb`. Seen with the
+platform spike on an API 35 emulator.
+
+**P13 — The iOS SDK reports trim analysis warnings that the Android SDK hides.** Both heads trim with
+`TrimMode=partial`: only assemblies marked `IsTrimmable` are trimmed, every other one is copied whole. Android sets
+`SuppressTrimAnalysisWarnings=true` by default, iOS does not, so an iOS Release build (warnings as errors) fails on
+IL2104 for AngleSharp, AngleSharp.Css, Microsoft.Data.Sqlite and Avalonia.DesignerSupport — none of which is trimmed:
+each one in `obj/…/linked/` is byte for byte the size of its package copy, while `Avalonia.Base` shrinks from 2.36 MB
+to 1.66 MB. ILLink also reports IL2037 for interface members `Avalonia.iOS` names (`AvaloniaAppDelegate`,
+`TextInputResponder`), which is not our code. The iOS head sets `SuppressTrimAnalysisWarnings` and `NoWarn` IL2037.
+Measured with the platform spike, which passes every step in a Release simulator build. A new dependency that is
+marked trimmable and uses reflection would be trimmed silently: run the spike after adding one.

@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0-android</TargetFramework>
+    <SupportedOSPlatformVersion>24.0</SupportedOSPlatformVersion>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>RSSmote.Android</RootNamespace>
+    <ApplicationId>com.ahrentlov.rssmote</ApplicationId>
+    <ApplicationTitle>RSSmote</ApplicationTitle>
+    <ApplicationVersion>1</ApplicationVersion>
+    <ApplicationDisplayVersion>$(Version)</ApplicationDisplayVersion>
+    <AndroidPackageFormat>apk</AndroidPackageFormat>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\RSSmote.Mobile\RSSmote.Mobile.csproj" />
+    <PackageReference Include="Avalonia.Android" />
+  </ItemGroup>
+</Project>

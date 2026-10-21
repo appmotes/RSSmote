@@ -4,6 +4,7 @@
     <Project Path="src/RSSmote.Data/RSSmote.Data.csproj" />
     <Project Path="src/RSSmote.App/RSSmote.App.csproj" />
     <Project Path="src/RSSmote.Desktop/RSSmote.Desktop.csproj" />
+    <Project Path="src/RSSmote.Mobile/RSSmote.Mobile.csproj" />
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/RSSmote.Core.Tests/RSSmote.Core.Tests.csproj" />

@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0-ios</TargetFramework>
+    <SupportedOSPlatformVersion>15.0</SupportedOSPlatformVersion>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>RSSmote.iOS</RootNamespace>
+    <ApplicationId>com.ahrentlov.rssmote</ApplicationId>
+    <ApplicationTitle>RSSmote</ApplicationTitle>
+    <ApplicationVersion>1</ApplicationVersion>
+    <ApplicationDisplayVersion>$(Version)</ApplicationDisplayVersion>
+    <ProvisioningType>manual</ProvisioningType>
+    <!-- Partial trimming keeps every assembly not marked trimmable whole; as on Android, its analysis warnings are
+         off (P13). -->
+    <SuppressTrimAnalysisWarnings>true</SuppressTrimAnalysisWarnings>
+    <!-- Avalonia.iOS names interface members ILLink cannot resolve; nothing of ours is involved (P13). -->
+    <NoWarn>$(NoWarn);IL2037</NoWarn>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\RSSmote.Mobile\RSSmote.Mobile.csproj" />
+    <PackageReference Include="Avalonia.iOS" />
+  </ItemGroup>
+</Project>

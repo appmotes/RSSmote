@@ -14,6 +14,9 @@ src/RSSmote.Data             SQLite store, settings store, refresher, data folde
 src/RSSmote.App              shared Avalonia UI with no screens: view-models, controls, styles, themes, assets, services
 src/RSSmote.Desktop          the desktop executable and its screens: Program.cs, Shell/ (MainWindow), Views/
                              (shell, columns, Panels/), Services/ (ProcessLauncher), per-OS packaging metadata
+src/RSSmote.Mobile           phone and tablet screens, shared by both mobile heads (plain net10.0, A15)
+src/RSSmote.Android          Android head: AndroidApp, MainActivity, manifest
+src/RSSmote.iOS              iOS head: AppDelegate, Program, Info.plist
 tests/RSSmote.App.Tests      headless tests: view-models, palette key sets, gallery snapshots per theme (xUnit v3)
 tests/RSSmote.Desktop.Tests  headless tests of the desktop screens: shell renders, panels, menus, captures
 tests/RSSmote.Core.Tests     parser, dates, HTML helpers, feed discovery (fake HTTP), OPML
@@ -22,7 +25,8 @@ build/                       per-OS packaging scripts
 Docs/
 ```
 
-Dependencies point one way: `Desktop → App → Data → Core`. Core and Data never reference Avalonia.
+Dependencies point one way: `Desktop → App → Data → Core` and `Android, iOS → Mobile → App`; Desktop and Mobile
+never reference each other. Core and Data never reference Avalonia.
 `App` holds building blocks and no screens: a `.axaml` with `x:DataType` on a view-model is a screen and lives in
 a head; a `ControlTheme` or style lives in `App`. `RSSmote.Desktop.Tests` compiles `ShellFixture` and
 `TestAppBuilder` from `RSSmote.App.Tests` as linked files.
@@ -49,6 +53,11 @@ remaining seam; Desktop supplies `ProcessLauncher` through its `IShellHost` (A3)
 | macOS | `~/Library/Application Support/com.ahrentlov.rssmote/` |
 | Windows | `%LOCALAPPDATA%\RSSmote\` |
 | Linux | `$XDG_DATA_HOME/rssmote/` (fallback `~/.local/share/rssmote/`) |
+| iOS | `<app container>/Library/Application Support/` |
+| Android | `/data/user/0/com.ahrentlov.rssmote/files/` (the app's private files folder) |
+
+`OperatingSystem.IsMacOS()` is false on iOS and `IsLinux()` is false on Android, so each mobile OS needs its own
+branch; without one it lands in the Linux fallback.
 
 **A5 — Desktop shell.** Everything here lives in `RSSmote.Desktop`. `MainWindow` hosts `ShellView`: a `Grid` with three columns (sidebar · list · article) and two
 invisible 5 pt `GridSplitter`s, the first on the list card's left edge, the second in the 8 pt gap between the cards.
@@ -133,3 +142,21 @@ feed is saved only after `FeedFinder` has fetched and parsed it (or it arrives f
 active: every refresh fetches it. Removing a feed deletes it and all of its articles, starred ones included, for
 good (`Store.DeleteFeed`, `ON DELETE CASCADE`); adding the address again starts over from what the feed holds
 then. The UI says "Add Feed", "Save", "Remove Feed", never "subscribe".
+
+**A15 — Mobile heads.** `RSSmote.Android` (`net10.0-android`, API 24+) and `RSSmote.iOS` (`net10.0-ios`, iOS 15+)
+are thin heads over `RSSmote.Mobile`, the same way `RSSmote.Desktop` is over `App`. Both share the id
+`com.ahrentlov.rssmote`. Avalonia builds the app itself on mobile: `AndroidApp` (`AvaloniaAndroidApplication<App>`)
+and `AppDelegate` (`AvaloniaAppDelegate<App>`) add `WithInterFont()` in `CustomizeAppBuilder`; an `IShellHost` goes
+in through `CreateAppBuilder` (`AppBuilder.Configure(() => new App { Host = … })`). Android starts `App` under
+`IActivityApplicationLifetime`, iOS under `ISingleViewApplicationLifetime`; `App` does not handle either yet, so
+the heads start to an empty view. The heads need the `android` and `ios` workloads and live only in
+`RSSmote.Mobile.slnx`; `RSSmote.slnx` builds `RSSmote.Mobile` but not the heads, so the desktop build needs no
+mobile tooling. Building a head:
+
+```
+dotnet build src/RSSmote.Android/RSSmote.Android.csproj
+dotnet build src/RSSmote.iOS/RSSmote.iOS.csproj -r iossimulator-arm64
+```
+
+Android needs the API 36 platform and JDK 17 or later, and a Debug build reaches an emulator through `-t:Install`
+(P12); iOS needs the Xcode version the `ios` workload names.
