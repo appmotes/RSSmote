@@ -22,7 +22,8 @@ public sealed class AppServices : IDisposable
     private readonly HttpClient _http;
 
     /// <param name="topLevel">The window that file dialogs belong to, looked up when a dialog opens.</param>
-    public AppServices(Func<Avalonia.Controls.TopLevel?> topLevel)
+    /// <param name="launcher">The head's way of opening links.</param>
+    public AppServices(Func<Avalonia.Controls.TopLevel?> topLevel, ILauncher launcher)
     {
         _http = FeedFinder.CreateHttpClient();
         Store = new Store(AppFolders.DatabasePath(), Clock);
@@ -31,7 +32,7 @@ public sealed class AppServices : IDisposable
         Refresher = new Refresher(Store, Finder, Settings, Clock);
         Images = new ImageCache(_http);
         Files = new StorageFilePicker(topLevel);
-        Launcher = new ProcessLauncher();
+        Launcher = launcher;
         Ui = new AvaloniaUiDispatcher();
     }
 

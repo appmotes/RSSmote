@@ -11,9 +11,11 @@ Directory.Packages.props     central package versions (see dependencies.md)
 NuGet.config                 nuget.org only
 src/RSSmote.Core             models, feed parsing, OPML, HTML helpers, service interfaces — no Avalonia
 src/RSSmote.Data             SQLite store, settings store, refresher, data folder — no Avalonia
-src/RSSmote.App              Avalonia UI: views, view-models, controls, themes, assets
-src/RSSmote.Desktop          the one executable: Program.cs, platform seams, per-OS packaging metadata
-tests/RSSmote.App.Tests      headless tests: palette key sets, gallery snapshots per theme (xUnit v3)
+src/RSSmote.App              shared Avalonia UI with no screens: view-models, controls, styles, themes, assets, services
+src/RSSmote.Desktop          the desktop executable and its screens: Program.cs, Shell/ (MainWindow), Views/
+                             (shell, columns, Panels/), Services/ (ProcessLauncher), per-OS packaging metadata
+tests/RSSmote.App.Tests      headless tests: view-models, palette key sets, gallery snapshots per theme (xUnit v3)
+tests/RSSmote.Desktop.Tests  headless tests of the desktop screens: shell renders, panels, menus, captures
 tests/RSSmote.Core.Tests     parser, dates, HTML helpers, feed discovery (fake HTTP), OPML
 tests/RSSmote.Data.Tests     store: upsert, filters, counts, retention, migrations, macOS-library compatibility
 build/                       per-OS packaging scripts
@@ -21,6 +23,9 @@ Docs/
 ```
 
 Dependencies point one way: `Desktop → App → Data → Core`. Core and Data never reference Avalonia.
+`App` holds building blocks and no screens: a `.axaml` with `x:DataType` on a view-model is a screen and lives in
+a head; a `ControlTheme` or style lives in `App`. `RSSmote.Desktop.Tests` compiles `ShellFixture` and
+`TestAppBuilder` from `RSSmote.App.Tests` as linked files.
 
 **A2 — One desktop head for all three OSes.** `RSSmote.Desktop` is plain `net10.0` (no `-macos` workload),
 published per RID: `osx-arm64`, `osx-x64`, `win-x64`, `win-arm64`, `linux-x64`, `linux-arm64`. The macOS
@@ -29,13 +34,15 @@ published per RID: `osx-arm64`, `osx-x64`, `win-x64`, `win-arm64`, `linux-x64`, 
 **A3 — Composition root, no container.** `App` creates `AppServices` once (store, settings, feed finder,
 refresher, image cache, launcher, UI dispatcher, clock), applies the theme — the palette of the slot the settings
 name, or for Automatic the slot the OS asks for, re-applied when either changes (D22) — builds `ShellViewModel` from
-those services, opens `MainWindow` and starts the refresher; shutdown disposes them. View-models get services
+those services, opens the main window and starts the refresher; shutdown disposes them. The head passes an
+`IShellHost` (`App.Host`) that supplies its launcher and creates its main window, so `App` never names a screen:
+`AppBuilder.Configure(() => new App { Host = new DesktopShellHost() })`. View-models get services
 through constructors and never reach for a static, so tests build them over a temporary library.
 
 **A4 — Data folder and platform seams.** `AppFolders` resolves the data folder per OS in plain .NET (no seam
 needed); `RSSMOTE_DATA_DIR` overrides it. The library is `rssmote.sqlite`, preferences `settings.json`, side by
-side. `IExternalLauncher` (open a URL in the browser, honouring "open in background" where the OS allows) is the
-remaining seam; Desktop registers it at startup.
+side. `ILauncher` (open a URL in the browser, honouring "open in background" where the OS allows) is the
+remaining seam; Desktop supplies `ProcessLauncher` through its `IShellHost` (A3).
 
 | OS | Data folder |
 |---|---|
@@ -43,7 +50,7 @@ remaining seam; Desktop registers it at startup.
 | Windows | `%LOCALAPPDATA%\RSSmote\` |
 | Linux | `$XDG_DATA_HOME/rssmote/` (fallback `~/.local/share/rssmote/`) |
 
-**A5 — Shell.** `MainWindow` hosts `ShellView`: a `Grid` with three columns (sidebar · list · article) and two
+**A5 — Desktop shell.** Everything here lives in `RSSmote.Desktop`. `MainWindow` hosts `ShellView`: a `Grid` with three columns (sidebar · list · article) and two
 invisible 5 pt `GridSplitter`s, the first on the list card's left edge, the second in the 8 pt gap between the cards.
 The window background is the canvas (`Bg.Sidebar`); the sidebar sits on it and the list and article views are
 cards (`Border.card` + `Border.cardClip`, D20, L12). Each column view (`SidebarView`, `ArticleListView`,
@@ -110,7 +117,7 @@ on a background thread when a pass starts and after it ends.
 **A11 — Threading.** Network and SQLite work run off the UI thread; results are marshalled with
 `Dispatcher.UIThread.Post`. View-models expose `ObservableCollection`s that are only mutated on the UI thread.
 
-**A12 — Headless verification.** `RSSmote.App.Tests` boots the real `App` (styles, palettes, control themes) on
+**A12 — Headless verification.** `RSSmote.App.Tests` and `RSSmote.Desktop.Tests` boot the real `App` (styles, palettes, control themes) on
 Avalonia's headless platform with Skia drawing, so a test can render any view to a PNG without opening a window.
 This is how visuals are checked before the user runs the app. `DesignCaptureTests` renders every screen at 1280 × 800
 over a copy of a real library (with real favicons and thumbnails) when `RSSMOTE_CAPTURE_DIR` and

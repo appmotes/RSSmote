@@ -1,0 +1,60 @@
+<!-- Edit Folder panel (A6): name, the folder's feeds, delete. -->
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:c="urn:RSSmote.App.Controls"
+             xmlns:vm="using:RSSmote.App.ViewModels"
+             x:Class="RSSmote.Desktop.Views.Panels.EditFolderView"
+             x:DataType="vm:EditFolderViewModel">
+    <c:PanelFrame>
+        <DockPanel>
+            <StackPanel DockPanel.Dock="Top">
+                <Grid Classes="sheetHeader" ColumnDefinitions="*,Auto">
+                    <TextBlock Classes="largeTitle" Text="{Binding Title}" />
+                    <Button Grid.Column="1" Classes="icon" ToolTip.Tip="Close (Esc)" Command="{Binding CloseCommand}">
+                        <c:Icon Data="{StaticResource Icon.X}" />
+                    </Button>
+                </Grid>
+                <TextBlock Classes="sheetSubtitle" Text="{Binding Subtitle}" />
+            </StackPanel>
+            <DockPanel DockPanel.Dock="Bottom" Classes="sheetFooter">
+                <Button DockPanel.Dock="Left" Classes="danger" Content="Delete Folder…" Command="{Binding DeleteCommand}" />
+                <StackPanel>
+                    <Button Classes="secondary" Command="{Binding CloseCommand}">
+                        <StackPanel Orientation="Horizontal" Spacing="7">
+                            <TextBlock Text="Cancel" VerticalAlignment="Center" />
+                            <TextBlock Classes="keyHint" Text="esc" />
+                        </StackPanel>
+                    </Button>
+                    <Button Classes="primary" Command="{Binding SaveCommand}">
+                        <StackPanel Orientation="Horizontal" Spacing="7">
+                            <TextBlock Text="Save" VerticalAlignment="Center" />
+                            <TextBlock Classes="keyHint" Text="↵" />
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+            </DockPanel>
+            <ScrollViewer HorizontalScrollBarVisibility="Disabled">
+                <StackPanel Classes="sheetBody">
+                    <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
+                        <TextBlock Classes="formLabel" Text="Name" />
+                        <TextBox x:Name="NameBox" Grid.Column="1" Classes="panel-field" Text="{Binding Name}">
+                            <TextBox.KeyBindings>
+                                <KeyBinding Gesture="Enter" Command="{Binding SaveCommand}" />
+                            </TextBox.KeyBindings>
+                        </TextBox>
+                    </Grid>
+                    <TextBlock Classes="caps" Text="FEEDS" IsVisible="{Binding HasFeeds}" />
+                    <c:PanelGroup ItemsSource="{Binding Feeds}" IsVisible="{Binding HasFeeds}">
+                        <c:PanelGroup.ItemTemplate>
+                            <DataTemplate x:DataType="vm:FolderFeedRow">
+                                <c:PanelRow Title="{Binding Title}" Subtitle="{Binding Subtitle}" Accessory="Chevron"
+                                            Command="{Binding $parent[UserControl].((vm:EditFolderViewModel)DataContext).EditFeedCommand}"
+                                            CommandParameter="{Binding}" />
+                            </DataTemplate>
+                        </c:PanelGroup.ItemTemplate>
+                    </c:PanelGroup>
+                </StackPanel>
+            </ScrollViewer>
+        </DockPanel>
+    </c:PanelFrame>
+</UserControl>

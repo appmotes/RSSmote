@@ -8,7 +8,7 @@ internal static class Program
     public static void Main(string[] args) => BuildAvaloniaApp().StartWithClassicDesktopLifetime(args);
 
     public static AppBuilder BuildAvaloniaApp() =>
-        AppBuilder.Configure<RSSmote.App.App>()
+        AppBuilder.Configure(() => new App.App { Host = new DesktopShellHost() })
             .UsePlatformDetect()
             .WithInterFont()
             .LogToTrace();

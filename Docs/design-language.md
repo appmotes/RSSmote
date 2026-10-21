@@ -226,7 +226,7 @@ which `TableView` offers. `ListBox` virtualizes by default and gives keyboard se
 
 **D19 — The component gallery shows every token, icon and component with sample data.** `Gallery/ComponentGallery`
 is the reference for how a component looks in each palette; `GalleryRenderTests` renders it headless to
-`tests/RSSmote.App.Tests/bin/Debug/net10.0/snapshots/gallery-{Light,Dark,Black}.png`, and `ShellRenderTests`
+`tests/RSSmote.App.Tests/bin/Debug/net10.0/snapshots/gallery-{Light,Dark,Black}.png`, and `ShellRenderTests` (in `RSSmote.Desktop.Tests`)
 renders the real shell over a seeded library to `shell-{Light,Dark}.png`. In a Debug build Ctrl/⌘+Shift+G opens
 the gallery in its own window. A new component gets a
 gallery entry in the same change as its `templates.html` article.

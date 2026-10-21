@@ -5,9 +5,13 @@
     <RootNamespace>RSSmote.Desktop</RootNamespace>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <RuntimeIdentifiers>osx-arm64;osx-x64;win-x64;win-arm64;linux-x64;linux-arm64</RuntimeIdentifiers>
+    <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\RSSmote.App\RSSmote.App.csproj" />
     <PackageReference Include="Avalonia.Desktop" />
+  </ItemGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="RSSmote.Desktop.Tests" />
   </ItemGroup>
 </Project>

@@ -9,6 +9,7 @@
     <Project Path="tests/RSSmote.Core.Tests/RSSmote.Core.Tests.csproj" />
     <Project Path="tests/RSSmote.Data.Tests/RSSmote.Data.Tests.csproj" />
     <Project Path="tests/RSSmote.App.Tests/RSSmote.App.Tests.csproj" />
+    <Project Path="tests/RSSmote.Desktop.Tests/RSSmote.Desktop.Tests.csproj" />
   </Folder>
   <Folder Name="/Docs/">
     <File Path="CLAUDE.md" />

@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <IsPackable>false</IsPackable>
+    <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\RSSmote.Desktop\RSSmote.Desktop.csproj" />
+    <PackageReference Include="Avalonia.Headless.XUnit" />
+    <PackageReference Include="Avalonia.Skia" />
+    <PackageReference Include="xunit.v3" />
+    <PackageReference Include="Microsoft.Extensions.TimeProvider.Testing" />
+    <PackageReference Include="xunit.runner.visualstudio" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <Using Include="Xunit" />
+    <Using Include="RSSmote.App.Tests" />
+  </ItemGroup>
+  <ItemGroup>
+    <!-- The same headless app and seeded library as RSSmote.App.Tests. -->
+    <Compile Include="..\RSSmote.App.Tests\TestAppBuilder.cs" Link="TestAppBuilder.cs" />
+    <Compile Include="..\RSSmote.App.Tests\ShellFixture.cs" Link="ShellFixture.cs" />
+  </ItemGroup>
+</Project>

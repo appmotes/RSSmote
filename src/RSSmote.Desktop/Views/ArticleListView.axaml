@@ -1,0 +1,95 @@
+<!-- The article list card (D9, D18): title, count and filter in the strip, the filter box, rows, the status bar. -->
+<!-- The card is flush with the view's left edge; its ring and shadow are drawn outside the view (L14). -->
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:c="urn:RSSmote.App.Controls"
+             xmlns:vm="using:RSSmote.App.ViewModels"
+             xmlns:v="using:RSSmote.Desktop.Views"
+             xmlns:m="using:RSSmote.Core.Models"
+             x:Class="RSSmote.Desktop.Views.ArticleListView"
+             x:DataType="vm:ShellViewModel"
+             ClipToBounds="False">
+    <Border Classes="card" Background="{DynamicResource Brush.Bg.List}">
+        <Border Classes="cardClip">
+            <DockPanel>
+                <c:TitleStrip DockPanel.Dock="Top" Classes="card" Padding="14,0,8,0">
+                    <c:TitleStrip.Leading>
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <TextBlock Classes="listTitle" Text="{Binding List.Title}" VerticalAlignment="Center"
+                                       MaxWidth="200" />
+                            <Border Classes="listBadge" ToolTip.Tip="{Binding List.Subtitle}"
+                                    IsVisible="{Binding List.CountText, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+                                <TextBlock Classes="count" Text="{Binding List.CountText}" />
+                            </Border>
+                        </StackPanel>
+                    </c:TitleStrip.Leading>
+                    <c:TitleStrip.Trailing>
+                        <StackPanel Orientation="Horizontal" Spacing="6">
+                            <c:FilterBar Filter="{Binding List.Filter}" />
+                            <Border Classes="vsep" />
+                            <Button Classes="icon" ToolTip.Tip="Mark All as Read (A)" Command="{Binding MarkAllReadCommand}">
+                                <c:Icon Data="{StaticResource Icon.CheckCircle}" />
+                            </Button>
+                        </StackPanel>
+                    </c:TitleStrip.Trailing>
+                </c:TitleStrip>
+
+                <TextBox x:Name="Search" DockPanel.Dock="Top" Classes="filter" Margin="10,0,10,6"
+                         Text="{Binding List.SearchText}">
+                    <TextBox.InnerLeftContent>
+                        <c:Icon Data="{StaticResource Icon.Search}" Size="13" Margin="9,0,0,0"
+                                Foreground="{DynamicResource Brush.Ink.Secondary}" />
+                    </TextBox.InnerLeftContent>
+                    <TextBox.InnerRightContent>
+                        <Panel Margin="0,0,5,0" VerticalAlignment="Center">
+                            <Border Classes="kbd"
+                                    IsVisible="{Binding List.SearchText, Converter={x:Static StringConverters.IsNullOrEmpty}}">
+                                <TextBlock Classes="kbd" Text="{x:Static v:Chrome.FindShortcut}" />
+                            </Border>
+                            <Button Classes="clear" ToolTip.Tip="Clear Filter" Command="{Binding List.ClearSearchCommand}"
+                                    IsVisible="{Binding List.SearchText, Converter={x:Static StringConverters.IsNotNullOrEmpty}}">
+                                <c:Icon Data="{StaticResource Icon.X}" Size="10" StrokeThickness="2" />
+                            </Button>
+                        </Panel>
+                    </TextBox.InnerRightContent>
+                </TextBox>
+
+                <c:StatusBar DockPanel.Dock="Bottom">
+                    <c:StatusBar.Leading>
+                        <TextBlock Text="{Binding List.StatusText}" FontFeatures="+tnum" TextTrimming="CharacterEllipsis" />
+                    </c:StatusBar.Leading>
+                </c:StatusBar>
+
+                <Panel>
+                    <c:EmptyState Classes="compact"
+                                  Classes.starred="{Binding List.Filter, Converter={x:Static ObjectConverters.Equal},
+                                                    ConverterParameter={x:Static m:StreamFilter.Starred}}"
+                                  Classes.searching="{Binding List.IsSearching}"
+                                  Title="{Binding List.EmptyTitle}" Subtitle="{Binding List.EmptySubtitle}"
+                                  IsVisible="{Binding List.IsEmpty}" />
+                    <ListBox x:Name="Rows" Classes="articles"
+                             ItemsSource="{Binding List.Rows}"
+                             SelectedItem="{Binding List.SelectedRow}">
+                        <ListBox.DataTemplates>
+                            <DataTemplate DataType="vm:DateHeaderViewModel">
+                                <!-- 10 + the 6 pt tile inset puts the heading on the 16 pt edge. -->
+                                <Grid Height="{StaticResource Size.DateHeader.Height}" Margin="10,0" ColumnDefinitions="*,Auto">
+                                    <TextBlock Classes="caps" Text="{Binding Title}" VerticalAlignment="Center" />
+                                    <TextBlock Grid.Column="1" Classes="caps" Text="{Binding Count}" VerticalAlignment="Center"
+                                               FontFeatures="+tnum" />
+                                </Grid>
+                            </DataTemplate>
+                            <DataTemplate DataType="vm:ArticleRowViewModel">
+                                <c:ArticleRow FeedTitle="{Binding FeedTitle}" TimeText="{Binding TimeText}"
+                                              Title="{Binding Title}" Summary="{Binding Summary}"
+                                              IsUnread="{Binding IsUnread}" IsStarred="{Binding IsStarred}"
+                                              Favicon="{Binding Favicon}" IsFaviconGrayscale="{Binding IsFaviconGrayscale}"
+                                              Thumbnail="{Binding Thumbnail}" HasThumbnail="{Binding HasThumbnail}" />
+                            </DataTemplate>
+                        </ListBox.DataTemplates>
+                    </ListBox>
+                </Panel>
+            </DockPanel>
+        </Border>
+    </Border>
+</UserControl>

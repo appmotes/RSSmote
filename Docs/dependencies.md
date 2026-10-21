@@ -14,12 +14,12 @@ Versions checked against nuget.org on 2026-10-19.
 | Avalonia.Controls.WebView | 12.1.1 | MIT | App | Article view in the OS web engine (A9) |
 | Avalonia.HtmlRenderer | 12.0.0 | MIT | App | Article fallback where no web engine is installed (A9) |
 | HtmlSanitizer | 9.2.1039 | MIT | Core | Strips active content from feed HTML (A9); brings AngleSharp and AngleSharp.Css (MIT) |
-| Avalonia.Skia | 12.1.4 | MIT | App.Tests | Real drawing in headless tests |
-| Avalonia.Headless.XUnit | 12.1.4 | MIT | App.Tests | Headless platform for xUnit v3 |
+| Avalonia.Skia | 12.1.4 | MIT | App.Tests, Desktop.Tests | Real drawing in headless tests |
+| Avalonia.Headless.XUnit | 12.1.4 | MIT | App.Tests, Desktop.Tests | Headless platform for xUnit v3 |
 | xunit.v3 | 3.2.2 | Apache-2.0 | tests | Matches Avalonia.Headless.XUnit's xUnit 3.2 dependency |
 | xunit.runner.visualstudio | 3.1.5 | Apache-2.0 | tests | `dotnet test` runner |
 | Microsoft.NET.Test.Sdk | 18.11.0 | MIT | tests | Test host |
-| Microsoft.Extensions.TimeProvider.Testing | 10.11.0 | MIT | Data.Tests, App.Tests | `FakeTimeProvider` for retention and the refresh timer |
+| Microsoft.Extensions.TimeProvider.Testing | 10.11.0 | MIT | Data.Tests, App.Tests, Desktop.Tests | `FakeTimeProvider` for retention and the refresh timer |
 
 **Assets**
 

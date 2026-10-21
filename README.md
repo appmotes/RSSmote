@@ -67,7 +67,7 @@ Uden en artikel valgt viser højre side de vigtigste genveje:
 | Tilføj et feed ud fra en adresse eller en OPML-fil | Phosphor: grønt på et slukket rør |
 
 Alle skærmbilleder er taget af appen selv, uden skærm, over et opdigtet demo-bibliotek: feeds, artikler, favicons og
-billeder er lavet til formålet (se `tests/RSSmote.App.Tests/ReadmeCaptureTests.cs`).
+billeder er lavet til formålet (se `tests/RSSmote.Desktop.Tests/ReadmeCaptureTests.cs`).
 
 ## Temaer
 

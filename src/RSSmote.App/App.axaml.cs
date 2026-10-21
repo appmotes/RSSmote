@@ -5,7 +5,6 @@ using Avalonia.Platform;
 using Avalonia.Threading;
 using RSSmote.App.Controls.Headless;
 using RSSmote.App.Services;
-using RSSmote.App.Shell;
 using RSSmote.App.Theming;
 using RSSmote.App.ViewModels;
 using RSSmote.Core.Models;
@@ -17,16 +16,20 @@ public partial class App : Application
     private AppServices? _services;
     private ShellViewModel? _shell;
 
+    /// <summary>The head's launcher and main window; required under the desktop lifetime.</summary>
+    public IShellHost? Host { get; init; }
+
     public override void Initialize() => AvaloniaXamlLoader.Load(this);
 
     public override void OnFrameworkInitializationCompleted()
     {
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
+            var host = Host ?? throw new InvalidOperationException("App needs a Host under the desktop lifetime.");
             // RSSMOTE_ARTICLE_RENDERER=fallback shows the renderer used where no web view is installed.
             if (Enum.TryParse<ArticleRenderer>(Environment.GetEnvironmentVariable("RSSMOTE_ARTICLE_RENDERER"), true, out var renderer))
                 ArticleHost.DefaultRenderer = renderer;
-            _services = new AppServices(() => desktop.MainWindow);
+            _services = new AppServices(() => desktop.MainWindow, host.Launcher);
             // The stored theme applies before the first window, so the first frame is already right.
             ApplyTheme();
             _services.Settings.Changed += OnSettingsChanged;
@@ -35,7 +38,7 @@ public partial class App : Application
 
             _shell = new ShellViewModel(_services.Store, _services.Settings, _services.Refresher, _services.Finder, _services.Files, _services.Images,
                 _services.Launcher, _services.Ui, _services.Clock);
-            desktop.MainWindow = new MainWindow(_shell);
+            desktop.MainWindow = host.CreateMainWindow(_shell);
             desktop.ShutdownRequested += (_, _) => Shutdown();
             _services.Refresher.Start();
         }
