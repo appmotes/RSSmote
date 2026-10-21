@@ -1,0 +1,82 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:c="urn:RSSmote.App.Controls"
+             xmlns:vm="using:RSSmote.App.ViewModels"
+             xmlns:v="using:RSSmote.App.Views"
+             xmlns:m="using:RSSmote.Core.Models"
+             x:Class="RSSmote.App.Views.SidebarView"
+             x:DataType="vm:ShellViewModel">
+    <Border Background="{DynamicResource Brush.Bg.Sidebar}">
+        <DockPanel>
+            <c:TitleStrip DockPanel.Dock="Top" Padding="{x:Static v:Chrome.SidebarStripPadding}">
+                <c:TitleStrip.Trailing>
+                    <StackPanel Orientation="Horizontal">
+                        <Button Classes="icon" ToolTip.Tip="Refresh (R)" Command="{Binding RefreshCommand}">
+                            <c:Icon Data="{StaticResource Icon.Refresh}" />
+                        </Button>
+                        <Button Classes="icon" ToolTip.Tip="Add Feed" Command="{Binding ShowAddFeedCommand}">
+                            <c:Icon Data="{StaticResource Icon.Plus}" />
+                        </Button>
+                        <Button Classes="icon" ToolTip.Tip="Menu" IsVisible="{x:Static v:Chrome.UsesMenuButton}">
+                            <c:Icon Data="{StaticResource Icon.Menu}" />
+                            <Button.Flyout>
+                                <MenuFlyout Placement="BottomEdgeAlignedRight">
+                                    <MenuItem Header="Add Feed…" InputGesture="Ctrl+N" Command="{Binding ShowAddFeedCommand}" />
+                                    <MenuItem Header="Import Feeds…" Command="{Binding ImportOpmlCommand}" />
+                                    <MenuItem Header="Export Feeds…" Command="{Binding ExportOpmlCommand}" />
+                                    <Separator />
+                                    <MenuItem Header="Refresh" InputGesture="R" Command="{Binding RefreshCommand}" />
+                                    <MenuItem Header="Mark All as Read" InputGesture="A" Command="{Binding MarkAllReadCommand}" />
+                                    <Separator />
+                                    <MenuItem Header="Starred Items" InputGesture="Ctrl+1" Command="{Binding ShowFilterCommand}" CommandParameter="{x:Static m:StreamFilter.Starred}" />
+                                    <MenuItem Header="Unread Items" InputGesture="Ctrl+2" Command="{Binding ShowFilterCommand}" CommandParameter="{x:Static m:StreamFilter.Unread}" />
+                                    <MenuItem Header="All Items" InputGesture="Ctrl+3" Command="{Binding ShowFilterCommand}" CommandParameter="{x:Static m:StreamFilter.All}" />
+                                    <Separator />
+                                    <MenuItem Header="Theme">
+                                        <MenuItem Header="Appearance" Classes="choices" ItemsSource="{Binding Appearances}" />
+                                        <MenuItem Header="Light Theme" Classes="choices" ItemsSource="{Binding LightThemes}" />
+                                        <MenuItem Header="Dark Theme" Classes="choices" ItemsSource="{Binding DarkThemes}" />
+                                        <Separator />
+                                        <MenuItem Header="Grayscale Favicons" Command="{Binding ToggleGrayscaleFaviconsCommand}" />
+                                    </MenuItem>
+                                    <MenuItem Header="Sort Unread Items">
+                                        <MenuItem Header="Newest First" Command="{Binding SetSortNewestFirstCommand}" CommandParameter="{x:True}" />
+                                        <MenuItem Header="Oldest First" Command="{Binding SetSortNewestFirstCommand}" CommandParameter="{x:False}" />
+                                    </MenuItem>
+                                    <MenuItem Header="Group Items">
+                                        <MenuItem Header="By Date" Command="{Binding SetGroupByDateCommand}" CommandParameter="{x:True}" />
+                                        <MenuItem Header="None" Command="{Binding SetGroupByDateCommand}" CommandParameter="{x:False}" />
+                                    </MenuItem>
+                                </MenuFlyout>
+                            </Button.Flyout>
+                        </Button>
+                    </StackPanel>
+                </c:TitleStrip.Trailing>
+            </c:TitleStrip>
+
+            <c:StatusBar DockPanel.Dock="Bottom" Classes="canvas" Margin="0,0,0,6">
+                <c:StatusBar.Leading>
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <Ellipse Classes="statusDot" Classes.updating="{Binding IsRefreshing}"
+                                 Classes.failed="{Binding Sidebar.HasFailures}" />
+                        <TextBlock Text="{Binding Sidebar.StatusText}" TextTrimming="CharacterEllipsis"
+                                   FontFeatures="+tnum" VerticalAlignment="Center" />
+                    </StackPanel>
+                </c:StatusBar.Leading>
+            </c:StatusBar>
+
+            <ListBox x:Name="Rows" Classes="sidebar"
+                     ItemsSource="{Binding Sidebar.Rows}"
+                     SelectedItem="{Binding Sidebar.SelectedRow}">
+                <ListBox.ItemTemplate>
+                    <DataTemplate x:DataType="vm:SidebarRowViewModel">
+                        <c:SidebarRow Kind="{Binding Kind}" Title="{Binding Title}" Count="{Binding Count}"
+                                      Favicon="{Binding Favicon}" IsFaviconGrayscale="{Binding IsFaviconGrayscale}"
+                                      IsExpanded="{Binding IsExpanded}" IsExpandable="{Binding IsExpandable}"
+                                      HasError="{Binding HasError}" Filter="{Binding Filter}" />
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </DockPanel>
+    </Border>
+</UserControl>

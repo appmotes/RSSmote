@@ -1,0 +1,363 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:c="urn:RSSmote.App.Controls"
+             x:Class="RSSmote.App.Gallery.ComponentGallery"
+             Background="{DynamicResource Brush.Bg.List}">
+    <UserControl.Styles>
+        <Style Selector="TextBlock.galleryHeading">
+            <Setter Property="FontSize" Value="13" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Accent}" />
+            <Setter Property="Margin" Value="0,8,0,6" />
+        </Style>
+    </UserControl.Styles>
+    <ScrollViewer>
+        <StackPanel Margin="24" Spacing="12">
+
+            <!-- Columns: sidebar · article list · panel, with sample data -->
+            <TextBlock Classes="galleryHeading" Text="Columns" />
+            <StackPanel Orientation="Horizontal" Spacing="24">
+
+                <Border Width="232" Height="440" Background="{DynamicResource Brush.Bg.Sidebar}" CornerRadius="10" ClipToBounds="True">
+                    <DockPanel>
+                        <c:TitleStrip DockPanel.Dock="Top">
+                            <c:TitleStrip.Trailing>
+                                <StackPanel Orientation="Horizontal">
+                                    <Button Classes="icon" ToolTip.Tip="Refresh"><c:Icon Data="{StaticResource Icon.Refresh}" /></Button>
+                                    <Button Classes="icon" ToolTip.Tip="Add Feed"><c:Icon Data="{StaticResource Icon.Plus}" Size="17" /></Button>
+                                </StackPanel>
+                            </c:TitleStrip.Trailing>
+                        </c:TitleStrip>
+                        <c:StatusBar DockPanel.Dock="Bottom" Classes="canvas" Margin="0,0,0,6">
+                            <c:StatusBar.Leading>
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <Ellipse Classes="statusDot" />
+                                    <TextBlock Text="Today at 13.33 · 5 feeds" VerticalAlignment="Center" />
+                                </StackPanel>
+                            </c:StatusBar.Leading>
+                        </c:StatusBar>
+                        <ListBox Classes="sidebar" SelectedIndex="0">
+                            <c:SidebarRow Kind="Smart" Title="Unread" Count="4" />
+                            <c:SidebarRow Kind="Section" Title="Folders" IsExpanded="True" />
+                            <c:SidebarRow Kind="Folder" Title="Apple" Count="1" IsExpanded="True" />
+                            <c:SidebarRow Kind="Feed" Title="AppleInsider News" Count="1" />
+                            <c:SidebarRow Kind="Folder" Title="Nyheder Indland" Count="2" />
+                            <c:SidebarRow Kind="Folder" Title="Tech" />
+                            <c:SidebarRow Kind="Section" Title="Feeds" IsExpanded="True" />
+                            <c:SidebarRow Kind="Feed" Title="mobilsiden.dk" Count="3" />
+                            <c:SidebarRow Kind="Feed" Title="Broken Feed" HasError="True" />
+                        </ListBox>
+                    </DockPanel>
+                </Border>
+
+                <Border Width="420" Height="440" Classes="card" Margin="0" Background="{DynamicResource Brush.Bg.List}">
+                    <Border Classes="cardClip">
+                    <DockPanel>
+                        <c:TitleStrip DockPanel.Dock="Top" Classes="card" Padding="14,0,8,0">
+                            <c:TitleStrip.Leading>
+                                <StackPanel Orientation="Horizontal" Spacing="8">
+                                    <TextBlock Classes="listTitle" Text="Unread" VerticalAlignment="Center" />
+                                    <Border Classes="listBadge"><TextBlock Classes="count" Text="4" /></Border>
+                                </StackPanel>
+                            </c:TitleStrip.Leading>
+                            <c:TitleStrip.Trailing>
+                                <StackPanel Orientation="Horizontal" Spacing="6">
+                                    <c:FilterBar Filter="Unread" />
+                                    <Border Classes="vsep" />
+                                    <Button Classes="icon" ToolTip.Tip="Mark All as Read"><c:Icon Data="{StaticResource Icon.CheckCircle}" /></Button>
+                                </StackPanel>
+                            </c:TitleStrip.Trailing>
+                        </c:TitleStrip>
+                        <TextBox DockPanel.Dock="Top" Classes="filter" Margin="10,0,10,6" />
+                        <c:StatusBar DockPanel.Dock="Bottom" Leading="4 articles · newest first" />
+                        <ListBox Classes="articles" SelectedIndex="2">
+                            <ListBoxItem Classes="header" IsEnabled="False">
+                                <Grid Height="{StaticResource Size.DateHeader.Height}" Margin="10,0" ColumnDefinitions="*,Auto">
+                                    <TextBlock Classes="caps" Text="TODAY" VerticalAlignment="Center" />
+                                    <TextBlock Grid.Column="1" Classes="caps" Text="3" VerticalAlignment="Center" />
+                                </Grid>
+                            </ListBoxItem>
+                            <c:ArticleRow FeedTitle="Kort nyt | DR" TimeText="13.34" IsUnread="True"
+                                          Title="Københavns Politi beder DUP om at undersøge slag mod fotografer" />
+                            <c:ArticleRow FeedTitle="WIRED" TimeText="13.30" HasThumbnail="True"
+                                          Title="Nathan Fielder’s Surprise Call From Elizabeth Holmes: ‘I Trust You’"
+                                          Summary="The codirector of “You Can See Everything” talks exclusively about the call." />
+                            <c:ArticleRow FeedTitle="BBC News" TimeText="13.23" IsUnread="True" IsStarred="True" HasThumbnail="True"
+                                          Title="Italian PM Meloni to hold emergency meeting after weekend of violent clashes"
+                                          Summary="More than 200 people were detained during two days of protests." />
+                        </ListBox>
+                    </DockPanel>
+                    </Border>
+                </Border>
+
+                <Border Width="{StaticResource Size.Panel.Width}" VerticalAlignment="Top" Background="{DynamicResource Brush.Bg.Panel}"
+                        CornerRadius="{StaticResource CornerRadius.Panel}" BoxShadow="{DynamicResource BoxShadows.Panel}">
+                    <StackPanel>
+                        <Grid Classes="sheetHeader" ColumnDefinitions="*,Auto">
+                            <TextBlock Classes="largeTitle" Text="Edit Feed" />
+                            <Button Grid.Column="1" Classes="icon"><c:Icon Data="{StaticResource Icon.X}" /></Button>
+                        </Grid>
+                        <TextBlock Classes="sheetSubtitle" Text="devblogs.microsoft.com/dotnet/feed/" />
+                        <StackPanel Classes="sheetBody">
+                            <TextBox Classes="panel-field" Text=".NET Blog" />
+                            <WrapPanel ItemSpacing="6" LineSpacing="6">
+                                <Button Classes="chip on" Content=".NET" />
+                                <Button Classes="chip" Content="AI" />
+                                <Button Classes="chip" Content="Apple" />
+                                <Button Classes="chip" Content="Lokalt" />
+                            </WrapPanel>
+                            <c:PanelGroup>
+                                <c:PanelRow Title="The Verge" Subtitle="https://www.theverge.com/rss/index.xml"
+                                            Accessory="Check" IsOn="True" FontWeight="Medium" />
+                                <c:PanelRow Title="Folder: Apple" Accessory="Chevron" />
+                            </c:PanelGroup>
+                        </StackPanel>
+                        <DockPanel Classes="sheetFooter">
+                            <Button DockPanel.Dock="Left" Classes="danger" Content="Delete Folder…" />
+                            <StackPanel>
+                                <Button Classes="secondary" Content="Cancel" />
+                                <Button Classes="primary" Content="Save" />
+                            </StackPanel>
+                        </DockPanel>
+                    </StackPanel>
+                </Border>
+
+            </StackPanel>
+
+            <TextBlock Classes="galleryHeading" Text="Empty state" />
+            <Border Width="380" Height="260" HorizontalAlignment="Left" CornerRadius="10"
+                    Background="{DynamicResource Brush.Bg.Article}">
+                <c:EmptyState Title="No article selected" Subtitle="4 unread items in Unread" />
+            </Border>
+
+            <TextBlock Classes="galleryHeading" Text="Palette" />
+            <WrapPanel ItemSpacing="12" LineSpacing="12">
+                <StackPanel Width="112" Spacing="4">
+                    <Border Height="40" CornerRadius="6" BorderThickness="1" BorderBrush="{DynamicResource Brush.Line.Separator}"
+                            Background="{DynamicResource Brush.Bg.Sidebar}" />
+                    <TextBlock Classes="meta" Text="Bg.Sidebar" />
+                </StackPanel>
+                <StackPanel Width="112" Spacing="4">
+                    <Border Height="40" CornerRadius="6" BorderThickness="1" BorderBrush="{DynamicResource Brush.Line.Separator}"
+                            Background="{DynamicResource Brush.Bg.List}" />
+                    <TextBlock Classes="meta" Text="Bg.List" />
+                </StackPanel>
+                <StackPanel Width="112" Spacing="4">
+                    <Border Height="40" CornerRadius="6" BorderThickness="1" BorderBrush="{DynamicResource Brush.Line.Separator}"
+                            Background="{DynamicResource Brush.Bg.Article}" />
+                    <TextBlock Classes="meta" Text="Bg.Article" />
+                </StackPanel>
+                <StackPanel Width="112" Spacing="4">
+                    <Border Height="40" CornerRadius="6" BorderThickness="1" BorderBrush="{DynamicResource Brush.Line.Separator}"
+                            Background="{DynamicResource Brush.Bg.Panel}" />
+                    <TextBlock Classes="meta" Text="Bg.Panel" />
+                </StackPanel>
+                <StackPanel Width="112" Spacing="4">
+                    <Border Height="40" CornerRadius="6" BorderThickness="1" BorderBrush="{DynamicResource Brush.Line.Separator}"
+                            Background="{DynamicResource Brush.Bg.PanelRow}" />
+                    <TextBlock Classes="meta" Text="Bg.PanelRow" />
+                </StackPanel>
+                <StackPanel Width="112" Spacing="4">
+                    <Border Height="40" CornerRadius="6" BorderThickness="1" BorderBrush="{DynamicResource Brush.Line.Separator}"
+                            Background="{DynamicResource Brush.Bg.Pill}" />
+                    <TextBlock Classes="meta" Text="Bg.Pill" />
+                </StackPanel>
+                <StackPanel Width="112" Spacing="4">
+                    <Border Height="40" CornerRadius="6" BorderThickness="1" BorderBrush="{DynamicResource Brush.Line.Separator}"
+                            Background="{DynamicResource Brush.Bg.Hover}" />
+                    <TextBlock Classes="meta" Text="Bg.Hover" />
+                </StackPanel>
+                <StackPanel Width="112" Spacing="4">
+                    <Border Height="40" CornerRadius="6" BorderThickness="1" BorderBrush="{DynamicResource Brush.Line.Separator}"
+                            Background="{DynamicResource Brush.Bg.FaviconTile}" />
+                    <TextBlock Classes="meta" Text="Bg.FaviconTile" />
+                </StackPanel>
+                <StackPanel Width="112" Spacing="4">
+                    <Border Height="40" CornerRadius="6" BorderThickness="1" BorderBrush="{DynamicResource Brush.Line.Separator}"
+                            Background="{DynamicResource Brush.Selection.Sidebar}" />
+                    <TextBlock Classes="meta" Text="Selection.Sidebar" />
+                </StackPanel>
+                <StackPanel Width="112" Spacing="4">
+                    <Border Height="40" CornerRadius="6" BorderThickness="1" BorderBrush="{DynamicResource Brush.Line.Separator}"
+                            Background="{DynamicResource Brush.Selection.List}" />
+                    <TextBlock Classes="meta" Text="Selection.List" />
+                </StackPanel>
+                <StackPanel Width="112" Spacing="4">
+                    <Border Height="40" CornerRadius="6" BorderThickness="1" BorderBrush="{DynamicResource Brush.Line.Separator}"
+                            Background="{DynamicResource Brush.Ink.Primary}" />
+                    <TextBlock Classes="meta" Text="Ink.Primary" />
+                </StackPanel>
+                <StackPanel Width="112" Spacing="4">
+                    <Border Height="40" CornerRadius="6" BorderThickness="1" BorderBrush="{DynamicResource Brush.Line.Separator}"
+                            Background="{DynamicResource Brush.Ink.Sidebar}" />
+                    <TextBlock Classes="meta" Text="Ink.Sidebar" />
+                </StackPanel>
+                <StackPanel Width="112" Spacing="4">
+                    <Border Height="40" CornerRadius="6" BorderThickness="1" BorderBrush="{DynamicResource Brush.Line.Separator}"
+                            Background="{DynamicResource Brush.Ink.Secondary}" />
+                    <TextBlock Classes="meta" Text="Ink.Secondary" />
+                </StackPanel>
+                <StackPanel Width="112" Spacing="4">
+                    <Border Height="40" CornerRadius="6" BorderThickness="1" BorderBrush="{DynamicResource Brush.Line.Separator}"
+                            Background="{DynamicResource Brush.Ink.Read}" />
+                    <TextBlock Classes="meta" Text="Ink.Read" />
+                </StackPanel>
+                <StackPanel Width="112" Spacing="4">
+                    <Border Height="40" CornerRadius="6" BorderThickness="1" BorderBrush="{DynamicResource Brush.Line.Separator}"
+                            Background="{DynamicResource Brush.Ink.Icon}" />
+                    <TextBlock Classes="meta" Text="Ink.Icon" />
+                </StackPanel>
+                <StackPanel Width="112" Spacing="4">
+                    <Border Height="40" CornerRadius="6" BorderThickness="1" BorderBrush="{DynamicResource Brush.Line.Separator}"
+                            Background="{DynamicResource Brush.Ink.OnTile}" />
+                    <TextBlock Classes="meta" Text="Ink.OnTile" />
+                </StackPanel>
+                <StackPanel Width="112" Spacing="4">
+                    <Border Height="40" CornerRadius="6" BorderThickness="1" BorderBrush="{DynamicResource Brush.Line.Separator}"
+                            Background="{DynamicResource Brush.Accent}" />
+                    <TextBlock Classes="meta" Text="Accent" />
+                </StackPanel>
+                <StackPanel Width="112" Spacing="4">
+                    <Border Height="40" CornerRadius="6" BorderThickness="1" BorderBrush="{DynamicResource Brush.Line.Separator}"
+                            Background="{DynamicResource Brush.Line.Separator}" />
+                    <TextBlock Classes="meta" Text="Line.Separator" />
+                </StackPanel>
+                <StackPanel Width="112" Spacing="4">
+                    <Border Height="40" CornerRadius="6" Background="{DynamicResource Brush.Accent}">
+                        <TextBlock Text="Save" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Center"
+                                   Foreground="{DynamicResource Brush.Ink.OnAccent}" />
+                    </Border>
+                    <TextBlock Classes="meta" Text="Ink.OnAccent" />
+                </StackPanel>
+                <StackPanel Width="112" Spacing="4">
+                    <Border Height="40" CornerRadius="6" Background="{DynamicResource Brush.Bg.Pill}">
+                        <TextBlock Text="Remove Feed" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Center"
+                                   Foreground="{DynamicResource Brush.Ink.Danger}" />
+                    </Border>
+                    <TextBlock Classes="meta" Text="Ink.Danger" />
+                </StackPanel>
+            </WrapPanel>
+
+            <TextBlock Classes="galleryHeading" Text="Elevation" />
+            <WrapPanel ItemSpacing="20" LineSpacing="12">
+                <StackPanel Width="140" Spacing="6">
+                    <Border Height="64" CornerRadius="{StaticResource CornerRadius.Card}" Background="{DynamicResource Brush.Bg.List}"
+                            BoxShadow="{DynamicResource BoxShadows.Card}" />
+                    <TextBlock Classes="meta" Text="BoxShadows.Card" />
+                </StackPanel>
+                <StackPanel Width="140" Spacing="6">
+                    <Border Height="28" CornerRadius="{StaticResource CornerRadius.Row.Sidebar}" Background="{DynamicResource Brush.Selection.Sidebar}"
+                            BoxShadow="{DynamicResource BoxShadows.Raised}" />
+                    <TextBlock Classes="meta" Text="BoxShadows.Raised" />
+                </StackPanel>
+                <StackPanel Width="140" Spacing="6">
+                    <Border Height="64" CornerRadius="{StaticResource CornerRadius.Panel}" Background="{DynamicResource Brush.Bg.Panel}"
+                            BoxShadow="{DynamicResource BoxShadows.Panel}" />
+                    <TextBlock Classes="meta" Text="BoxShadows.Panel" />
+                </StackPanel>
+            </WrapPanel>
+
+            <TextBlock Classes="galleryHeading" Text="Type roles" />
+            <StackPanel Spacing="6">
+                <TextBlock Classes="largeTitle" Text="Add Feed  ·  .largeTitle" />
+                <TextBlock Classes="listTitle" Text="Unread  ·  .listTitle" />
+                <TextBlock Classes="headerSubtitle" Text="devblogs.microsoft.com  ·  .headerSubtitle" />
+                <TextBlock Classes="meta" Text="13.34  ·  .meta" />
+                <TextBlock Classes="caps" Text="TODAY  ·  .caps" />
+                <TextBlock Classes="kbd" HorizontalAlignment="Left" Text="⌘F  ·  .kbd" />
+                <TextBlock Classes="count" HorizontalAlignment="Left" Text="42  ·  .count" />
+                <TextBlock Classes="emptyTitle" Text="No article selected  ·  .emptyTitle" />
+                <TextBlock Classes="emptySubtitle" Text="4 unread items in Unread  ·  .emptySubtitle" />
+                <TextBlock Classes="body" Text="Body text  ·  .body" />
+            </StackPanel>
+
+            <TextBlock Classes="galleryHeading" Text="Icons" />
+            <WrapPanel ItemSpacing="8" LineSpacing="14">
+                <StackPanel Width="84" Spacing="4" HorizontalAlignment="Center">
+                    <c:Icon Data="{StaticResource Icon.Refresh}" Size="18" Foreground="{DynamicResource Brush.Ink.Icon}" />
+                    <TextBlock Classes="meta" Text="Refresh" HorizontalAlignment="Center" />
+                </StackPanel>
+                <StackPanel Width="84" Spacing="4" HorizontalAlignment="Center">
+                    <c:Icon Data="{StaticResource Icon.Plus}" Size="18" Foreground="{DynamicResource Brush.Ink.Icon}" />
+                    <TextBlock Classes="meta" Text="Plus" HorizontalAlignment="Center" />
+                </StackPanel>
+                <StackPanel Width="84" Spacing="4" HorizontalAlignment="Center">
+                    <c:Icon Data="{StaticResource Icon.CheckCircle}" Size="18" Foreground="{DynamicResource Brush.Ink.Icon}" />
+                    <TextBlock Classes="meta" Text="CheckCircle" HorizontalAlignment="Center" />
+                </StackPanel>
+                <StackPanel Width="84" Spacing="4" HorizontalAlignment="Center">
+                    <c:Icon Data="{StaticResource Icon.Search}" Size="18" Foreground="{DynamicResource Brush.Ink.Icon}" />
+                    <TextBlock Classes="meta" Text="Search" HorizontalAlignment="Center" />
+                </StackPanel>
+                <StackPanel Width="84" Spacing="4" HorizontalAlignment="Center">
+                    <c:Icon Data="{StaticResource Icon.X}" Size="18" Foreground="{DynamicResource Brush.Ink.Icon}" />
+                    <TextBlock Classes="meta" Text="X" HorizontalAlignment="Center" />
+                </StackPanel>
+                <StackPanel Width="84" Spacing="4" HorizontalAlignment="Center">
+                    <c:Icon Data="{StaticResource Icon.Circle}" Size="18" Foreground="{DynamicResource Brush.Ink.Icon}" />
+                    <TextBlock Classes="meta" Text="Circle" HorizontalAlignment="Center" />
+                </StackPanel>
+                <StackPanel Width="84" Spacing="4" HorizontalAlignment="Center">
+                    <c:Icon Data="{StaticResource Icon.CircleDot}" Size="18" Foreground="{DynamicResource Brush.Ink.Icon}" />
+                    <TextBlock Classes="meta" Text="CircleDot" HorizontalAlignment="Center" />
+                </StackPanel>
+                <StackPanel Width="84" Spacing="4" HorizontalAlignment="Center">
+                    <c:Icon Data="{StaticResource Icon.Star}" Size="18" Foreground="{DynamicResource Brush.Ink.Icon}" />
+                    <TextBlock Classes="meta" Text="Star" HorizontalAlignment="Center" />
+                </StackPanel>
+                <StackPanel Width="84" Spacing="4" HorizontalAlignment="Center">
+                    <c:Icon Data="{StaticResource Icon.AlignLeft}" Size="18" Foreground="{DynamicResource Brush.Ink.Icon}" />
+                    <TextBlock Classes="meta" Text="AlignLeft" HorizontalAlignment="Center" />
+                </StackPanel>
+                <StackPanel Width="84" Spacing="4" HorizontalAlignment="Center">
+                    <c:Icon Data="{StaticResource Icon.Share}" Size="18" Foreground="{DynamicResource Brush.Ink.Icon}" />
+                    <TextBlock Classes="meta" Text="Share" HorizontalAlignment="Center" />
+                </StackPanel>
+                <StackPanel Width="84" Spacing="4" HorizontalAlignment="Center">
+                    <c:Icon Data="{StaticResource Icon.ChevronLeft}" Size="18" Foreground="{DynamicResource Brush.Ink.Icon}" />
+                    <TextBlock Classes="meta" Text="ChevronLeft" HorizontalAlignment="Center" />
+                </StackPanel>
+                <StackPanel Width="84" Spacing="4" HorizontalAlignment="Center">
+                    <c:Icon Data="{StaticResource Icon.ChevronRight}" Size="18" Foreground="{DynamicResource Brush.Ink.Icon}" />
+                    <TextBlock Classes="meta" Text="ChevronRight" HorizontalAlignment="Center" />
+                </StackPanel>
+                <StackPanel Width="84" Spacing="4" HorizontalAlignment="Center">
+                    <c:Icon Data="{StaticResource Icon.ChevronDown}" Size="18" Foreground="{DynamicResource Brush.Ink.Icon}" />
+                    <TextBlock Classes="meta" Text="ChevronDown" HorizontalAlignment="Center" />
+                </StackPanel>
+                <StackPanel Width="84" Spacing="4" HorizontalAlignment="Center">
+                    <c:Icon Data="{StaticResource Icon.Folder}" Size="18" Foreground="{DynamicResource Brush.Ink.Icon}" />
+                    <TextBlock Classes="meta" Text="Folder" HorizontalAlignment="Center" />
+                </StackPanel>
+                <StackPanel Width="84" Spacing="4" HorizontalAlignment="Center">
+                    <c:Icon Data="{StaticResource Icon.Rss}" Size="18" Foreground="{DynamicResource Brush.Ink.Icon}" />
+                    <TextBlock Classes="meta" Text="Rss" HorizontalAlignment="Center" />
+                </StackPanel>
+                <StackPanel Width="84" Spacing="4" HorizontalAlignment="Center">
+                    <c:Icon Data="{StaticResource Icon.Settings}" Size="18" Foreground="{DynamicResource Brush.Ink.Icon}" />
+                    <TextBlock Classes="meta" Text="Settings" HorizontalAlignment="Center" />
+                </StackPanel>
+                <StackPanel Width="84" Spacing="4" HorizontalAlignment="Center">
+                    <c:Icon Data="{StaticResource Icon.Menu}" Size="18" Foreground="{DynamicResource Brush.Ink.Icon}" />
+                    <TextBlock Classes="meta" Text="Menu" HorizontalAlignment="Center" />
+                </StackPanel>
+                <StackPanel Width="84" Spacing="4" HorizontalAlignment="Center">
+                    <c:Icon Data="{StaticResource Icon.Globe}" Size="18" Foreground="{DynamicResource Brush.Ink.Icon}" />
+                    <TextBlock Classes="meta" Text="Globe" HorizontalAlignment="Center" />
+                </StackPanel>
+                <StackPanel Width="84" Spacing="4" HorizontalAlignment="Center">
+                    <c:Icon Data="{StaticResource Icon.ExternalLink}" Size="18" Foreground="{DynamicResource Brush.Ink.Icon}" />
+                    <TextBlock Classes="meta" Text="ExternalLink" HorizontalAlignment="Center" />
+                </StackPanel>
+                <StackPanel Width="84" Spacing="4" HorizontalAlignment="Center">
+                    <c:Icon Data="{StaticResource Icon.Check}" Size="18" Foreground="{DynamicResource Brush.Ink.Icon}" />
+                    <TextBlock Classes="meta" Text="Check" HorizontalAlignment="Center" />
+                </StackPanel>
+                <StackPanel Width="84" Spacing="4">
+                    <c:Icon Data="{StaticResource Icon.Star}" Size="18" IsFilled="True" Foreground="{DynamicResource Brush.Accent}" />
+                    <TextBlock Classes="meta" Text="Star filled" HorizontalAlignment="Center" />
+                </StackPanel>
+            </WrapPanel>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

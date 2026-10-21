@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+  </PropertyGroup>
+  <ItemGroup>
+    <AvaloniaResource Include="Assets\**" Exclude="Assets\**\*.axaml" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\RSSmote.Core\RSSmote.Core.csproj" />
+    <ProjectReference Include="..\RSSmote.Data\RSSmote.Data.csproj" />
+    <PackageReference Include="Avalonia" />
+    <PackageReference Include="Avalonia.Themes.Fluent" />
+    <PackageReference Include="Avalonia.Fonts.Inter" />
+    <PackageReference Include="Avalonia.Controls.WebView" />
+    <PackageReference Include="Avalonia.HtmlRenderer" />
+    <PackageReference Include="CommunityToolkit.Mvvm" />
+  </ItemGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="RSSmote.App.Tests" />
+  </ItemGroup>
+</Project>

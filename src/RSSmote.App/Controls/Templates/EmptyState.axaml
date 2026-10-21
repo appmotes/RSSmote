@@ -1,0 +1,42 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:c="urn:RSSmote.App.Controls">
+    <ControlTheme x:Key="{x:Type c:EmptyState}" TargetType="c:EmptyState">
+        <Setter Property="HorizontalAlignment" Value="Center" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="Illustration" Value="{StaticResource Icon.CircleDot}" />
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Panel>
+                    <Border x:Name="PART_Box" Width="300" Padding="22,20,22,18"
+                            CornerRadius="{StaticResource CornerRadius.Card}" Background="{DynamicResource Brush.Bg.Pill}">
+                        <StackPanel>
+                            <TextBlock Classes="emptyTitle" Text="{TemplateBinding Title}" />
+                            <TextBlock Classes="emptySubtitle" Text="{TemplateBinding Subtitle}" Margin="0,2,0,0"
+                                       TextWrapping="Wrap" />
+                            <ContentPresenter Content="{TemplateBinding Shortcuts}" Margin="0,14,0,0" />
+                        </StackPanel>
+                    </Border>
+                    <StackPanel x:Name="PART_Compact" IsVisible="False" Spacing="3" HorizontalAlignment="Center">
+                        <Border Width="52" Height="52" CornerRadius="26" Margin="0,0,0,9" HorizontalAlignment="Center"
+                                Background="{DynamicResource Brush.Bg.Pill}">
+                            <c:Icon Data="{TemplateBinding Illustration}" Size="{StaticResource Size.Illustration}"
+                                    HorizontalAlignment="Center" VerticalAlignment="Center"
+                                    Foreground="{DynamicResource Brush.Ink.Secondary}" />
+                        </Border>
+                        <TextBlock Classes="emptyTitle" Text="{TemplateBinding Title}" HorizontalAlignment="Center" />
+                        <TextBlock Classes="emptySubtitle" Text="{TemplateBinding Subtitle}" HorizontalAlignment="Center"
+                                   TextAlignment="Center" TextWrapping="Wrap" MaxWidth="260" />
+                    </StackPanel>
+                </Panel>
+            </ControlTemplate>
+        </Setter>
+
+        <Style Selector="^.compact /template/ Border#PART_Box">
+            <Setter Property="IsVisible" Value="False" />
+        </Style>
+        <Style Selector="^.compact /template/ StackPanel#PART_Compact">
+            <Setter Property="IsVisible" Value="True" />
+        </Style>
+    </ControlTheme>
+</ResourceDictionary>

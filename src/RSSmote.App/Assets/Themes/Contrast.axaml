@@ -1,0 +1,64 @@
+<!-- Contrast palette (light slot): black on white; a card is its edge. Generated from one table so every palette answers the same
+     keys in the same order (D4, D5, D22). Read with DynamicResource. -->
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <Color x:Key="Color.Bg.Sidebar">#FFFFFFFF</Color> <!-- Sidebar and the window canvas between the cards -->
+    <Color x:Key="Color.Bg.List">#FFFFFFFF</Color> <!-- Article list card -->
+    <Color x:Key="Color.Bg.Article">#FFFFFFFF</Color> <!-- Article card and the article page -->
+    <Color x:Key="Color.Bg.Panel">#FFFFFFFF</Color> <!-- Overlay panels, sidebar badges, active filter segment -->
+    <Color x:Key="Color.Bg.PanelRow">#FFFFFFFF</Color> <!-- Fields, row groups and chips in panels -->
+    <Color x:Key="Color.Bg.Pill">#FFEDEDED</Color> <!-- Filter box, segment track, list badge, kbd, secondary buttons -->
+    <Color x:Key="Color.Bg.Hover">#1F000000</Color> <!-- Pointer-over wash on icon buttons, rows and chips -->
+    <Color x:Key="Color.Bg.FaviconTile">#FF3D3D3D</Color> <!-- Letter tile when a feed has no favicon -->
+    <Color x:Key="Color.Selection.Sidebar">#FFFFE1BF</Color> <!-- Selected sidebar row (raised) -->
+    <Color x:Key="Color.Selection.List">#FFFFE1BF</Color> <!-- Selected article, selected result, selected text -->
+    <Color x:Key="Color.Ink.Primary">#FF000000</Color> <!-- Titles, body -->
+    <Color x:Key="Color.Ink.Sidebar">#FF000000</Color> <!-- Sidebar labels -->
+    <Color x:Key="Color.Ink.Secondary">#FF1F1F1F</Color> <!-- Feed names, times, summaries, labels, status -->
+    <Color x:Key="Color.Ink.Read">#FF3D3D3D</Color> <!-- Read article titles -->
+    <Color x:Key="Color.Ink.Icon">#FF000000</Color> <!-- Chrome icons -->
+    <Color x:Key="Color.Ink.OnTile">#FFFFFFFF</Color> <!-- Letter on the favicon tile -->
+    <Color x:Key="Color.Accent">#FF8C3D00</Color> <!-- Selected badge, active segment, links, star, focus ring, primary button (D2) -->
+    <Color x:Key="Color.Line.Separator">#FF8A8A8A</Color> <!-- Hairlines in strips and status bars, field edges -->
+    <Color x:Key="Color.Scrim">#B3000000</Color> <!-- Behind every overlay panel -->
+    <Color x:Key="Color.Ink.OnAccent">#FFFFFFFF</Color> <!-- Text and icons on an accent fill -->
+    <Color x:Key="Color.Ink.Danger">#FFA30000</Color> <!-- Remove Feed, Delete Folder -->
+
+    <SolidColorBrush x:Key="Brush.Bg.Sidebar" Color="{StaticResource Color.Bg.Sidebar}" />
+    <SolidColorBrush x:Key="Brush.Bg.List" Color="{StaticResource Color.Bg.List}" />
+    <SolidColorBrush x:Key="Brush.Bg.Article" Color="{StaticResource Color.Bg.Article}" />
+    <SolidColorBrush x:Key="Brush.Bg.Panel" Color="{StaticResource Color.Bg.Panel}" />
+    <SolidColorBrush x:Key="Brush.Bg.PanelRow" Color="{StaticResource Color.Bg.PanelRow}" />
+    <SolidColorBrush x:Key="Brush.Bg.Pill" Color="{StaticResource Color.Bg.Pill}" />
+    <SolidColorBrush x:Key="Brush.Bg.Hover" Color="{StaticResource Color.Bg.Hover}" />
+    <SolidColorBrush x:Key="Brush.Bg.FaviconTile" Color="{StaticResource Color.Bg.FaviconTile}" />
+    <SolidColorBrush x:Key="Brush.Selection.Sidebar" Color="{StaticResource Color.Selection.Sidebar}" />
+    <SolidColorBrush x:Key="Brush.Selection.List" Color="{StaticResource Color.Selection.List}" />
+    <SolidColorBrush x:Key="Brush.Ink.Primary" Color="{StaticResource Color.Ink.Primary}" />
+    <SolidColorBrush x:Key="Brush.Ink.Sidebar" Color="{StaticResource Color.Ink.Sidebar}" />
+    <SolidColorBrush x:Key="Brush.Ink.Secondary" Color="{StaticResource Color.Ink.Secondary}" />
+    <SolidColorBrush x:Key="Brush.Ink.Read" Color="{StaticResource Color.Ink.Read}" />
+    <SolidColorBrush x:Key="Brush.Ink.Icon" Color="{StaticResource Color.Ink.Icon}" />
+    <SolidColorBrush x:Key="Brush.Ink.OnTile" Color="{StaticResource Color.Ink.OnTile}" />
+    <SolidColorBrush x:Key="Brush.Accent" Color="{StaticResource Color.Accent}" />
+    <SolidColorBrush x:Key="Brush.Line.Separator" Color="{StaticResource Color.Line.Separator}" />
+    <SolidColorBrush x:Key="Brush.Scrim" Color="{StaticResource Color.Scrim}" />
+    <SolidColorBrush x:Key="Brush.Ink.OnAccent" Color="{StaticResource Color.Ink.OnAccent}" />
+    <SolidColorBrush x:Key="Brush.Ink.Danger" Color="{StaticResource Color.Ink.Danger}" />
+
+    <!-- Elevation: a soft shadow, or a ring where a shadow would not read (D20) -->
+    <BoxShadows x:Key="BoxShadows.Card">0 0 0 1 #FF4D4D4D</BoxShadows> <!-- Article list and article cards -->
+    <BoxShadows x:Key="BoxShadows.Raised">0 0 0 1 #FF4D4D4D</BoxShadows> <!-- Selected sidebar row, active filter segment -->
+    <BoxShadows x:Key="BoxShadows.Panel">0 0 0 2 #FF4D4D4D</BoxShadows> <!-- Overlay panels -->
+
+    <!-- Fluent keys mapped onto the palette so stock controls match: Dark1–3 are the accent × 0.88 / 0.76 / 0.64,
+         Light1–3 the accent blended 15 / 30 / 45 % towards white -->
+    <Color x:Key="SystemAccentColor">#FF8C3D00</Color>
+    <Color x:Key="SystemAccentColorDark1">#FF7B3600</Color>
+    <Color x:Key="SystemAccentColorDark2">#FF6A2E00</Color>
+    <Color x:Key="SystemAccentColorDark3">#FF5A2700</Color>
+    <Color x:Key="SystemAccentColorLight1">#FF9D5A26</Color>
+    <Color x:Key="SystemAccentColorLight2">#FFAE774C</Color>
+    <Color x:Key="SystemAccentColorLight3">#FFC09473</Color>
+</ResourceDictionary>

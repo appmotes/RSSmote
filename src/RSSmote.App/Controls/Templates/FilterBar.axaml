@@ -1,0 +1,29 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:c="urn:RSSmote.App.Controls">
+    <!-- Three icon segments in a track; the selected one is raised in the panel colour with an accent icon (D2, D20). -->
+    <ControlTheme x:Key="{x:Type c:FilterBar}" TargetType="c:FilterBar">
+        <Setter Property="Background" Value="{DynamicResource Brush.Bg.Pill}" />
+        <Setter Property="CornerRadius" Value="{StaticResource CornerRadius.Pill}" />
+        <Setter Property="Padding" Value="2" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Border Background="{TemplateBinding Background}" CornerRadius="{TemplateBinding CornerRadius}"
+                        Padding="{TemplateBinding Padding}">
+                    <StackPanel Orientation="Horizontal" Spacing="2">
+                        <Button x:Name="PART_Starred" Classes="filter-segment" ToolTip.Tip="Starred Items">
+                            <c:Icon Data="{StaticResource Icon.Star}" Size="13" />
+                        </Button>
+                        <Button x:Name="PART_Unread" Classes="filter-segment" ToolTip.Tip="Unread Items">
+                            <c:Icon Data="{StaticResource Icon.CircleDot}" Size="13" />
+                        </Button>
+                        <Button x:Name="PART_All" Classes="filter-segment" ToolTip.Tip="All Items">
+                            <c:Icon Data="{StaticResource Icon.AlignLeft}" Size="13" />
+                        </Button>
+                    </StackPanel>
+                </Border>
+            </ControlTemplate>
+        </Setter>
+    </ControlTheme>
+</ResourceDictionary>

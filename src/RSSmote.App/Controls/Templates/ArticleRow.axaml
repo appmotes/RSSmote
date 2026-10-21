@@ -1,0 +1,65 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:c="urn:RSSmote.App.Controls">
+    <!-- Padding is relative to the tile (inset 6). On screen: favicon at 16, title at 37, the summary under the title,
+         time and thumbnail flush 16 from the right edge (D7, D11). -->
+    <ControlTheme x:Key="{x:Type c:ArticleRow}" TargetType="c:ArticleRow">
+        <Setter Property="Padding" Value="{StaticResource Thickness.ArticleRow.Padding}" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Ink.Read}" />
+        <Setter Property="SummaryForeground" Value="{DynamicResource Brush.Ink.Secondary}" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Border Background="{TemplateBinding Background}">
+                    <Grid Margin="{TemplateBinding Padding}" ColumnDefinitions="21,*,Auto" RowDefinitions="Auto,Auto">
+                        <c:Favicon x:Name="PART_Favicon" HorizontalAlignment="Left" VerticalAlignment="Center"
+                                   Size="{StaticResource Size.Favicon}" Opacity="0.75"
+                                   Source="{TemplateBinding Favicon}" IsGrayscale="{TemplateBinding IsFaviconGrayscale}" Title="{TemplateBinding FeedTitle}"
+                                   TileBrush="{DynamicResource Brush.Bg.FaviconTile}"
+                                   LetterBrush="{DynamicResource Brush.Ink.OnTile}" />
+                        <DockPanel Grid.Column="1">
+                            <TextBlock x:Name="PART_Time" DockPanel.Dock="Right" Classes="meta" Margin="8,0,0,0"
+                                       VerticalAlignment="Center" Text="{TemplateBinding TimeText}" />
+                            <c:Icon x:Name="PART_Star" DockPanel.Dock="Right" IsVisible="False" Data="{StaticResource Icon.Star}"
+                                    Size="11" Margin="6,0,0,0" IsFilled="True" Foreground="{DynamicResource Brush.Accent}"
+                                    VerticalAlignment="Center" />
+                            <TextBlock x:Name="PART_Title" Text="{TemplateBinding Title}" VerticalAlignment="Center"
+                                       FontSize="{StaticResource TextTheme.Item.Size}"
+                                       LineHeight="{StaticResource Double.ItemLineHeight}"
+                                       MaxLines="1" TextTrimming="CharacterEllipsis"
+                                       ToolTip.Tip="{TemplateBinding Title}" />
+                        </DockPanel>
+                        <TextBlock x:Name="PART_Summary" Grid.Row="1" Grid.Column="1" Margin="0,3,0,0"
+                                   FontSize="{StaticResource TextTheme.ItemSummary.Size}"
+                                   LineHeight="{StaticResource Double.SummaryLineHeight}"
+                                   Foreground="{TemplateBinding SummaryForeground}"
+                                   MaxLines="2" TextWrapping="Wrap" TextTrimming="CharacterEllipsis" />
+                        <Border x:Name="PART_Thumb" Grid.Column="2" Grid.RowSpan="2" IsVisible="False"
+                                Width="{StaticResource Size.Thumb}" Height="{StaticResource Size.Thumb}"
+                                Margin="12,0,0,0" VerticalAlignment="Center"
+                                Background="{DynamicResource Brush.Bg.Pill}"
+                                CornerRadius="{StaticResource CornerRadius.Thumb}" ClipToBounds="True">
+                            <Image Source="{TemplateBinding Thumbnail}" Stretch="UniformToFill" />
+                        </Border>
+                    </Grid>
+                </Border>
+            </ControlTemplate>
+        </Setter>
+
+        <Style Selector="^:unread">
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Ink.Primary}" />
+        </Style>
+        <Style Selector="^:unread /template/ TextBlock#PART_Title">
+            <Setter Property="FontWeight" Value="SemiBold" />
+        </Style>
+        <Style Selector="^:unread /template/ c|Favicon#PART_Favicon">
+            <Setter Property="Opacity" Value="1" />
+        </Style>
+        <Style Selector="^:starred /template/ c|Icon#PART_Star">
+            <Setter Property="IsVisible" Value="True" />
+        </Style>
+        <Style Selector="^:thumbnail /template/ Border#PART_Thumb">
+            <Setter Property="IsVisible" Value="True" />
+        </Style>
+    </ControlTheme>
+</ResourceDictionary>

@@ -1,0 +1,12 @@
+<!-- Radio items generated from a list of ThemeChoiceViewModel (D22): appearance and the two theme slots. -->
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:RSSmote.App.ViewModels">
+    <Style Selector="MenuItem.choices > MenuItem" x:DataType="vm:ThemeChoiceViewModel">
+        <Setter Property="Header" Value="{Binding Header}" />
+        <Setter Property="CommandParameter" Value="{Binding Key}" />
+        <Setter Property="Command" Value="{Binding Command}" />
+        <Setter Property="ToggleType" Value="Radio" />
+        <Setter Property="IsChecked" Value="{Binding IsChecked, Mode=OneWay}" />
+    </Style>
+</Styles>

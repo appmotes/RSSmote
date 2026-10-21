@@ -1,0 +1,57 @@
+<!-- Type roles (D6). Roles set size, weight and ink; never FontFamily (Inter comes from WithInterFont). -->
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Style Selector="TextBlock.largeTitle">
+        <Setter Property="FontSize" Value="{StaticResource TextTheme.LargeTitle.Size}" />
+        <Setter Property="FontWeight" Value="{StaticResource TextTheme.LargeTitle.Weight}" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Ink.Primary}" />
+    </Style>
+    <Style Selector="TextBlock.listTitle">
+        <Setter Property="FontSize" Value="{StaticResource TextTheme.ListTitle.Size}" />
+        <Setter Property="FontWeight" Value="{StaticResource TextTheme.ListTitle.Weight}" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Ink.Primary}" />
+        <Setter Property="TextTrimming" Value="CharacterEllipsis" />
+    </Style>
+    <Style Selector="TextBlock.headerSubtitle">
+        <Setter Property="FontSize" Value="13" />
+        <Setter Property="FontWeight" Value="Medium" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Ink.Secondary}" />
+    </Style>
+    <Style Selector="TextBlock.meta">
+        <Setter Property="FontSize" Value="{StaticResource TextTheme.Meta.Size}" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Ink.Secondary}" />
+    </Style>
+    <Style Selector="TextBlock.caps">
+        <Setter Property="FontSize" Value="{StaticResource TextTheme.Caps.Size}" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="LetterSpacing" Value="{StaticResource TextTheme.Caps.Tracking}" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Ink.Secondary}" />
+    </Style>
+    <Style Selector="TextBlock.kbd">
+        <Setter Property="FontSize" Value="{StaticResource TextTheme.Kbd.Size}" />
+        <Setter Property="FontWeight" Value="Medium" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Ink.Secondary}" />
+        <Setter Property="HorizontalAlignment" Value="Center" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+    <Style Selector="TextBlock.count">
+        <Setter Property="FontSize" Value="{StaticResource TextTheme.Count.Size}" />
+        <Setter Property="FontWeight" Value="Medium" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Ink.Secondary}" />
+        <Setter Property="FontFeatures" Value="+tnum" />
+    </Style>
+    <Style Selector="TextBlock.emptyTitle">
+        <Setter Property="FontSize" Value="{StaticResource TextTheme.EmptyTitle.Size}" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Ink.Primary}" />
+    </Style>
+    <Style Selector="TextBlock.emptySubtitle">
+        <Setter Property="FontSize" Value="{StaticResource TextTheme.EmptySubtitle.Size}" />
+        <Setter Property="FontWeight" Value="Normal" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Ink.Secondary}" />
+    </Style>
+    <Style Selector="TextBlock.body">
+        <Setter Property="FontSize" Value="{StaticResource TextTheme.Body.Size}" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Ink.Primary}" />
+    </Style>
+</Styles>

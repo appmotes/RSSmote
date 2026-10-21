@@ -1,0 +1,25 @@
+<!-- A confirmation before something that cannot be undone (A6). Cancel has the keyboard. -->
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:c="urn:RSSmote.App.Controls"
+             xmlns:vm="using:RSSmote.App.ViewModels"
+             x:Class="RSSmote.App.Views.ConfirmView"
+             x:DataType="vm:ConfirmViewModel">
+    <c:PanelFrame Classes="narrow">
+        <StackPanel>
+            <TextBlock Classes="largeTitle" Text="{Binding Title}" Margin="20,20,20,0" TextWrapping="Wrap" />
+            <TextBlock Classes="hint" Text="{Binding Message}" Margin="20,8,20,0" />
+            <DockPanel Classes="sheetFooter" Margin="20,20,16,16">
+                <StackPanel>
+                    <Button x:Name="CancelButton" Classes="secondary" Command="{Binding CloseCommand}">
+                        <StackPanel Orientation="Horizontal" Spacing="7">
+                            <TextBlock Text="Cancel" VerticalAlignment="Center" />
+                            <TextBlock Classes="keyHint" Text="esc" />
+                        </StackPanel>
+                    </Button>
+                    <Button Classes="dangerSecondary" Content="{Binding ActionTitle}" Command="{Binding ConfirmCommand}" />
+                </StackPanel>
+            </DockPanel>
+        </StackPanel>
+    </c:PanelFrame>
+</UserControl>

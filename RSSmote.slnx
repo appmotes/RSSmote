@@ -1,0 +1,21 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/RSSmote.Core/RSSmote.Core.csproj" />
+    <Project Path="src/RSSmote.Data/RSSmote.Data.csproj" />
+    <Project Path="src/RSSmote.App/RSSmote.App.csproj" />
+    <Project Path="src/RSSmote.Desktop/RSSmote.Desktop.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/RSSmote.Core.Tests/RSSmote.Core.Tests.csproj" />
+    <Project Path="tests/RSSmote.Data.Tests/RSSmote.Data.Tests.csproj" />
+    <Project Path="tests/RSSmote.App.Tests/RSSmote.App.Tests.csproj" />
+  </Folder>
+  <Folder Name="/Docs/">
+    <File Path="CLAUDE.md" />
+    <File Path="Docs/architecture.md" />
+    <File Path="Docs/design-language.md" />
+    <File Path="Docs/pitfalls.md" />
+    <File Path="Docs/todo.md" />
+    <File Path="Docs/dependencies.md" />
+  </Folder>
+</Solution>

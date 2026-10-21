@@ -1,0 +1,285 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RSSmote controls</title>
+<style>
+/* Verbatim copy of the Sand palette (Assets/Themes/Sand.axaml, the light-slot default) and neutral tokens (Assets/AppResources.axaml). Translucent colours and BoxShadows are written as CSS rgba. */
+:root {
+  --Bg-Sidebar: #E9E4DA; --Bg-List: #FBF9F5; --Bg-Article: #FFFEFB; --Bg-Panel: #FFFEFB; --Bg-PanelRow: #F4F0E8;
+  --Bg-Pill: #EFE9DF; --Bg-Hover: rgba(58,42,16,.06); --Bg-FaviconTile: #8C8276;
+  --Selection-Sidebar: #FFFEFB; --Selection-List: #F6EAD9;
+  --Ink-Primary: #24201B; --Ink-Sidebar: #2E2923; --Ink-Secondary: #6B6257; --Ink-Read: #83796D; --Ink-Icon: #5C544A;
+  --Ink-OnTile: #FFFFFF; --Accent: #A85607; --Line-Separator: rgba(58,42,16,.09); --Scrim: rgba(42,31,16,.28);
+  --Ink-OnAccent: #FFFFFF; --Ink-Danger: #B3261E;
+  --Shadow-Card: 0 1px 2px rgba(42,31,16,.08), 0 10px 28px -12px rgba(42,31,16,.14);
+  --Shadow-Raised: 0 1px 2px rgba(42,31,16,.14), 0 0 0 1px rgba(58,42,16,.09);
+  --Shadow-Panel: 0 24px 64px -16px rgba(42,31,16,.25), 0 0 0 1px rgba(58,42,16,.09);
+  --Size-TitleBar: 52px; --Size-CardStrip: 44px; --Size-StatusBar: 28px;
+  --Size-SidebarRow: 28px; --Size-SidebarSection: 38px; --Size-DateHeader: 28px; --Size-Badge: 18px;
+  --Size-PanelRow: 36px; --Size-PanelRowTall: 48px; --Size-Thumb: 44px; --Size-Favicon: 14px;
+  --ItemLineHeight: 18px; --SummaryLineHeight: 17px;
+  --Radius-Card: 12px; --Radius-Row-Sidebar: 7px; --Radius-Row-List: 8px; --Radius-Thumb: 7px; --Radius-Favicon: 3px;
+  --Radius-Panel: 16px; --Radius-Group: 10px; --Radius-Field: 7px; --Radius-Pill: 7px; --Radius-Badge: 5px; --Radius-Chip: 7px;
+}
+* { box-sizing: border-box; }
+body { margin: 0; font: 14px/1.5 Inter, -apple-system, system-ui, sans-serif; color: #1b1b1b; background: #fafafa; }
+header.top { padding: 32px 40px 8px; }
+header.top h1 { margin: 0; font-size: 28px; }
+.badge { display: inline-block; margin-left: 8px; padding: 2px 10px; border-radius: 999px; background: var(--Accent); color: #fff; font-size: 12px; vertical-align: middle; }
+nav.index { padding: 0 40px 16px; display: flex; gap: 14px; flex-wrap: wrap; }
+nav.index a { color: var(--Accent); text-decoration: none; font-weight: 600; font-size: 13px; }
+h2.group { margin: 28px 40px 8px; font-size: 13px; text-transform: uppercase; letter-spacing: .06em; color: #8a8a88; }
+article { margin: 0 40px 24px; padding: 20px 24px; background: #fff; border: 1px solid #eee; border-radius: 12px; }
+article h3 { margin: 0 0 4px; font-size: 18px; }
+article p { margin: 4px 0 12px; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; margin: 8px 0 12px; }
+th, td { text-align: left; padding: 6px 8px; border-bottom: 1px solid #eee; vertical-align: top; }
+th { color: #8a8a88; font-weight: 600; }
+code { font: 12.5px ui-monospace, Menlo, monospace; background: #f3f3f3; padding: 1px 4px; border-radius: 4px; }
+.note { margin-top: 10px; padding: 10px 12px; border-left: 3px solid var(--Accent); background: #fff6f4; font-size: 13px; }
+.preview { margin-top: 12px; padding: 16px; border-radius: 10px; background: var(--Bg-List); display: flex; gap: 16px; flex-wrap: wrap; align-items: flex-start; }
+.ico { display: inline-block; width: 16px; height: 16px; border: 1.5px solid var(--Ink-Icon); border-radius: 50%; }
+.fav { display: inline-flex; width: var(--Size-Favicon); height: var(--Size-Favicon); border-radius: var(--Radius-Favicon); background: var(--Bg-FaviconTile); color: var(--Ink-OnTile); font-size: 13px; font-weight: 500; align-items: center; justify-content: center; flex: none; }
+/* mocks */
+.strip { height: var(--Size-TitleBar); display: flex; align-items: center; justify-content: space-between; padding: 0 8px; background: var(--Bg-Sidebar); border-radius: 8px; width: 320px; }
+.strip .slot { display: flex; gap: 14px; padding: 0 6px; }
+.strip.card-strip { height: var(--Size-CardStrip); background: var(--Bg-Article); border-bottom: 1px solid var(--Line-Separator); border-radius: var(--Radius-Card) var(--Radius-Card) 0 0; box-shadow: var(--Shadow-Card); }
+.ebox { width: 300px; padding: 20px 22px 18px; border-radius: var(--Radius-Card); background: var(--Bg-Pill); display: flex; flex-direction: column; gap: 2px; }
+.ebox b { font-size: 15px; font-weight: 600; } .ebox small, .ecompact small { font-size: 12.5px; color: var(--Ink-Secondary); }
+.kgrid { display: grid; grid-template-columns: auto 1fr; gap: 7px 12px; font-size: 13px; margin-top: 12px; align-items: center; }
+.kbd { display: inline-grid; place-items: center; min-width: 18px; height: 18px; padding: 0 5px; margin-right: 4px; border-radius: var(--Radius-Badge); border: 1px solid var(--Line-Separator); background: var(--Bg-Panel); font: 500 10.5px Inter, sans-serif; font-style: normal; color: var(--Ink-Secondary); }
+.ecompact { width: 260px; display: flex; flex-direction: column; align-items: center; gap: 3px; text-align: center; }
+.ecompact .circ { width: 52px; height: 52px; border-radius: 50%; background: var(--Bg-Pill); display: grid; place-items: center; color: var(--Ink-Secondary); font-style: normal; margin-bottom: 9px; } .ecompact b { font-size: 15px; font-weight: 600; }
+.scrimmock { padding: 24px; background: var(--Scrim); border-radius: 10px; }
+.panel { width: 400px; background: var(--Bg-Panel); border-radius: var(--Radius-Panel); box-shadow: var(--Shadow-Panel); padding: 14px 16px 16px 20px; display: flex; flex-direction: column; gap: 12px; }
+.phead { display: flex; justify-content: space-between; align-items: center; } .phead b { font-size: 20px; } .psub { font-size: 12.5px; color: var(--Ink-Secondary); margin-top: -10px; }
+.field { height: var(--Size-PanelRow); border-radius: var(--Radius-Field); background: var(--Bg-PanelRow); border: 1px solid var(--Accent); display: flex; align-items: center; padding: 0 10px; font-size: 13.5px; }
+.chips { display: flex; gap: 6px; flex-wrap: wrap; } .chip { height: 28px; padding: 0 11px; border-radius: var(--Radius-Chip); background: var(--Bg-PanelRow); border: 1px solid var(--Line-Separator); font-size: 12.5px; font-weight: 500; display: inline-flex; align-items: center; }
+.chip.on { background: var(--Accent); border-color: var(--Accent); color: var(--Ink-OnAccent); }
+.pfoot { display: flex; gap: 8px; align-items: center; justify-content: flex-end; } .pfoot .danger { margin-right: auto; color: var(--Ink-Danger); font-size: 13px; font-weight: 500; }
+.btn { height: 30px; padding: 0 12px; border-radius: var(--Radius-Field); font-size: 13px; font-weight: 500; display: inline-flex; align-items: center; } .btn.sec { background: var(--Bg-Pill); } .btn.pri { background: var(--Accent); color: var(--Ink-OnAccent); font-weight: 600; }
+.group-mock { background: var(--Bg-PanelRow); border: 1px solid var(--Line-Separator); border-radius: var(--Radius-Group); overflow: hidden; }
+.row { height: var(--Size-PanelRow); display: flex; align-items: center; justify-content: space-between; padding: 0 12px; font-size: 13.5px; }
+.row + .row { border-top: 1px solid var(--Line-Separator); }
+.row.tall { height: var(--Size-PanelRowTall); } .row.on { background: var(--Selection-List); }
+.row small { display: block; font-size: 11.5px; color: var(--Ink-Secondary); }
+.chev { color: var(--Ink-Secondary); } .ck { width: 18px; height: 18px; border-radius: 50%; border: 1.5px solid var(--Ink-Read); display: grid; place-items: center; font-size: 11px; font-style: normal; } .ck.on { background: var(--Accent); border-color: var(--Accent); color: var(--Ink-OnAccent); }
+
+.sidebar { width: 232px; background: var(--Bg-Sidebar); padding: 4px 0; border-radius: 8px; color: var(--Ink-Sidebar); font-size: 13px; }
+.srow { height: var(--Size-SidebarRow); margin: 0 8px; border-radius: var(--Radius-Row-Sidebar); display: flex; align-items: center; gap: 8px; padding: 0 6px 0 30px; }
+.srow .glyph { width: 14px; height: 14px; border: 1.5px solid var(--Accent); border-radius: 50%; flex: none; }
+.srow.folder { padding-left: 26px; } .srow .disc { margin-left: -20px; width: 12px; color: var(--Ink-Secondary); }
+.sfoot { height: var(--Size-StatusBar); display: flex; align-items: center; gap: 8px; padding: 0 18px; font-size: 11.5px; color: var(--Ink-Secondary); }
+.sfoot .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--Accent); }
+.statusbar { width: 320px; height: var(--Size-StatusBar); display: flex; align-items: center; padding: 0 16px; font-size: 11.5px; color: var(--Ink-Secondary); border-top: 1px solid var(--Line-Separator); background: var(--Bg-List); }
+.srow .t { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } .srow .n { min-width: 24px; height: var(--Size-Badge); padding: 0 6px; border-radius: var(--Radius-Badge); background: var(--Bg-Panel); color: var(--Ink-Secondary); font-size: 11px; font-weight: 500; display: grid; place-items: center; }
+.srow.smart, .srow.section { padding-left: 10px; font-weight: 500; } .srow.section { height: var(--Size-SidebarSection); align-items: flex-end; padding-bottom: 6px; font-size: 12px; font-weight: 600; color: var(--Ink-Secondary); }
+.srow.sel { background: var(--Selection-Sidebar); box-shadow: var(--Shadow-Raised); } .srow.sel .n { background: var(--Accent); color: var(--Ink-OnAccent); }
+.segtrack { display: inline-flex; gap: 2px; padding: 2px; border-radius: var(--Radius-Pill); background: var(--Bg-Pill); }
+.segtrack span { width: 28px; height: 22px; display: grid; place-items: center; border-radius: var(--Radius-Badge); color: var(--Ink-Secondary); font-size: 12px; }
+.segtrack .on { background: var(--Bg-Panel); color: var(--Accent); box-shadow: var(--Shadow-Raised); }
+.list { width: 420px; background: var(--Bg-List); padding: 4px 0; border-radius: var(--Radius-Card); box-shadow: var(--Shadow-Card); }
+.arow { margin: 0 6px 1px; border-radius: var(--Radius-Row-List); padding: 8px 10px 9px; display: grid; grid-template-columns: 21px 1fr auto auto; align-items: center; }
+.arow.sel { background: var(--Selection-List); }
+.arow .t { grid-column: 2; font-size: 13.5px; line-height: var(--ItemLineHeight); font-weight: 400; color: var(--Ink-Read); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.arow.unread .t { font-weight: 600; color: var(--Ink-Primary); }
+.arow .time { grid-column: 3; font-size: 11.5px; color: var(--Ink-Secondary); margin-left: 8px; }
+.arow .sum { grid-column: 2 / 4; grid-row: 2; font-size: 12.5px; line-height: var(--SummaryLineHeight); color: var(--Ink-Secondary); margin-top: 3px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.arow .sum b { font-weight: 500; }
+.arow .thumb { grid-column: 4; grid-row: 1 / 3; width: var(--Size-Thumb); height: var(--Size-Thumb); margin-left: 12px; border-radius: var(--Radius-Thumb); background: #c9c4bb; }
+</style>
+</head>
+<body>
+<header class="top"><h1>RSSmote controls <span class="badge">9 controls</span></h1>
+<p>What each templated control in <code>Controls/Templates/</code> is and does. Previews are HTML/CSS recreations drawn
+with the Sand token values, not screenshots.</p></header>
+<nav class="index">
+  <a href="#titlestrip">TitleStrip</a><a href="#statusbar">StatusBar</a><a href="#filterbar">FilterBar</a><a href="#emptystate">EmptyState</a>
+  <a href="#panelframe">PanelFrame</a><a href="#panelgroup">PanelGroup</a><a href="#panelrow">PanelRow</a>
+  <a href="#sidebarrow">SidebarRow</a><a href="#articlerow">ArticleRow</a><a href="#headless">Headless controls</a>
+</nav>
+
+<h2 class="group">Chrome</h2>
+
+<article id="titlestrip">
+  <h3>TitleStrip</h3>
+  <p>The strip on top of a column: 52 pt on the sidebar, 44 pt inside a card (style class <code>card</code>), where 8 pt
+  of canvas above it complete the title bar. It acts as the window's title bar (drag, double-click to zoom) and has a
+  leading and a trailing slot for icon buttons. The article card's strip draws a hairline under itself.</p>
+  <table><tr><th>Property</th><th>Type</th><th>Description</th></tr>
+    <tr><td>Leading</td><td>object? (null)</td><td>Content docked left.</td></tr>
+    <tr><td>Trailing</td><td>object? (null)</td><td>Content docked right.</td></tr>
+    <tr><td>Padding</td><td>Thickness (8,0)</td><td>Keeps clear of the window's own caption buttons.</td></tr>
+    <tr><td>BorderThickness / BorderBrush</td><td>Thickness (0) / IBrush? (null)</td><td>A hairline, e.g. <code>0,0,0,1</code> in <code>Line.Separator</code> under the article strip.</td></tr>
+    <tr><td>Classes <code>card</code></td><td>—</td><td>Height <code>Size.CardStrip.Height</code> (44) instead of <code>Size.TitleBar.Height</code> (52).</td></tr>
+  </table>
+  <div class="preview"><div class="strip"><span class="slot"></span><span class="slot"><i class="ico"></i><i class="ico"></i></span></div>
+    <div class="strip card-strip"><span class="slot"><i class="ico"></i></span><span class="slot"><i class="ico"></i><i class="ico"></i><i class="ico"></i></span></div></div>
+  <div class="note">Buttons inside the strip take input normally; only empty strip area drags the window.</div>
+</article>
+
+<article id="statusbar">
+  <h3>StatusBar</h3>
+  <p>The thin bar at the foot of a column: status text on the left, a few controls on the right, in 11.5 pt
+  <code>Ink.Secondary</code>. Under the list and the article it draws a hairline above itself; with the style class
+  <code>canvas</code> it sits on the sidebar without one and shows the refresh dot (accent, secondary ink while a
+  refresh runs, <code>Ink.Danger</code> when a feed failed) and "Today at 13.33 · 5 feeds".</p>
+  <table><tr><th>Property</th><th>Type</th><th>Description</th></tr>
+    <tr><td>Leading</td><td>object? (null)</td><td>Content docked left.</td></tr>
+    <tr><td>Trailing</td><td>object? (null)</td><td>Content docked right.</td></tr>
+    <tr><td>Padding</td><td>Thickness (16,0,8,0)</td><td>18,0,8,0 with <code>canvas</code>.</td></tr>
+    <tr><td>Height</td><td>double (28)</td><td><code>Size.StatusBar.Height</code>.</td></tr>
+  </table>
+  <div class="preview"><div class="sidebar"><div class="sfoot"><i class="dot"></i>Today at 13.33 · 5 feeds</div></div>
+    <div class="statusbar">9 today · newest first</div></div>
+</article>
+
+<article id="filterbar">
+  <h3>FilterBar</h3>
+  <p>The list's filter in its title strip: starred · unread · all as three 28 × 22 icon segments in a
+  <code>Bg.Pill</code> track. The active segment is raised (<code>Bg.Panel</code>, <code>BoxShadows.Raised</code>)
+  with an accent icon. Clicking a segment sets <code>Filter</code>; ⌘/Ctrl+1/2/3 do the same from the window.</p>
+  <table><tr><th>Property</th><th>Type</th><th>Description</th></tr>
+    <tr><td>Filter</td><td>StreamFilter (Unread), two-way</td><td>The active filter.</td></tr>
+  </table>
+  <div class="preview"><div class="segtrack"><span>☆</span><span class="on">◉</span><span>≡</span></div></div>
+  <div class="note">Segment looks come from the <code>Button.filter-segment</code> styles in <code>Styles/Buttons.axaml</code>.</div>
+</article>
+
+
+<article id="emptystate">
+  <h3>EmptyState</h3>
+  <p>What an empty pane shows. By default a soft box (300 wide, <code>Bg.Pill</code>, radius 12) with a title, a
+  subtitle and the shortcuts worth knowing under them, for the article card with nothing selected. With the style
+  class <code>compact</code> it is an icon in a round 52 pt tile above a title and subtitle, for an empty list; the
+  classes <code>starred</code> and <code>searching</code> swap the icon for a star or a magnifier.</p>
+  <table><tr><th>Property</th><th>Type</th><th>Description</th></tr>
+    <tr><td>Title</td><td>string? (null)</td><td>15 pt SemiBold, e.g. "No article selected".</td></tr>
+    <tr><td>Subtitle</td><td>string? (null)</td><td>12.5 pt, e.g. "4 unread items in Unread".</td></tr>
+    <tr><td>Shortcuts</td><td>object? (null)</td><td>Shown under the subtitle in the box: a grid of kbd chips and labels.</td></tr>
+    <tr><td>Illustration</td><td>Geometry? (Icon.CircleDot)</td><td>The compact variant's icon, 22 pt.</td></tr>
+  </table>
+  <div class="preview"><div class="ebox"><b>No article selected</b><small>4 unread items in Unread</small>
+    <div class="kgrid"><span><i class="kbd">j</i><i class="kbd">k</i></span><span>Next / previous article</span><span><i class="kbd">s</i></span><span>Star</span></div></div>
+    <div class="ecompact"><i class="circ">☆</i><b>No starred articles</b><small>Press s on an article to star it.</small></div></div>
+</article>
+
+
+<h2 class="group">Panels</h2>
+
+<article id="panelframe">
+  <h3>PanelFrame</h3>
+  <p>An overlay sheet, 400 wide and as tall as its content (at most 600), radius 16, with
+  <code>BoxShadows.Panel</code>, centred over a <code>Scrim</code> that covers the window and catches clicks. The
+  style class <code>narrow</code> makes it 360 wide, for confirmations. Clicking the scrim or pressing Escape raises
+  <code>DismissRequested</code>. Pages inside use the <code>sheetHeader</code>, <code>sheetBody</code> and
+  <code>sheetFooter</code> styles: title and close (or back) on top, content, then the buttons on the right.</p>
+  <table><tr><th>Member</th><th>Type</th><th>Description</th></tr>
+    <tr><td>Content</td><td>object? (null)</td><td>The panel page.</td></tr>
+    <tr><td>Classes <code>narrow</code></td><td>—</td><td>Width <code>Size.Panel.NarrowWidth</code> (360).</td></tr>
+    <tr><td>DismissRequested</td><td>routed event</td><td>The caller closes the overlay.</td></tr>
+  </table>
+  <div class="preview"><div class="scrimmock"><div class="panel"><div class="phead"><b>Edit Feed</b><span>✕</span></div>
+    <small class="psub">devblogs.microsoft.com/dotnet/feed/</small>
+    <div class="field">.NET Blog</div>
+    <div class="chips"><span class="chip on">.NET</span><span class="chip">AI</span><span class="chip">Apple</span></div>
+    <div class="pfoot"><span class="danger">Delete Folder…</span><span class="btn sec">Cancel</span><span class="btn pri">Save</span></div></div></div></div>
+  <div class="note">Hosted over all three columns; the article hides its native web view meanwhile (L9). Two borders, so the shadow survives the clip (L12).</div>
+</article>
+
+
+<article id="panelgroup">
+  <h3>PanelGroup</h3>
+  <p>A rounded group of rows inside a panel: <code>Bg.PanelRow</code>, radius 10, a hairline edge. Rows after the
+  first get a hairline on top.</p>
+  <table><tr><th>Property</th><th>Type</th><th>Description</th></tr>
+    <tr><td>Items</td><td>controls</td><td>PanelRow children, or rows from <code>ItemsSource</code>.</td></tr>
+  </table>
+  <div class="preview"><div class="panel"><div class="group-mock">
+    <div class="row">Blood in the Machine<span class="chev">›</span></div><div class="row">Pluralistic<span class="chev">›</span></div></div></div></div>
+</article>
+
+
+<article id="panelrow">
+  <h3>PanelRow</h3>
+  <p>A clickable row (a Button): title, optional subtitle, and a chevron or a round check. Hover washes the row; a
+  checked row is tinted with <code>Selection.List</code> and its check filled with the accent.</p>
+  <table><tr><th>Property</th><th>Type</th><th>Description</th></tr>
+    <tr><td>Title</td><td>string? (null)</td><td>Main text, 13.5 pt.</td></tr>
+    <tr><td>Subtitle</td><td>string? (null)</td><td>Second line, 11.5 pt; the row grows to 48.</td></tr>
+    <tr><td>Accessory</td><td>PanelRowAccessory (None)</td><td>None, Chevron or Check.</td></tr>
+    <tr><td>IsOn</td><td>bool (False)</td><td>Fills the check and tints the row.</td></tr>
+    <tr><td>IsCentered</td><td>bool (False)</td><td>Centres the text.</td></tr>
+  </table>
+  <div class="preview"><div class="panel"><div class="group-mock">
+    <div class="row tall on"><span>The Verge<small>https://www.theverge.com/rss/index.xml</small></span><i class="ck on">✓</i></div>
+    <div class="row">Folder: Apple<span class="chev">›</span></div></div></div></div>
+</article>
+
+
+<h2 class="group">Rows</h2>
+
+<article id="sidebarrow">
+  <h3>SidebarRow</h3>
+  <p>One sidebar row, 28 pt high. The smart row shows an accent icon for its filter (circle-dot, star or lines);
+  folders show a disclosure chevron on the left, feeds a favicon, sections a 12 pt SemiBold label with a chevron on
+  the right. Counts sit in a badge that is hidden at zero. Selection and hover are drawn by the
+  <code>ListBox.sidebar</code> item, inset 8: the selected row is raised (<code>Selection.Sidebar</code> and
+  <code>BoxShadows.Raised</code>) and its badge takes the accent.</p>
+  <table><tr><th>Property</th><th>Type</th><th>Description</th></tr>
+    <tr><td>Kind</td><td>SidebarRowKind (Feed)</td><td>Smart, Section, Folder or Feed.</td></tr>
+    <tr><td>Title</td><td>string? (null)</td><td>Label; also the favicon's letter.</td></tr>
+    <tr><td>Count</td><td>int (0)</td><td>Unread or starred count, shown in the badge.</td></tr>
+    <tr><td>Filter</td><td>StreamFilter (Unread)</td><td>For the smart row: picks its icon.</td></tr>
+    <tr><td>Favicon</td><td>Bitmap? (null)</td><td>Feed icon; a letter tile when null.</td></tr>
+    <tr><td>IsFaviconGrayscale</td><td>bool (True)</td><td>Shows the favicon in greyscale.</td></tr>
+    <tr><td>IsExpanded</td><td>bool (False)</td><td>Rotates the folder chevron; turns the section chevron down.</td></tr>
+    <tr><td>IsExpandable</td><td>bool (True)</td><td>False hides a folder's chevron.</td></tr>
+    <tr><td>HasError</td><td>bool (False)</td><td>Dims the label.</td></tr>
+  </table>
+  <div class="preview"><div class="sidebar">
+    <div class="srow smart sel"><i class="glyph"></i><span class="t">Unread</span><span class="n">4</span></div>
+    <div class="srow section"><span class="t">Folders</span><span class="chev">⌄</span></div>
+    <div class="srow folder"><span class="disc">⌄</span><span class="t">Apple</span><span class="n">1</span></div>
+    <div class="srow feed"><i class="fav">a</i><span class="t">AppleInsider News</span><span class="n">1</span></div>
+    <div class="srow folder"><span class="disc">›</span><span class="t">Tech</span></div>
+    <div class="sfoot"><i class="dot"></i>Today at 13.33 · 5 feeds</div>
+  </div></div>
+</article>
+
+<article id="articlerow">
+  <h3>ArticleRow</h3>
+  <p>One article on a rounded tile: favicon · title · time on one line, then "<b>Feed</b> — summary" on at most two
+  lines, and an optional 44 pt thumbnail centred on the right. Unread titles are SemiBold in primary ink; read ones
+  drop to read ink, Regular. The full title is the tooltip.</p>
+  <table><tr><th>Property</th><th>Type</th><th>Description</th></tr>
+    <tr><td>FeedTitle</td><td>string? (null)</td><td>Starts the summary line, in Medium.</td></tr>
+    <tr><td>TimeText</td><td>string? (null)</td><td>Pre-formatted by the view-model.</td></tr>
+    <tr><td>Title</td><td>string? (null)</td><td>One line, ellipsis.</td></tr>
+    <tr><td>Summary</td><td>string? (null)</td><td>After the feed name, up to two lines.</td></tr>
+    <tr><td>IsUnread</td><td>bool (False)</td><td>Weight and ink of the title.</td></tr>
+    <tr><td>IsStarred</td><td>bool (False)</td><td>Accent star before the time.</td></tr>
+    <tr><td>Favicon / Thumbnail</td><td>Bitmap? (null)</td><td>Images.</td></tr>
+    <tr><td>IsFaviconGrayscale</td><td>bool (True)</td><td>Shows the favicon in greyscale.</td></tr>
+    <tr><td>HasThumbnail</td><td>bool (False)</td><td>Reserves the 44 pt square before the bitmap arrives.</td></tr>
+    <tr><td>SummaryForeground</td><td>IBrush? (Ink.Secondary)</td><td>Colour of the summary line.</td></tr>
+  </table>
+  <div class="preview"><div class="list">
+    <div class="arow unread"><i class="fav">k</i><b class="t">Københavns Politi beder DUP om at undersøge slag mod fotografer</b><span class="time">13.34</span><div class="sum"><b>Kort nyt | DR</b></div></div>
+    <div class="arow sel"><i class="fav" style="opacity:.75">w</i><b class="t">Nathan Fielder’s Surprise Call From Elizabeth Holmes</b><span class="time">13.30</span><div class="sum"><b>WIRED</b> — The codirector of “You Can See Everything” talks about the call.</div><i class="thumb"></i></div>
+  </div></div>
+  <div class="note">Row height follows the summary (one or two lines) and the thumbnail; the list must not fix it.</div>
+</article>
+
+
+<h2 class="group" id="headless">Headless controls (Controls/Headless/)</h2>
+<article>
+  <table><tr><th>Control</th><th>What it does</th></tr>
+    <tr><td>Icon</td><td>Strokes a geometry from <code>Assets/Icons.axaml</code> at a constant on-screen stroke; <code>IsFilled</code> also fills it. Foreground inherits like text.</td></tr>
+    <tr><td>Favicon</td><td>Rounded favicon bitmap, optionally greyscale, or a letter tile when there is no bitmap.</td></tr>
+  </table>
+</article>
+</body>
+</html>

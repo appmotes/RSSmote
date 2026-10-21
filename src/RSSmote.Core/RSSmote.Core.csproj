@@ -1,0 +1,9 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <PackageReference Include="HtmlSanitizer" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Rendering\article.css" LogicalName="RSSmote.Core.Rendering.article.css" />
+    <EmbeddedResource Include="Rendering\article.js" LogicalName="RSSmote.Core.Rendering.article.js" />
+  </ItemGroup>
+</Project>

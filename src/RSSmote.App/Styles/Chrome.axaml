@@ -1,0 +1,88 @@
+<!-- Small chrome pieces (D9, D21): the refresh dot, count badge, kbd chip, strip separator and clear button. -->
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:c="urn:RSSmote.App.Controls">
+    <!-- Accent when all is well, secondary ink while a refresh runs, danger ink when a feed failed. -->
+    <Style Selector="Ellipse.statusDot">
+        <Setter Property="Width" Value="6" />
+        <Setter Property="Height" Value="6" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="Fill" Value="{DynamicResource Brush.Accent}" />
+    </Style>
+    <Style Selector="Ellipse.statusDot.failed">
+        <Setter Property="Fill" Value="{DynamicResource Brush.Ink.Danger}" />
+    </Style>
+    <Style Selector="Ellipse.statusDot.updating">
+        <Setter Property="Fill" Value="{DynamicResource Brush.Ink.Secondary}" />
+    </Style>
+
+    <!-- The count next to the list title. -->
+    <Style Selector="Border.listBadge">
+        <Setter Property="Height" Value="{StaticResource Size.Badge.Height}" />
+        <Setter Property="MinWidth" Value="24" />
+        <Setter Property="Padding" Value="6,0" />
+        <Setter Property="CornerRadius" Value="{StaticResource CornerRadius.Badge}" />
+        <Setter Property="Background" Value="{DynamicResource Brush.Bg.Pill}" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+    <Style Selector="Border.listBadge > TextBlock">
+        <Setter Property="HorizontalAlignment" Value="Center" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+
+    <!-- A shortcut chip: "⌘F", "j". -->
+    <Style Selector="Border.kbd">
+        <Setter Property="MinWidth" Value="18" />
+        <Setter Property="Height" Value="18" />
+        <Setter Property="Padding" Value="5,0" />
+        <Setter Property="CornerRadius" Value="{StaticResource CornerRadius.Badge}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Line.Separator}" />
+        <Setter Property="Background" Value="{DynamicResource Brush.Bg.List}" />
+    </Style>
+
+    <!-- A hairline between groups in a strip. -->
+    <Style Selector="Border.vsep">
+        <Setter Property="Width" Value="1" />
+        <Setter Property="Height" Value="18" />
+        <Setter Property="Margin" Value="2,0" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="Background" Value="{DynamicResource Brush.Line.Separator}" />
+    </Style>
+
+    <!-- The round clear button inside the filter box. -->
+    <Style Selector="Button.clear">
+        <Setter Property="Width" Value="16" />
+        <Setter Property="Height" Value="16" />
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="CornerRadius" Value="8" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="HorizontalContentAlignment" Value="Center" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="Background" Value="{DynamicResource Brush.Ink.Read}" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Bg.List}" />
+        <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource Brush.Ink.Secondary}" />
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Bg.List}" />
+        </Style>
+    </Style>
+
+    <!-- The list's empty state picks its icon from the filter; a kbd chip on the shortcut box sits on the panel colour. -->
+    <Style Selector="c|EmptyState.starred">
+        <Setter Property="Illustration" Value="{StaticResource Icon.Star}" />
+    </Style>
+    <Style Selector="c|EmptyState.searching">
+        <Setter Property="Illustration" Value="{StaticResource Icon.Search}" />
+    </Style>
+    <Style Selector="c|EmptyState Border.kbd">
+        <Setter Property="Background" Value="{DynamicResource Brush.Bg.Panel}" />
+    </Style>
+
+    <!-- The article strip's path: feed and position. -->
+    <Style Selector="TextBlock.crumb">
+        <Setter Property="FontSize" Value="{StaticResource TextTheme.ItemSummary.Size}" />
+        <Setter Property="FontWeight" Value="Medium" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Ink.Secondary}" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+</Styles>

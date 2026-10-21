@@ -1,0 +1,94 @@
+<!-- Theme-neutral tokens (D4, D6, D7). Read with StaticResource. Colour and shadows live in Themes/*.axaml. -->
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- Type roles (D6): size, weight, tracking -->
+    <x:Double x:Key="TextTheme.LargeTitle.Size">20</x:Double>
+    <FontWeight x:Key="TextTheme.LargeTitle.Weight">Bold</FontWeight>
+    <x:Double x:Key="TextTheme.ListTitle.Size">15</x:Double>
+    <FontWeight x:Key="TextTheme.ListTitle.Weight">SemiBold</FontWeight>
+    <x:Double x:Key="TextTheme.Sidebar.Size">13</x:Double>
+    <x:Double x:Key="TextTheme.SidebarSection.Size">12</x:Double>
+    <x:Double x:Key="TextTheme.Item.Size">13.5</x:Double>
+    <x:Double x:Key="TextTheme.ItemSummary.Size">12.5</x:Double>
+    <x:Double x:Key="TextTheme.Meta.Size">11.5</x:Double>
+    <x:Double x:Key="TextTheme.Caps.Size">11</x:Double>
+    <x:Double x:Key="TextTheme.Caps.Tracking">0.66</x:Double>
+    <x:Double x:Key="TextTheme.PanelRow.Size">13.5</x:Double>
+    <x:Double x:Key="TextTheme.PanelRowSubtitle.Size">11.5</x:Double>
+    <x:Double x:Key="TextTheme.Count.Size">11</x:Double>
+    <x:Double x:Key="TextTheme.Body.Size">13</x:Double>
+    <x:Double x:Key="TextTheme.EmptyTitle.Size">15</x:Double>
+    <x:Double x:Key="TextTheme.EmptySubtitle.Size">12.5</x:Double>
+    <x:Double x:Key="TextTheme.Kbd.Size">10.5</x:Double>
+
+    <!-- Columns and bars (D7) -->
+    <x:Double x:Key="Size.Column.Sidebar">232</x:Double>
+    <x:Double x:Key="Size.Column.SidebarMin">200</x:Double>
+    <x:Double x:Key="Size.Column.SidebarMax">320</x:Double>
+    <x:Double x:Key="Size.Column.List">428</x:Double>
+    <x:Double x:Key="Size.Column.ListMin">328</x:Double>
+    <x:Double x:Key="Size.Column.ListMax">608</x:Double>
+    <x:Double x:Key="Size.Column.ArticleMin">360</x:Double>
+    <!-- Same widths as GridLength, for ColumnDefinition.Width (a double does not convert there, L6). -->
+    <GridLength x:Key="GridLength.Column.Sidebar">232</GridLength>
+    <GridLength x:Key="GridLength.Column.List">428</GridLength>
+    <x:Double x:Key="Size.TitleBar.Height">52</x:Double>
+    <!-- The strip inside a card: 8 of canvas above it make up the 52 of the title bar. -->
+    <x:Double x:Key="Size.CardStrip.Height">44</x:Double>
+    <x:Double x:Key="Size.StatusBar.Height">28</x:Double>
+
+    <!-- Rows -->
+    <x:Double x:Key="Size.SidebarRow.Height">28</x:Double>
+    <x:Double x:Key="Size.SidebarSection.Height">38</x:Double>
+    <x:Double x:Key="Size.DateHeader.Height">28</x:Double>
+    <x:Double x:Key="Size.PanelRow.Height">36</x:Double>
+    <x:Double x:Key="Size.PanelRowTall.Height">48</x:Double>
+    <x:Double x:Key="Double.ItemLineHeight">18</x:Double>
+    <x:Double x:Key="Double.SummaryLineHeight">17</x:Double>
+
+    <!-- Images, icons and badges -->
+    <x:Double x:Key="Size.Thumb">44</x:Double>
+    <x:Double x:Key="Size.Favicon">14</x:Double>
+    <x:Double x:Key="Size.Icon.Toolbar">15</x:Double>
+    <x:Double x:Key="Size.Icon.Small">12</x:Double>
+    <x:Double x:Key="Size.Illustration">22</x:Double>
+    <x:Double x:Key="Size.Badge.Height">18</x:Double>
+    <x:Double x:Key="Double.IconStroke">1.5</x:Double>
+
+    <!-- Overlay panel -->
+    <x:Double x:Key="Size.Panel.Width">400</x:Double>
+    <x:Double x:Key="Size.Panel.NarrowWidth">360</x:Double>
+    <x:Double x:Key="Size.Panel.MaxHeight">600</x:Double>
+    <x:Double x:Key="Size.FormLabel.Width">64</x:Double>
+    <Thickness x:Key="Thickness.Panel.Inset">20,0</Thickness>
+
+    <!-- Spacing (D7) -->
+    <x:Double x:Key="Double.Gutter">16</x:Double>
+    <x:Double x:Key="Double.ListTextLeft">37</x:Double>
+    <x:Double x:Key="Double.SidebarChildLeft">38</x:Double>
+    <Thickness x:Key="Thickness.Card.Margin">0,8,8,8</Thickness>
+    <Thickness x:Key="Thickness.Row.Inset">6,0,6,1</Thickness>
+    <Thickness x:Key="Thickness.SidebarRow.Inset">8,0</Thickness>
+    <Thickness x:Key="Thickness.ArticleRow.Padding">10,8,10,9</Thickness>
+    <Thickness x:Key="Thickness.IconButton.Padding">6.5</Thickness>
+    <x:Double x:Key="Double.Space.xs">4</x:Double>
+    <x:Double x:Key="Double.Space.s">8</x:Double>
+    <x:Double x:Key="Double.Space.m">12</x:Double>
+    <x:Double x:Key="Double.Space.l">16</x:Double>
+    <x:Double x:Key="Double.Space.xl">24</x:Double>
+
+    <!-- Radii (D7) -->
+    <CornerRadius x:Key="CornerRadius.Card">12</CornerRadius>
+    <CornerRadius x:Key="CornerRadius.Row.Sidebar">7</CornerRadius>
+    <CornerRadius x:Key="CornerRadius.Row.List">8</CornerRadius>
+    <CornerRadius x:Key="CornerRadius.Thumb">7</CornerRadius>
+    <CornerRadius x:Key="CornerRadius.Favicon">3</CornerRadius>
+    <CornerRadius x:Key="CornerRadius.Panel">16</CornerRadius>
+    <CornerRadius x:Key="CornerRadius.Group">10</CornerRadius>
+    <CornerRadius x:Key="CornerRadius.Field">7</CornerRadius>
+    <CornerRadius x:Key="CornerRadius.IconButton">7</CornerRadius>
+    <CornerRadius x:Key="CornerRadius.Pill">7</CornerRadius>
+    <CornerRadius x:Key="CornerRadius.Badge">5</CornerRadius>
+    <CornerRadius x:Key="CornerRadius.Chip">7</CornerRadius>
+</ResourceDictionary>

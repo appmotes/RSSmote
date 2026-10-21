@@ -1,0 +1,32 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:c="urn:RSSmote.App.Controls">
+    <ControlTheme x:Key="{x:Type c:PanelFrame}" TargetType="c:PanelFrame">
+        <Setter Property="Background" Value="{DynamicResource Brush.Bg.Panel}" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Ink.Primary}" />
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Panel>
+                    <!-- The scrim behind every panel; a click on it dismisses the panel. -->
+                    <Border x:Name="PART_Backdrop" Background="{DynamicResource Brush.Scrim}" />
+                    <!-- Two borders: the outer casts the shadow, the inner clips to the corners (L12). -->
+                    <Border x:Name="PART_Sheet" Width="{StaticResource Size.Panel.Width}"
+                            MaxHeight="{StaticResource Size.Panel.MaxHeight}"
+                            HorizontalAlignment="Center" VerticalAlignment="Center"
+                            Background="{TemplateBinding Background}"
+                            CornerRadius="{StaticResource CornerRadius.Panel}"
+                            BoxShadow="{DynamicResource BoxShadows.Panel}">
+                        <Border CornerRadius="{StaticResource CornerRadius.Panel}" ClipToBounds="True">
+                            <ContentPresenter Content="{TemplateBinding Content}"
+                                              ContentTemplate="{TemplateBinding ContentTemplate}" />
+                        </Border>
+                    </Border>
+                </Panel>
+            </ControlTemplate>
+        </Setter>
+
+        <Style Selector="^.narrow /template/ Border#PART_Sheet">
+            <Setter Property="Width" Value="{StaticResource Size.Panel.NarrowWidth}" />
+        </Style>
+    </ControlTheme>
+</ResourceDictionary>

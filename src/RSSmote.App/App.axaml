@@ -1,0 +1,48 @@
+<Application xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:theming="using:RSSmote.App.Theming"
+             x:Class="RSSmote.App.App"
+             Name="RSSmote"
+             RequestedThemeVariant="Default">
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceInclude Source="avares://RSSmote.App/Assets/AppResources.axaml" />
+                <ResourceInclude Source="avares://RSSmote.App/Assets/Icons.axaml" />
+                <ResourceInclude Source="avares://RSSmote.App/Controls/Templates/TitleStrip.axaml" />
+                <ResourceInclude Source="avares://RSSmote.App/Controls/Templates/StatusBar.axaml" />
+                <ResourceInclude Source="avares://RSSmote.App/Controls/Templates/FilterBar.axaml" />
+                <ResourceInclude Source="avares://RSSmote.App/Controls/Templates/EmptyState.axaml" />
+                <ResourceInclude Source="avares://RSSmote.App/Controls/Templates/PanelFrame.axaml" />
+                <ResourceInclude Source="avares://RSSmote.App/Controls/Templates/PanelGroup.axaml" />
+                <ResourceInclude Source="avares://RSSmote.App/Controls/Templates/PanelRow.axaml" />
+                <ResourceInclude Source="avares://RSSmote.App/Controls/Templates/SidebarRow.axaml" />
+                <ResourceInclude Source="avares://RSSmote.App/Controls/Templates/ArticleRow.axaml" />
+            </ResourceDictionary.MergedDictionaries>
+            <!-- One palette per variant (D4, D5, D22). Sand and Ember are Light and Dark; the others inherit from one of them. -->
+            <ResourceDictionary.ThemeDictionaries>
+                <ResourceInclude x:Key="Light" Source="avares://RSSmote.App/Assets/Themes/Sand.axaml" />
+                <ResourceInclude x:Key="Dark" Source="avares://RSSmote.App/Assets/Themes/Ember.axaml" />
+                <ResourceInclude x:Key="{x:Static theming:ThemeCatalogue.Newsprint}" Source="avares://RSSmote.App/Assets/Themes/Newsprint.axaml" />
+                <ResourceInclude x:Key="{x:Static theming:ThemeCatalogue.Fern}" Source="avares://RSSmote.App/Assets/Themes/Fern.axaml" />
+                <ResourceInclude x:Key="{x:Static theming:ThemeCatalogue.Harbor}" Source="avares://RSSmote.App/Assets/Themes/Harbor.axaml" />
+                <ResourceInclude x:Key="{x:Static theming:ThemeCatalogue.Contrast}" Source="avares://RSSmote.App/Assets/Themes/Contrast.axaml" />
+                <ResourceInclude x:Key="{x:Static theming:ThemeCatalogue.Black}" Source="avares://RSSmote.App/Assets/Themes/Black.axaml" />
+                <ResourceInclude x:Key="{x:Static theming:ThemeCatalogue.Fjord}" Source="avares://RSSmote.App/Assets/Themes/Fjord.axaml" />
+                <ResourceInclude x:Key="{x:Static theming:ThemeCatalogue.Phosphor}" Source="avares://RSSmote.App/Assets/Themes/Phosphor.axaml" />
+                <ResourceInclude x:Key="{x:Static theming:ThemeCatalogue.ContrastDark}" Source="avares://RSSmote.App/Assets/Themes/ContrastDark.axaml" />
+            </ResourceDictionary.ThemeDictionaries>
+        </ResourceDictionary>
+    </Application.Resources>
+
+    <Application.Styles>
+        <FluentTheme />
+        <StyleInclude Source="avares://RSSmote.App/Styles/TextBlocks.axaml" />
+        <StyleInclude Source="avares://RSSmote.App/Styles/Buttons.axaml" />
+        <StyleInclude Source="avares://RSSmote.App/Styles/Lists.axaml" />
+        <StyleInclude Source="avares://RSSmote.App/Styles/Inputs.axaml" />
+        <StyleInclude Source="avares://RSSmote.App/Styles/Panels.axaml" />
+        <StyleInclude Source="avares://RSSmote.App/Styles/Menus.axaml" />
+        <StyleInclude Source="avares://RSSmote.App/Styles/Chrome.axaml" />
+    </Application.Styles>
+</Application>

@@ -1,0 +1,105 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:c="urn:RSSmote.App.Controls">
+    <!-- Paddings are relative to the selection rect, which the list item insets by 8. Inside it: smart icon and section
+         labels at 10, folder chevrons at 6 and titles at 26, feed favicons at 30, the badge 6 from the right (D7). -->
+    <ControlTheme x:Key="{x:Type c:SidebarRow}" TargetType="c:SidebarRow">
+        <Setter Property="Height" Value="{StaticResource Size.SidebarRow.Height}" />
+        <Setter Property="Padding" Value="30,0,6,0" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Ink.Sidebar}" />
+        <Setter Property="FontSize" Value="{StaticResource TextTheme.Sidebar.Size}" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Border Background="{TemplateBinding Background}">
+                    <Grid x:Name="PART_Grid" ColumnDefinitions="Auto,Auto,*,Auto" Margin="{TemplateBinding Padding}">
+                        <!-- The whole indent left of the title opens the folder; the chevron alone is too small a target (L11). -->
+                        <Border x:Name="PART_Disclosure" IsVisible="False" Background="Transparent" Cursor="Hand"
+                                Width="26" Margin="-26,0,0,0">
+                            <c:Icon x:Name="PART_DisclosureIcon" Size="12" Width="12" Margin="6,0,0,0"
+                                    HorizontalAlignment="Left" VerticalAlignment="Center"
+                                    Data="{StaticResource Icon.ChevronRight}"
+                                    Foreground="{DynamicResource Brush.Ink.Secondary}">
+                                <c:Icon.Transitions>
+                                    <Transitions>
+                                        <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.12" />
+                                    </Transitions>
+                                </c:Icon.Transitions>
+                            </c:Icon>
+                        </Border>
+                        <c:Icon x:Name="PART_Glyph" Grid.Column="1" IsVisible="False" Size="14" Margin="0,0,8,0"
+                                VerticalAlignment="Center" Data="{StaticResource Icon.CircleDot}"
+                                Foreground="{DynamicResource Brush.Accent}" />
+                        <c:Favicon x:Name="PART_Favicon" Grid.Column="1" IsVisible="False" Margin="0,0,8,0"
+                                   Size="{StaticResource Size.Favicon}" VerticalAlignment="Center"
+                                   Source="{TemplateBinding Favicon}" IsGrayscale="{TemplateBinding IsFaviconGrayscale}" Title="{TemplateBinding Title}"
+                                   TileBrush="{DynamicResource Brush.Bg.FaviconTile}"
+                                   LetterBrush="{DynamicResource Brush.Ink.OnTile}" />
+                        <TextBlock x:Name="PART_Title" Grid.Column="2" VerticalAlignment="Center"
+                                   Text="{TemplateBinding Title}" TextTrimming="CharacterEllipsis"
+                                   FontSize="{TemplateBinding FontSize}" FontWeight="{TemplateBinding FontWeight}" />
+                        <Border x:Name="PART_Badge" Grid.Column="3" IsVisible="False" Margin="6,0,0,0"
+                                MinWidth="24" Height="{StaticResource Size.Badge.Height}" Padding="6,0"
+                                CornerRadius="{StaticResource CornerRadius.Badge}" VerticalAlignment="Center"
+                                Background="{DynamicResource Brush.Bg.Panel}">
+                            <TextBlock x:Name="PART_Count" Classes="count" Text="{TemplateBinding CountText}"
+                                       HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                        <c:Icon x:Name="PART_SectionChevron" Grid.Column="3" IsVisible="False" Size="12"
+                                VerticalAlignment="Center"
+                                Data="{StaticResource Icon.ChevronRight}"
+                                Foreground="{DynamicResource Brush.Ink.Secondary}" />
+                    </Grid>
+                </Border>
+            </ControlTemplate>
+        </Setter>
+
+        <Style Selector="^:count /template/ Border#PART_Badge">
+            <Setter Property="IsVisible" Value="True" />
+        </Style>
+        <Style Selector="^:smart">
+            <Setter Property="Padding" Value="10,0,6,0" />
+            <Setter Property="FontWeight" Value="Medium" />
+        </Style>
+        <Style Selector="^:smart /template/ c|Icon#PART_Glyph">
+            <Setter Property="IsVisible" Value="True" />
+        </Style>
+        <Style Selector="^:smart:starred /template/ c|Icon#PART_Glyph">
+            <Setter Property="Data" Value="{StaticResource Icon.Star}" />
+        </Style>
+        <Style Selector="^:smart:all /template/ c|Icon#PART_Glyph">
+            <Setter Property="Data" Value="{StaticResource Icon.AlignLeft}" />
+        </Style>
+        <Style Selector="^:section">
+            <Setter Property="Height" Value="{StaticResource Size.SidebarSection.Height}" />
+            <Setter Property="Padding" Value="10,14,6,0" />
+            <Setter Property="FontSize" Value="{StaticResource TextTheme.SidebarSection.Size}" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Ink.Secondary}" />
+        </Style>
+        <Style Selector="^:section /template/ Border#PART_Badge">
+            <Setter Property="IsVisible" Value="False" />
+        </Style>
+        <Style Selector="^:section /template/ c|Icon#PART_SectionChevron">
+            <Setter Property="IsVisible" Value="True" />
+        </Style>
+        <Style Selector="^:section:expanded /template/ c|Icon#PART_SectionChevron">
+            <Setter Property="Data" Value="{StaticResource Icon.ChevronDown}" />
+        </Style>
+        <Style Selector="^:folder">
+            <Setter Property="Padding" Value="26,0,6,0" />
+        </Style>
+        <Style Selector="^:folder:expandable /template/ Border#PART_Disclosure">
+            <Setter Property="IsVisible" Value="True" />
+        </Style>
+        <Style Selector="^:folder:expanded /template/ c|Icon#PART_DisclosureIcon">
+            <Setter Property="RenderTransform" Value="rotate(90deg)" />
+        </Style>
+        <Style Selector="^:feed /template/ c|Favicon#PART_Favicon">
+            <Setter Property="IsVisible" Value="True" />
+        </Style>
+        <Style Selector="^:error /template/ TextBlock#PART_Title">
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Ink.Secondary}" />
+        </Style>
+    </ControlTheme>
+</ResourceDictionary>

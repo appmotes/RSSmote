@@ -1,0 +1,32 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:c="urn:RSSmote.App.Controls">
+    <ControlTheme x:Key="{x:Type c:StatusBar}" TargetType="c:StatusBar">
+        <Setter Property="Height" Value="{StaticResource Size.StatusBar.Height}" />
+        <Setter Property="Padding" Value="16,0,8,0" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0,1,0,0" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Line.Separator}" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Ink.Secondary}" />
+        <Setter Property="FontSize" Value="{StaticResource TextTheme.Meta.Size}" />
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Border Background="{TemplateBinding Background}"
+                        BorderBrush="{TemplateBinding BorderBrush}"
+                        BorderThickness="{TemplateBinding BorderThickness}">
+                    <DockPanel Margin="{TemplateBinding Padding}">
+                        <ContentPresenter DockPanel.Dock="Right" VerticalAlignment="Center"
+                                          Content="{TemplateBinding Trailing}" />
+                        <ContentPresenter VerticalAlignment="Center" Content="{TemplateBinding Leading}" />
+                    </DockPanel>
+                </Border>
+            </ControlTemplate>
+        </Setter>
+
+        <!-- In the sidebar the bar sits on the canvas, with no hairline. -->
+        <Style Selector="^.canvas">
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Padding" Value="18,0,8,0" />
+        </Style>
+    </ControlTheme>
+</ResourceDictionary>

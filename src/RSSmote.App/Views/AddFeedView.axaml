@@ -1,0 +1,128 @@
+<!-- The Add Feed panel (A6, D9): search page, results page, folder page. -->
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:c="urn:RSSmote.App.Controls"
+             xmlns:vm="using:RSSmote.App.ViewModels"
+             xmlns:v="using:RSSmote.App.Views"
+             x:Class="RSSmote.App.Views.AddFeedView"
+             x:DataType="vm:AddFeedViewModel">
+    <UserControl.KeyBindings>
+        <KeyBinding Gesture="Enter" Command="{Binding EnterCommand}" />
+    </UserControl.KeyBindings>
+    <c:PanelFrame>
+        <Panel>
+            <!-- Search -->
+            <StackPanel IsVisible="{Binding IsSearchPage}">
+                <Grid Classes="sheetHeader" ColumnDefinitions="*,Auto">
+                    <TextBlock Classes="largeTitle" Text="Add Feed" />
+                    <Button Grid.Column="1" Classes="icon" ToolTip.Tip="Close (Esc)" Command="{Binding CloseCommand}">
+                        <c:Icon Data="{StaticResource Icon.X}" />
+                    </Button>
+                </Grid>
+                <StackPanel Classes="sheetBody">
+                    <TextBox x:Name="AddressBox" Classes="panel-field" PlaceholderText="Feed or site address"
+                             Text="{Binding Address}">
+                        <TextBox.InnerLeftContent>
+                            <c:Icon Data="{StaticResource Icon.Search}" Size="14" Margin="0,0,8,0"
+                                    Foreground="{DynamicResource Brush.Ink.Secondary}" />
+                        </TextBox.InnerLeftContent>
+                        <TextBox.KeyBindings>
+                            <KeyBinding Gesture="Enter" Command="{Binding SearchCommand}" />
+                        </TextBox.KeyBindings>
+                    </TextBox>
+                    <TextBlock Classes="hint error" Text="{Binding Error}" IsVisible="{Binding HasError}" />
+                    <TextBlock Classes="hint" IsVisible="{Binding !HasError}"
+                               Text="Paste the address of a feed or a website. RSSmote checks it and shows the feeds it finds before anything is saved." />
+                </StackPanel>
+                <DockPanel Classes="sheetFooter">
+                    <Button DockPanel.Dock="Left" Classes="secondary" Content="{Binding ImportTitle}"
+                            Command="{Binding ImportOpmlCommand}" />
+                    <StackPanel>
+                        <Button Classes="primary" Command="{Binding SearchCommand}">
+                            <StackPanel Orientation="Horizontal" Spacing="7">
+                                <TextBlock Text="{Binding SearchButtonTitle}" VerticalAlignment="Center" />
+                                <TextBlock Classes="keyHint" Text="↵" />
+                            </StackPanel>
+                        </Button>
+                    </StackPanel>
+                </DockPanel>
+            </StackPanel>
+
+            <!-- Results -->
+            <DockPanel IsVisible="{Binding IsResultsPage}">
+                <StackPanel DockPanel.Dock="Top">
+                    <Grid Classes="sheetHeader back" ColumnDefinitions="Auto,*,Auto">
+                        <Button Classes="icon" ToolTip.Tip="Back" Command="{Binding BackCommand}">
+                            <c:Icon Data="{StaticResource Icon.ChevronLeft}" />
+                        </Button>
+                        <TextBlock Grid.Column="1" Classes="largeTitle" Text="Add Feed" />
+                        <Button Grid.Column="2" Classes="icon" ToolTip.Tip="Close (Esc)" Command="{Binding CloseCommand}">
+                            <c:Icon Data="{StaticResource Icon.X}" />
+                        </Button>
+                    </Grid>
+                    <TextBlock Classes="sheetSubtitle back" Text="{Binding ResultsTitle}" />
+                </StackPanel>
+                <DockPanel DockPanel.Dock="Bottom" Classes="sheetFooter">
+                    <StackPanel>
+                        <Button Classes="secondary" Command="{Binding CloseCommand}">
+                            <StackPanel Orientation="Horizontal" Spacing="7">
+                                <TextBlock Text="Cancel" VerticalAlignment="Center" />
+                                <TextBlock Classes="keyHint" Text="esc" />
+                            </StackPanel>
+                        </Button>
+                        <Button Classes="primary" Command="{Binding SaveCommand}">
+                            <StackPanel Orientation="Horizontal" Spacing="7">
+                                <TextBlock Text="Save" VerticalAlignment="Center" />
+                                <TextBlock Classes="keyHint" Text="↵" />
+                            </StackPanel>
+                        </Button>
+                    </StackPanel>
+                </DockPanel>
+                <StackPanel Classes="sheetBody">
+                    <TextBlock Classes="caps" Text="{Binding FoundTitle}" />
+                    <ScrollViewer MaxHeight="300" HorizontalScrollBarVisibility="Disabled">
+                        <c:PanelGroup ItemsSource="{Binding Results}">
+                            <c:PanelGroup.ItemTemplate>
+                                <DataTemplate x:DataType="vm:FoundFeedRowViewModel">
+                                    <c:PanelRow Title="{Binding Title}" Subtitle="{Binding Subtitle}" FontWeight="Medium"
+                                                Accessory="Check" IsOn="{Binding IsOn}" IsEnabled="{Binding !IsSaved}"
+                                                Command="{Binding $parent[UserControl].((vm:AddFeedViewModel)DataContext).ToggleResultCommand}"
+                                                CommandParameter="{Binding}" />
+                                </DataTemplate>
+                            </c:PanelGroup.ItemTemplate>
+                        </c:PanelGroup>
+                    </ScrollViewer>
+                    <c:PanelGroup>
+                        <c:PanelRow Title="{Binding FolderTitle}" Accessory="Chevron" Command="{Binding ShowFoldersCommand}" />
+                    </c:PanelGroup>
+                </StackPanel>
+            </DockPanel>
+
+            <!-- Folders -->
+            <DockPanel IsVisible="{Binding IsFoldersPage}">
+                <StackPanel DockPanel.Dock="Top">
+                    <Grid Classes="sheetHeader back" ColumnDefinitions="Auto,*">
+                        <Button Classes="icon" ToolTip.Tip="Back" Command="{Binding BackCommand}">
+                            <c:Icon Data="{StaticResource Icon.ChevronLeft}" />
+                        </Button>
+                        <TextBlock Grid.Column="1" Classes="largeTitle" Text="Add to Folder" />
+                    </Grid>
+                    <TextBlock Classes="sheetSubtitle back" Text="{Binding ResultsTitle}" />
+                </StackPanel>
+                <DockPanel DockPanel.Dock="Bottom" Classes="sheetFooter">
+                    <StackPanel>
+                        <Button Classes="primary" Command="{Binding BackCommand}">
+                            <StackPanel Orientation="Horizontal" Spacing="7">
+                                <TextBlock Text="Done" VerticalAlignment="Center" />
+                                <TextBlock Classes="keyHint" Text="↵" />
+                            </StackPanel>
+                        </Button>
+                    </StackPanel>
+                </DockPanel>
+                <ScrollViewer HorizontalScrollBarVisibility="Disabled">
+                    <v:FolderPickerView x:Name="Picker" DataContext="{Binding Picker}" Margin="20,16,20,4" />
+                </ScrollViewer>
+            </DockPanel>
+        </Panel>
+    </c:PanelFrame>
+</UserControl>

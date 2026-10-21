@@ -1,0 +1,30 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:c="urn:RSSmote.App.Controls">
+    <ControlTheme x:Key="{x:Type c:TitleStrip}" TargetType="c:TitleStrip">
+        <Setter Property="Height" Value="{StaticResource Size.TitleBar.Height}" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Padding" Value="8,0" />
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Border Background="{TemplateBinding Background}"
+                        BorderBrush="{TemplateBinding BorderBrush}"
+                        BorderThickness="{TemplateBinding BorderThickness}"
+                        WindowDecorationProperties.ElementRole="TitleBar">
+                    <DockPanel Margin="{TemplateBinding Padding}">
+                        <ContentPresenter DockPanel.Dock="Left" VerticalAlignment="Center"
+                                          Content="{TemplateBinding Leading}" />
+                        <ContentPresenter DockPanel.Dock="Right" VerticalAlignment="Center"
+                                          Content="{TemplateBinding Trailing}" />
+                        <Panel />
+                    </DockPanel>
+                </Border>
+            </ControlTemplate>
+        </Setter>
+
+        <!-- Inside a card the strip is 44; the 8 of canvas above the card make up the title bar (D20). -->
+        <Style Selector="^.card">
+            <Setter Property="Height" Value="{StaticResource Size.CardStrip.Height}" />
+        </Style>
+    </ControlTheme>
+</ResourceDictionary>
