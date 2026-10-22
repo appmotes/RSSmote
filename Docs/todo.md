@@ -28,3 +28,15 @@ the card with its rounded corners intact; the 8 pt band above the cards and the 
 Windows the caption buttons clear the article card's actions (P3, N2); panels show their shadow and scrim; and the ten
 palettes switch from the menus.
 
+
+**W2 — Preview an OPML import on desktop, as the mobile Import Feeds page does (D27).** Today "Import Feeds…"
+imports the chosen file at once and only reports the count afterwards (`ShellViewModel.ImportOpmlAsync`). Instead,
+show the file name and "N feeds in M folders", the folders with the feeds each one adds, how many feeds are already
+added and will be skipped (`Store.FeedWithUrl`), and import only on "Import N Feeds"; "Change" picks another file.
+Mobile and desktop share the view-model, so build it once in `RSSmote.App` and give each head its own view (a panel
+on desktop, A6). Done when importing a file that partly overlaps the library shows the right counts before anything is
+saved, and cancelling leaves the library untouched (a test in `RSSmote.App.Tests`).
+
+**W3 — Tablet layout.** The mobile design covers the phone only (D23–D28). A tablet in landscape needs its own
+answer (list and article side by side, or three columns as on desktop). Done when it is drawn and recorded as a
+D entry.

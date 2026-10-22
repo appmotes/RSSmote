@@ -271,3 +271,56 @@ Every palette clears these floors (WCAG 2, translucent ink composited first; `Co
 | `Ink.Read` on `Bg.List` | 4:1 |
 | `Accent` on `Bg.Article`; `Ink.OnAccent` on `Accent`; `Ink.Danger` on `Bg.Panel` and `Bg.Pill`; `Ink.Icon` on `Bg.List` | 4.5:1 |
 | `Ink.OnTile` on `Bg.FaviconTile` | 3:1 |
+
+## Mobile (phone)
+
+The phone screens are drawn as HTML recreations, not screenshots, on the design canvas
+(https://claude.ai/artifact/JXWBKf8qYCoCGWSKPKx7BJ): M1–M11 in Sand and M1D–M11D in Ember, at 402 × 874 pt. A
+tablet layout is not designed yet (W3).
+
+**D23 — One navigation stack, two roots.** Feeds → article list → article is one `NavigationPage`. Its root page
+shows a bottom tab bar, Feeds | Settings (`Icon.Rss`, `Icon.Settings`, the active one in `Accent`); the bar belongs to
+the root page, so it is gone as soon as a list is pushed. Settings is reachable only from the root: reading pages
+keep their bars for reading, and there is no drawer. One stack rather than a tab control with a stack per tab, so
+there is one back history and one place that owns the selection.
+
+**D24 — Feeds root.** A large title "Feeds" over "Updated 09.29 · 10 feeds", which takes the place of the desktop
+status bar. Grouped cards on `Bg.Sidebar`, each `Bg.List` with `CornerRadius.Card`: a stream card (Unread, Starred,
+All Items, with `Icon.CircleDot`, `Icon.Star` and `Icon.AlignLeft` in `Accent`), then Folders and Feeds, each under
+a collapsible section header. A folder's chevron expands it in place; the row itself opens the folder's list. Counts
+are plain `Ink.Secondary` figures, not badges, and always count unread articles, because the root has no filter. A
+feed whose last refresh failed shows an `Ink.Danger` alert icon in its row.
+
+**D25 — Article list: three lines of title.** A large title (the stream's name) over "3 unread · newest first".
+Each row is a source line (favicon · feed name · star · time), the title in up to three lines, one line of summary,
+and a 64 pt thumbnail on the right. This departs from D11 on purpose: a phone column is about 370 pt, where one line
+would cut most titles short, so the title wraps and the summary gives up a line instead. A bottom bar holds Mark All
+as Read · the filter (Starred, Unread, All Items; the active one a labelled pill on `Bg.Pill`, the others icons) ·
+search, which opens the filter box.
+
+**D26 — Article: bars that step aside.** A top bar with back, the position ("1 of 3") and Aa; a bottom bar with Read,
+Star, Open in Browser, Previous and Next, icons only. Both bars slide away while the reader scrolls down and come
+back on a scroll up or a tap, leaving a 3 pt reading-progress line under the status bar. Previous and next are
+buttons, never a horizontal swipe: a swipe from the edge is back (`NavigationPage`), and the two would fight. Aa opens
+a sheet with text size (11–32, `AppSettings`), font (System, Serif, Rounded, Mono) and Automatic / Light / Dark as a
+shortcut to the same setting as Appearance.
+
+**D27 — Settings are plain pushed pages.** The Settings root lists Feeds (Add Feed, Manage Feeds, Import Feeds,
+Export Feeds), Display (Appearance), Articles (Read when opened, Newest first, Group by date as switches) and Refresh
+(interval and how long read articles are kept, as pickers), then the version. Every row that opens a page has a
+chevron; pages have a back button and a centred title, no large title.
+- Appearance: Mode (Automatic, Light, Dark), then the light and the dark palettes as rows with a swatch (`Bg.Article`
+  with an `Accent` dot) and a check, then the favicon switches. Choosing a palette follows D22.
+- Manage Feeds: one group per folder (with Edit) and one for feeds without a folder; each feed shows its host, or its
+  error in `Ink.Danger`; New Folder sits in the bar. A feed opens Edit Feed: name, read-only address, folder chips
+  (as D9), Open site, Reload Icon, and Remove Feed… in `Ink.Danger` with the line that it deletes the feed and its
+  articles for good (A14).
+- Add Feed: the address field, the feeds found as radio rows, folder chips and one primary button. No OPML here.
+- Import Feeds shows what a file will add before anything is saved: the file, its folders with their feed counts,
+  how many feeds already exist and are skipped, then "Import N Feeds". Export Feeds shows what the file holds and hands
+  it to the system's save or share sheet.
+
+**D28 — Touch metrics.** Rows are at least 44 pt (56 with a subtitle, 60 for radio rows with one); icon buttons
+are 44 pt targets around 22 pt icons; bars are 44 pt at the top and 49 pt plus the home-indicator inset at the
+bottom. Type: large titles 34 Bold, page titles 17 SemiBold, row text 16, secondary text 13–15. These are values for
+the phone views, not tokens yet; they become keys in `Assets/AppResources.axaml` when the views are built.
