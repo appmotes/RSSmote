@@ -1,7 +1,13 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <!-- Phone and tablet screens, shared by the Android and iOS heads. Plain net10.0, so it builds and tests without
        mobile workloads (A15). -->
+  <PropertyGroup>
+    <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+  </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\RSSmote.App\RSSmote.App.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="RSSmote.Mobile.Tests" />
   </ItemGroup>
 </Project>

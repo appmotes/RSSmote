@@ -11,5 +11,5 @@ public sealed class DesktopShellHost : IShellHost
 {
     public ILauncher Launcher { get; } = new ProcessLauncher();
 
-    public Window CreateMainWindow(ShellViewModel shell) => new MainWindow(shell);
+    public Control CreateRoot(ShellViewModel shell) => new MainWindow(shell);
 }

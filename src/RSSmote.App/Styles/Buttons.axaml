@@ -145,4 +145,40 @@
         <Setter Property="BorderBrush" Value="{DynamicResource Brush.Accent}" />
         <Setter Property="Foreground" Value="{DynamicResource Brush.Ink.OnAccent}" />
     </Style>
+
+    <!-- Phone tab bar (D23): icon over label, the selected tab in the accent. Content is a StackPanel. -->
+    <Style Selector="Button.tab">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Padding" Value="0,6,0,0" />
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+        <Setter Property="VerticalAlignment" Value="Stretch" />
+        <Setter Property="HorizontalContentAlignment" Value="Center" />
+        <Setter Property="VerticalContentAlignment" Value="Top" />
+        <Setter Property="FontSize" Value="{StaticResource TextTheme.Count.Size}" />
+        <Setter Property="FontWeight" Value="Medium" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Ink.Secondary}" />
+        <Style Selector="^ StackPanel">
+            <Setter Property="Spacing" Value="3" />
+        </Style>
+        <Style Selector="^ StackPanel > :is(Control)">
+            <Setter Property="HorizontalAlignment" Value="Center" />
+        </Style>
+        <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter, ^:pressed /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Ink.Secondary}" />
+        </Style>
+        <Style Selector="^:pressed">
+            <Setter Property="RenderTransform" Value="none" />
+            <Setter Property="Opacity" Value="0.7" />
+        </Style>
+    </Style>
+    <Style Selector="Button.tab.selected">
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Accent}" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+    </Style>
+    <Style Selector="Button.tab.selected:pointerover /template/ ContentPresenter#PART_ContentPresenter,
+                     Button.tab.selected:pressed /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Accent}" />
+    </Style>
 </Styles>

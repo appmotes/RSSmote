@@ -119,3 +119,9 @@ to 1.66 MB. ILLink also reports IL2037 for interface members `Avalonia.iOS` name
 `TextInputResponder`), which is not our code. The iOS head sets `SuppressTrimAnalysisWarnings` and `NoWarn` IL2037.
 Measured with the platform spike, which passes every step in a Release simulator build. A new dependency that is
 marked trimmable and uses reflection would be trimmed silently: run the spike after adding one.
+
+**P14 — A phone page's `Background` stops at the safe-area insets.** Under a `NavigationPage`, a `ContentPage` is laid
+out inside the status-bar and home-indicator insets, and its background goes with it: the strips above and below show
+the `NavigationPage`'s own background, white by default. Seen on the iPhone 17 Pro simulator with Avalonia 12.1.4.
+`MobileShell` sets `Bg.Sidebar`, the root page's background, so the strips match it (A16). A pushed page with another
+background will meet the same strip; not yet measured.

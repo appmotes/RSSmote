@@ -1,0 +1,9 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="RSSmote.Mobile.Views.FeedsView">
+    <!-- The Feeds root (D24). -->
+    <StackPanel>
+        <Border Height="{StaticResource Size.Phone.TopBar}" />
+        <TextBlock Classes="phoneLargeTitle" Text="Feeds" Margin="20,2,20,8" />
+    </StackPanel>
+</UserControl>

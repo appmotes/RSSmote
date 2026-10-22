@@ -14,11 +14,13 @@ src/RSSmote.Data             SQLite store, settings store, refresher, data folde
 src/RSSmote.App              shared Avalonia UI with no screens: view-models, controls, styles, themes, assets, services
 src/RSSmote.Desktop          the desktop executable and its screens: Program.cs, Shell/ (MainWindow), Views/
                              (shell, columns, Panels/), Services/ (ProcessLauncher), per-OS packaging metadata
-src/RSSmote.Mobile           phone and tablet screens, shared by both mobile heads (plain net10.0, A15)
+src/RSSmote.Mobile           phone and tablet screens, shared by both mobile heads (plain net10.0, A15):
+                             MobileShellHost, Shell/ (MobileShell, RootPage), Views/, Services/ (TopLevelLauncher)
 src/RSSmote.Android          Android head: AndroidApp, MainActivity, manifest
 src/RSSmote.iOS              iOS head: AppDelegate, Program, Info.plist
 tests/RSSmote.App.Tests      headless tests: view-models, palette key sets, gallery snapshots per theme (xUnit v3)
 tests/RSSmote.Desktop.Tests  headless tests of the desktop screens: shell renders, panels, menus, captures
+tests/RSSmote.Mobile.Tests   headless tests of the phone screens, rendered at 402 × 874 in Sand and Ember
 tests/RSSmote.Core.Tests     parser, dates, HTML helpers, feed discovery (fake HTTP), OPML
 tests/RSSmote.Data.Tests     store: upsert, filters, counts, retention, migrations, macOS-library compatibility
 build/                       per-OS packaging scripts
@@ -29,7 +31,7 @@ Dependencies point one way: `Desktop → App → Data → Core` and `Android, iO
 never reference each other. Core and Data never reference Avalonia.
 `App` holds building blocks and no screens: a `.axaml` with `x:DataType` on a view-model is a screen and lives in
 a head; a `ControlTheme` or style lives in `App`. `RSSmote.Desktop.Tests` compiles `ShellFixture` and
-`TestAppBuilder` from `RSSmote.App.Tests` as linked files.
+`TestAppBuilder` from `RSSmote.App.Tests` as linked files, and so does `RSSmote.Mobile.Tests`.
 
 **A2 — One desktop head for all three OSes.** `RSSmote.Desktop` is plain `net10.0` (no `-macos` workload),
 published per RID: `osx-arm64`, `osx-x64`, `win-x64`, `win-arm64`, `linux-x64`, `linux-arm64`. The macOS
@@ -38,15 +40,24 @@ published per RID: `osx-arm64`, `osx-x64`, `win-x64`, `win-arm64`, `linux-x64`, 
 **A3 — Composition root, no container.** `App` creates `AppServices` once (store, settings, feed finder,
 refresher, image cache, launcher, UI dispatcher, clock), applies the theme — the palette of the slot the settings
 name, or for Automatic the slot the OS asks for, re-applied when either changes (D22) — builds `ShellViewModel` from
-those services, opens the main window and starts the refresher; shutdown disposes them. The head passes an
-`IShellHost` (`App.Host`) that supplies its launcher and creates its main window, so `App` never names a screen:
-`AppBuilder.Configure(() => new App { Host = new DesktopShellHost() })`. View-models get services
+those services, creates the root control and starts the refresher; desktop shutdown disposes them. The head passes an
+`IShellHost` (`App.Host`) that supplies its launcher and creates its root (`CreateRoot(shell)`), so `App` never names
+a screen: `AppBuilder.Configure(() => new App { Host = new DesktopShellHost() })`. `App` handles three lifetimes:
+
+| Lifetime | Head | Root goes to | File dialogs belong to |
+|---|---|---|---|
+| `IClassicDesktopStyleApplicationLifetime` | Desktop | `MainWindow`; a root that is not a `Window` throws | the main window |
+| `IActivityApplicationLifetime` | Android | `MainViewFactory`, called per activity; every view shares one shell | `TopLevel.GetTopLevel(view)` |
+| `ISingleViewApplicationLifetime` | iOS | `MainView` | `TopLevel.GetTopLevel(MainView)` |
+
+Without a lifetime (headless tests) `App` creates nothing. View-models get services
 through constructors and never reach for a static, so tests build them over a temporary library.
 
 **A4 — Data folder and platform seams.** `AppFolders` resolves the data folder per OS in plain .NET (no seam
 needed); `RSSMOTE_DATA_DIR` overrides it. The library is `rssmote.sqlite`, preferences `settings.json`, side by
 side. `ILauncher` (open a URL in the browser, honouring "open in background" where the OS allows) is the
-remaining seam; Desktop supplies `ProcessLauncher` through its `IShellHost` (A3).
+remaining seam; each head supplies one through its `IShellHost` (A3): Desktop `ProcessLauncher`, the phone heads
+`TopLevelLauncher`, which hands the link to the top level's `Launcher` and ignores "open in background".
 
 | OS | Data folder |
 |---|---|
@@ -146,10 +157,11 @@ then. The UI says "Add Feed", "Save", "Remove Feed", never "subscribe".
 **A15 — Mobile heads.** `RSSmote.Android` (`net10.0-android`, API 24+) and `RSSmote.iOS` (`net10.0-ios`, iOS 15+)
 are thin heads over `RSSmote.Mobile`, the same way `RSSmote.Desktop` is over `App`. Both share the id
 `com.ahrentlov.rssmote`. Avalonia builds the app itself on mobile: `AndroidApp` (`AvaloniaAndroidApplication<App>`)
-and `AppDelegate` (`AvaloniaAppDelegate<App>`) add `WithInterFont()` in `CustomizeAppBuilder`; an `IShellHost` goes
-in through `CreateAppBuilder` (`AppBuilder.Configure(() => new App { Host = … })`). Android starts `App` under
-`IActivityApplicationLifetime`, iOS under `ISingleViewApplicationLifetime`; `App` does not handle either yet, so
-the heads start to an empty view. The heads need the `android` and `ios` workloads and live only in
+and `AppDelegate` (`AvaloniaAppDelegate<App>`) start `App` with `Host = new MobileShellHost()` from
+`CreateAppBuilder` (`AppBuilder.Configure(() => new App { Host = … }).UseAndroid()` / `.UseiOS(this)`) and add
+`WithInterFont()` in `CustomizeAppBuilder`. Android starts `App` under `IActivityApplicationLifetime`, iOS under
+`ISingleViewApplicationLifetime` (A3). `RSSmote.Mobile/Spike/` (the platform check) is no longer started by
+either head. The heads need the `android` and `ios` workloads and live only in
 `RSSmote.Mobile.slnx`; `RSSmote.slnx` builds `RSSmote.Mobile` but not the heads, so the desktop build needs no
 mobile tooling. Building a head:
 
@@ -160,3 +172,10 @@ dotnet build src/RSSmote.iOS/RSSmote.iOS.csproj -r iossimulator-arm64
 
 Android needs the API 36 platform and JDK 17 or later, and a Debug build reaches an emulator through `-t:Install`
 (P12); iOS needs the Xcode version the `ios` workload names.
+
+**A16 — Phone shell.** `MobileShellHost` creates `MobileShell`, a `NavigationPage` that is the whole stack (D23).
+Its root page, `RootPage` (a `ContentPage` with no navigation bar), holds the tab bar in `BottomCommandBar` and shows
+`FeedsView` or `SettingsView` as its content; `RootPage.Show(RootTab)` switches them, and both views are created once.
+The bar belongs to the root page, so a pushed page has none. `MobileShell` carries `Bg.Sidebar` as its background
+because the page does not reach under the safe-area insets (P14). Screens push onto `MobileShell`; nothing else holds
+navigation state.

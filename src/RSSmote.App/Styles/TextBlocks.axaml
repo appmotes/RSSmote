@@ -54,4 +54,26 @@
         <Setter Property="FontSize" Value="{StaticResource TextTheme.Body.Size}" />
         <Setter Property="Foreground" Value="{DynamicResource Brush.Ink.Primary}" />
     </Style>
+
+    <!-- Phone roles (D28) -->
+    <Style Selector="TextBlock.phoneLargeTitle">
+        <Setter Property="FontSize" Value="{StaticResource TextTheme.Phone.LargeTitle.Size}" />
+        <Setter Property="FontWeight" Value="{StaticResource TextTheme.Phone.LargeTitle.Weight}" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Ink.Primary}" />
+        <Setter Property="TextTrimming" Value="CharacterEllipsis" />
+    </Style>
+    <Style Selector="TextBlock.phonePageTitle">
+        <Setter Property="FontSize" Value="{StaticResource TextTheme.Phone.PageTitle.Size}" />
+        <Setter Property="FontWeight" Value="{StaticResource TextTheme.Phone.PageTitle.Weight}" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Ink.Primary}" />
+        <Setter Property="TextTrimming" Value="CharacterEllipsis" />
+    </Style>
+    <Style Selector="TextBlock.phoneRow">
+        <Setter Property="FontSize" Value="{StaticResource TextTheme.Phone.Row.Size}" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Ink.Primary}" />
+    </Style>
+    <Style Selector="TextBlock.phoneSecondary">
+        <Setter Property="FontSize" Value="{StaticResource TextTheme.Phone.Secondary.Size}" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Ink.Secondary}" />
+    </Style>
 </Styles>

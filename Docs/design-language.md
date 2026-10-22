@@ -322,5 +322,20 @@ chevron; pages have a back button and a centred title, no large title.
 
 **D28 — Touch metrics.** Rows are at least 44 pt (56 with a subtitle, 60 for radio rows with one); icon buttons
 are 44 pt targets around 22 pt icons; bars are 44 pt at the top and 49 pt plus the home-indicator inset at the
-bottom. Type: large titles 34 Bold, page titles 17 SemiBold, row text 16, secondary text 13–15. These are values for
-the phone views, not tokens yet; they become keys in `Assets/AppResources.axaml` when the views are built.
+bottom. Type: large titles 34 Bold, page titles 17 SemiBold, row text 16, secondary text 13–15. Cards keep 16 pt
+from the screen edges and reuse `CornerRadius.Card`. The keys in `Assets/AppResources.axaml`:
+
+| Key | Value | Notes |
+|---|---|---|
+| `Size.Phone.Row` / `.RowSubtitle` | 44 / 56 | |
+| `Size.Phone.Target` / `.Icon` | 44 / 22 | Tab bar icons are 22 too |
+| `Size.Phone.TopBar` / `.BottomBar` | 44 / 49 | The bottom bar without the home-indicator inset |
+| `Size.Phone.Thumb` | 64 | Article list thumbnail (D25) |
+| `Thickness.Phone.CardMargin` | 16,0 | |
+| `TextTheme.Phone.LargeTitle` | 34 Bold | Class `phoneLargeTitle` |
+| `TextTheme.Phone.PageTitle` | 17 SemiBold | Class `phonePageTitle` |
+| `TextTheme.Phone.Row` | 16 Regular | Class `phoneRow` |
+| `TextTheme.Phone.Secondary` | 15 Regular, `Ink.Secondary` | Class `phoneSecondary`; 13 and 14 have no key yet |
+
+The tab bar (`Button.tab`) is `Bg.Sidebar` under a hairline, two 22 pt icons over 11 pt labels
+(`TextTheme.Count.Size`): Medium in `Ink.Secondary`, the selected one SemiBold in `Accent`.

@@ -1,0 +1,29 @@
+<ContentPage xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:c="urn:RSSmote.App.Controls"
+             x:Class="RSSmote.Mobile.Shell.RootPage"
+             Background="{DynamicResource Brush.Bg.Sidebar}"
+             NavigationPage.HasNavigationBar="False">
+    <!-- The tab bar belongs to this page, so a pushed page has none (D23). -->
+    <ContentPage.BottomCommandBar>
+        <Border Height="{StaticResource Size.Phone.BottomBar}"
+                Background="{DynamicResource Brush.Bg.Sidebar}"
+                BorderBrush="{DynamicResource Brush.Line.Separator}"
+                BorderThickness="0,1,0,0">
+            <UniformGrid Columns="2" Rows="1" Margin="60,0">
+                <Button x:Name="FeedsTab" Classes="tab" Click="OnFeedsClick">
+                    <StackPanel>
+                        <c:Icon Data="{StaticResource Icon.Rss}" Size="{StaticResource Size.Phone.Icon}" />
+                        <TextBlock Text="Feeds" />
+                    </StackPanel>
+                </Button>
+                <Button x:Name="SettingsTab" Classes="tab" Click="OnSettingsClick">
+                    <StackPanel>
+                        <c:Icon Data="{StaticResource Icon.Settings}" Size="{StaticResource Size.Phone.Icon}" />
+                        <TextBlock Text="Settings" />
+                    </StackPanel>
+                </Button>
+            </UniformGrid>
+        </Border>
+    </ContentPage.BottomCommandBar>
+</ContentPage>
