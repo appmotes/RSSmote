@@ -189,4 +189,13 @@ rebuilt. The article list is built only while its page is in the stack: the host
 `ShellViewModel` to start on the Feeds root without a list, `List.Show` builds it when a stream is picked, and
 `List.Hide` on the way back to the root stops store changes from rebuilding rows nobody sees. The list page puts its
 large title and the `ListBox` in one `ScrollViewer`, so the title scrolls away with the rows (D25) and the list still
-realises only the rows in view.
+realises only the rows in view. A rebuild keeps the top row where it was (P25).
+
+The Settings tab shows `SettingsView` (D27); its rows push pages from `RSSmote.Mobile/Pages`, which derive from
+`PhonePage` (back title, centred title, bar button). Preferences live in `SettingsViewModel` (App), which the desktop
+menus bind as `Settings.*`; Manage Feeds has its own `ManageFeedsViewModel`, which follows the store while its page
+lives and is disposed when the page leaves. The phone reuses the desktop's panel view-models (A6) through
+`ShellViewModel.Create*` and `Confirm*` instead of `ShellViewModel.Panel`: `MobileShell.PushPanelAsync` pushes a page
+for a panel, the panel closing (Save, Add Feed) pops it and a page that goes any other way disposes its panel;
+`MobileShell.ConfirmAsync` shows a `ConfirmViewModel` as a modal bottom sheet (D29) and runs what follows a
+confirmation only after the sheet is gone (P24). The system back closes a sheet before it pops a page.

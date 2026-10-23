@@ -1,0 +1,62 @@
+<p:PhonePage xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:c="urn:RSSmote.App.Controls"
+             xmlns:vm="using:RSSmote.App.ViewModels"
+             xmlns:p="using:RSSmote.Mobile.Pages"
+             x:Class="RSSmote.Mobile.Pages.AppearancePage"
+             x:DataType="vm:SettingsViewModel"
+             Title="Appearance" BackTitle="Settings">
+    <!-- Appearance (M9, D27): the mode, a palette per slot with its swatch, the favicon switches. Picking a palette
+         follows D22. -->
+    <p:PhonePage.Resources>
+        <DataTemplate x:Key="Choice" x:DataType="vm:ChoiceViewModel">
+            <Border Classes="phoneRowLine">
+                <Button Classes="phoneRow" Command="{Binding Command}" CommandParameter="{Binding Key}">
+                    <DockPanel>
+                        <ThemeVariantScope DockPanel.Dock="Left" Margin="0,0,12,0" RequestedThemeVariant="{Binding Variant}"
+                                           IsVisible="{Binding Variant, Converter={x:Static ObjectConverters.IsNotNull}}">
+                            <Border Classes="phoneSwatch">
+                                <Border />
+                            </Border>
+                        </ThemeVariantScope>
+                        <c:Icon DockPanel.Dock="Right" Classes="check" IsVisible="{Binding IsChecked}" />
+                        <TextBlock Text="{Binding Header}" VerticalAlignment="Center" />
+                    </DockPanel>
+                </Button>
+            </Border>
+        </DataTemplate>
+    </p:PhonePage.Resources>
+    <ScrollViewer>
+        <StackPanel Margin="0,0,0,24">
+            <TextBlock Classes="phoneGroup" Text="Mode" />
+            <Border Classes="phoneCard">
+                <ItemsControl Classes="phoneRows" ItemsSource="{Binding Appearances}" ItemTemplate="{StaticResource Choice}" />
+            </Border>
+            <TextBlock Classes="phoneGroup" Text="Light theme" />
+            <Border Classes="phoneCard">
+                <ItemsControl Classes="phoneRows" ItemsSource="{Binding LightThemes}" ItemTemplate="{StaticResource Choice}" />
+            </Border>
+            <TextBlock Classes="phoneGroup" Text="Dark theme" />
+            <Border Classes="phoneCard">
+                <ItemsControl Classes="phoneRows" ItemsSource="{Binding DarkThemes}" ItemTemplate="{StaticResource Choice}" />
+            </Border>
+            <TextBlock Classes="phoneGroup" Text="Favicons" />
+            <Border Classes="phoneCard">
+                <StackPanel>
+                    <Border Classes="phoneRowLine">
+                        <Grid Classes="phoneSwitchRow" ColumnDefinitions="*,Auto">
+                            <TextBlock Classes="phoneRow" Text="Show favicons" VerticalAlignment="Center" />
+                            <ToggleSwitch Grid.Column="1" Classes="phone" IsChecked="{Binding DisplayFavicons}" />
+                        </Grid>
+                    </Border>
+                    <Border Classes="phoneRowLine last">
+                        <Grid Classes="phoneSwitchRow" ColumnDefinitions="*,Auto">
+                            <TextBlock Classes="phoneRow" Text="Grey favicons" VerticalAlignment="Center" />
+                            <ToggleSwitch Grid.Column="1" Classes="phone" IsChecked="{Binding GrayscaleFavicons}" />
+                        </Grid>
+                    </Border>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
+</p:PhonePage>

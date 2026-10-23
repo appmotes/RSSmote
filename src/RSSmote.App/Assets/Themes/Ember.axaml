@@ -24,6 +24,7 @@
     <Color x:Key="Color.Scrim">#8C0A0807</Color> <!-- Behind every overlay panel -->
     <Color x:Key="Color.Ink.OnAccent">#FF2A1A05</Color> <!-- Text and icons on an accent fill -->
     <Color x:Key="Color.Ink.Danger">#FFFF8A80</Color> <!-- Remove Feed, Delete Folder -->
+    <Color x:Key="Color.Bg.Knob">#FFFFFFFF</Color> <!-- Switch knob, on the accent and off -->
 
     <SolidColorBrush x:Key="Brush.Bg.Sidebar" Color="{StaticResource Color.Bg.Sidebar}" />
     <SolidColorBrush x:Key="Brush.Bg.List" Color="{StaticResource Color.Bg.List}" />
@@ -46,6 +47,7 @@
     <SolidColorBrush x:Key="Brush.Scrim" Color="{StaticResource Color.Scrim}" />
     <SolidColorBrush x:Key="Brush.Ink.OnAccent" Color="{StaticResource Color.Ink.OnAccent}" />
     <SolidColorBrush x:Key="Brush.Ink.Danger" Color="{StaticResource Color.Ink.Danger}" />
+    <SolidColorBrush x:Key="Brush.Bg.Knob" Color="{StaticResource Color.Bg.Knob}" />
 
     <!-- Elevation: shadows in the light and dark palettes, a hairline ring in Black (D20) -->
     <BoxShadows x:Key="BoxShadows.Card">0 1 2 0 #80000000, 0 10 28 -12 #80000000</BoxShadows> <!-- Article list and article cards -->

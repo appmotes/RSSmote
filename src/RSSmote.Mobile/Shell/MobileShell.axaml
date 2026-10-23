@@ -12,15 +12,32 @@
         <Style Selector="NavigationPage /template/ Path#PART_BackButtonDefaultIcon">
             <Setter Property="IsVisible" Value="False" />
         </Style>
-        <Style Selector="NavigationPage /template/ Button#PART_BackButton">
+        <!-- A style trigger, so the accent beats the template's foreground (P22). -->
+        <Style Selector="NavigationPage /template/ Button#PART_BackButton:not(:disabled)">
             <Setter Property="Foreground" Value="{DynamicResource Brush.Accent}" />
             <Setter Property="Padding" Value="0,0,8,0" />
         </Style>
-        <Style Selector="NavigationPage /template/ ContentPresenter#PART_Header">
+        <!-- The title is centred on the whole bar, behind back and the bar's buttons: the bar's grid starts 12 in and
+             the template's right margin of 12 evens it out. The template sets the header's column, which outranks a
+             plain style; the pseudo-class makes this a style trigger, which outranks the template (P22). -->
+        <Style Selector="NavigationPage /template/ ContentPresenter#PART_Header:not(:disabled)">
             <Setter Property="Foreground" Value="{DynamicResource Brush.Ink.Secondary}" />
             <Setter Property="FontSize" Value="15" />
             <Setter Property="HorizontalContentAlignment" Value="Center" />
-            <Setter Property="Margin" Value="0,0,56,0" />
+            <Setter Property="Grid.Column" Value="0" />
+            <Setter Property="Grid.ColumnSpan" Value="3" />
+            <Setter Property="ZIndex" Value="-1" />
+            <Setter Property="IsHitTestVisible" Value="False" />
+        </Style>
+        <Style Selector="NavigationPage /template/ ContentPresenter#PART_Header TextBlock">
+            <Setter Property="TextAlignment" Value="Center" />
+        </Style>
+        <!-- A sheet shows the page under its scrim (D29); the template fills the modal layer with the shell's background. -->
+        <Style Selector="NavigationPage /template/ ContentPresenter#PART_ModalPresenter:not(:disabled)">
+            <Setter Property="Background" Value="Transparent" />
+        </Style>
+        <Style Selector="NavigationPage /template/ ContentPresenter#PART_TopCommandBar">
+            <Setter Property="Margin" Value="0,0,8,0" />
         </Style>
     </NavigationPage.Styles>
 </NavigationPage>

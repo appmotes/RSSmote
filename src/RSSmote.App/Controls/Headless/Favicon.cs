@@ -110,13 +110,17 @@ public sealed class Favicon : Control
         context.DrawText(text, new Point(rect.X + (Size - text.Width) / 2, rect.Y + (Size - text.Height) / 2));
     }
 
-    /// <summary>Luminance copy of a BGRA bitmap, cached per source. Other pixel formats are returned unchanged.</summary>
+    /// <summary>
+    /// Luminance copy of a BGRA or RGBA bitmap (the phones decode to RGBA), cached per source. Other pixel formats are
+    /// returned unchanged.
+    /// </summary>
     internal static Bitmap Grayscale(Bitmap source)
     {
         if (GrayscaleCache.TryGetValue(source, out var cached))
             return cached;
-        if (source.Format is not { } format || format != PixelFormat.Bgra8888)
+        if (source.Format is not { } format || (format != PixelFormat.Bgra8888 && format != PixelFormat.Rgba8888))
             return source;
+        var (red, blue) = format == PixelFormat.Bgra8888 ? (2, 0) : (0, 2);
 
         var size = source.PixelSize;
         var stride = size.Width * 4;
@@ -133,11 +137,11 @@ public sealed class Favicon : Control
 
         for (var i = 0; i < pixels.Length; i += 4)
         {
-            var y = (byte)(0.114 * pixels[i] + 0.587 * pixels[i + 1] + 0.299 * pixels[i + 2]);
+            var y = (byte)(0.114 * pixels[i + blue] + 0.587 * pixels[i + 1] + 0.299 * pixels[i + red]);
             pixels[i] = pixels[i + 1] = pixels[i + 2] = y;
         }
 
-        var result = new WriteableBitmap(size, source.Dpi, PixelFormat.Bgra8888, source.AlphaFormat ?? AlphaFormat.Premul);
+        var result = new WriteableBitmap(size, source.Dpi, format, source.AlphaFormat ?? AlphaFormat.Premul);
         using (var buffer = result.Lock())
         {
             for (var row = 0; row < size.Height; row++)

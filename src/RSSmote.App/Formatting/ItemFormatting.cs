@@ -61,6 +61,9 @@ public static class ItemFormatting
 
     public static string ArticleCountText(int count) => count == 1 ? "1 article" : $"{count} articles";
 
+    /// <summary>"Open nightsky.example", or "Open Website" when the feed names no site.</summary>
+    public static string OpenSiteTitle(Feed? feed) => feed?.Host is { } host ? "Open " + host : "Open Website";
+
     public static string FeedCountText(int count) => count == 1 ? "1 feed" : $"{count} feeds";
 
     public static string FilterTitle(StreamFilter filter) => filter switch

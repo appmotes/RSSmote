@@ -52,6 +52,7 @@ inherits from one of them.
 | `Scrim` | `#2A1F10` @ 28 % | `#0A0807` @ 55 % | `#000000` @ 60 % | Behind every overlay panel |
 | `Ink.OnAccent` | `#FFFFFF` | `#2A1A05` | = Ember | Text and icons on an accent fill (D21) |
 | `Ink.Danger` | `#B3261E` | `#FF8A80` | = Ember | Remove Feed, Delete Folder (D21) |
+| `Bg.Knob` | `#FFFFFF` | `#FFFFFF` | = Ember | A phone switch's knob, on the accent and off (D27); white in every palette |
 | `BoxShadows.Card` | soft, 2 layers | soft, 2 layers | 1 px ring | List and article cards (D20) |
 | `BoxShadows.Raised` | soft + hairline | soft + hairline | 1 px ring | Selected sidebar row, active filter segment |
 | `BoxShadows.Panel` | deep + hairline | deep + hairline | 1 px ring | Overlay panels |
@@ -183,12 +184,20 @@ Licence notice in `Assets/Icons/LICENSE-lucide.txt`.
 | Menu (Win/Linux) | `Icon.Menu` | ellipsis |
 | Open website | `Icon.Globe`, `Icon.ExternalLink` | globe, external-link |
 | Checked row | `Icon.Check` | check |
+| Import, Export (phone) | `Icon.Download`, `Icon.Upload` | download, upload |
+| Appearance (phone) | `Icon.Palette` | palette |
+| Read when opened (phone) | `Icon.Eye` | eye |
+| Newest first (phone) | `Icon.SortDown` | arrow-down-wide-narrow |
+| Group by date (phone) | `Icon.Calendar` | calendar |
+| Refresh interval, Keep read (phone) | `Icon.Clock`, `Icon.Archive` | clock, archive |
+| Picker (phone) | `Icon.ChevronsUpDown` | chevrons-up-down |
 
 **D13 — Other assets.**
 - App icon: the Sand accent as a rounded square with a white Lucide star; master SVG in
   `Assets/AppIcon/AppIcon.svg`. The `.icns`, `.ico` and Linux PNGs are exported from it when packaging (N5).
 - Empty states use Lucide icons and type, not an illustration (D9).
-- Favicons: fetched at runtime, shown greyscale when "Grayscale Favicons" is on; a letter tile when missing.
+- Favicons: fetched at runtime, shown greyscale when "Grayscale Favicons" is on (BGRA on desktop, RGBA on the
+  phones); a letter tile when missing.
 - Font: Inter via `Avalonia.Fonts.Inter` on every OS, so the measured metrics hold everywhere.
 
 **D14 — Article typography is CSS.** The HTML template sets the date at 12.5 px with tabular figures, the title at
@@ -318,6 +327,10 @@ chevron; pages have a back button and a centred title, no large title.
   (as D9), Open site, Reload Icon, and Remove Feed… in `Ink.Danger` with the line that it deletes the feed and its
   articles for good (A14).
 - Add Feed: the address field, the feeds found as radio rows, folder chips and one primary button. No OPML here.
+- Edit Folder (no mockup) follows Edit Feed: the name, the folder's feeds (each opens Edit Feed), and Delete Folder…
+  in `Ink.Danger` with the line that its feeds stay. New Folder is the name alone; Save sits in the bar on all three.
+- The two Refresh pickers open a menu of radio items over the row (`MenuFlyout`, rows at 44 pt on `Bg.Panel`), as
+  M5's up-down chevron says; every other row that opens something pushes a page.
 - Import Feeds shows what a file will add before anything is saved: the file, its folders with their feed counts,
   how many feeds already exist and are skipped, then "Import N Feeds". Export Feeds shows what the file holds and hands
   it to the system's save or share sheet.
@@ -341,3 +354,9 @@ from the screen edges and reuse `CornerRadius.Card`. The keys in `Assets/AppReso
 
 The tab bar (`Button.tab`) is `Bg.Sidebar` under a hairline, two 22 pt icons over 11 pt labels
 (`TextTheme.Count.Size`): Medium in `Ink.Secondary`, the selected one SemiBold in `Accent`.
+
+**D29 — The phone asks in a bottom sheet.** Remove Feed… and Delete Folder… open a sheet from the bottom over the
+`Scrim`: the question as a page title, the line of what happens, the action in `Ink.Danger`, then Cancel, both as
+44 pt rows on `Bg.Pill` (the pair D21 holds at 4.5:1); a tap on the scrim or the system back cancels. A sheet rather
+than a centred dialog because it sits under the thumb and leaves the page it asks about in view. It reuses
+`ConfirmViewModel`, which the desktop shows as a panel (A6).

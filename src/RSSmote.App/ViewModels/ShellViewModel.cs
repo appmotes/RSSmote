@@ -2,7 +2,6 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using RSSmote.App.Formatting;
 using RSSmote.App.Services;
-using RSSmote.App.Theming;
 using RSSmote.Core.Discovery;
 using RSSmote.Core.Opml;
 using RSSmote.Core.Rendering;
@@ -27,6 +26,7 @@ public sealed partial class ShellViewModel : ObservableObject, IDisposable
     private readonly FeedFinder _finder;
     private readonly IFilePicker _files;
     private readonly IUiDispatcher _ui;
+    private readonly IImageLoader _images;
     private readonly TimeProvider _clock;
     private readonly Debouncer _reload;
     private readonly Debouncer _recount;
@@ -43,6 +43,7 @@ public sealed partial class ShellViewModel : ObservableObject, IDisposable
         _finder = finder;
         _files = files;
         _ui = ui;
+        _images = images;
         _clock = clock;
         _lastSettings = settings.Current;
 
@@ -50,15 +51,7 @@ public sealed partial class ShellViewModel : ObservableObject, IDisposable
         List = new ArticleListViewModel(store, settings, images, ui, clock, id => store.Feed(id));
         Article = new ArticleViewModel();
         Article.ApplySettings(settings.Current);
-        Appearances =
-        [
-            new("Automatic", AppTheme.Automatic, SetThemeCommand),
-            new("Light", AppTheme.Light, SetThemeCommand),
-            new("Dark", AppTheme.Dark, SetThemeCommand),
-        ];
-        LightThemes = [.. ThemeCatalogue.Light.Select(t => new ThemeChoiceViewModel(t.Name, t.Id, SetLightThemeCommand))];
-        DarkThemes = [.. ThemeCatalogue.Dark.Select(t => new ThemeChoiceViewModel(t.Name, t.Id, SetDarkThemeCommand))];
-        UpdateThemeChoices(settings.Current);
+        Settings = new SettingsViewModel(settings);
         _reload = new Debouncer(clock, ReloadDelay, ui, ReloadAll);
         _recount = new Debouncer(clock, ReloadDelay, ui, Sidebar.Reload);
 
@@ -80,6 +73,7 @@ public sealed partial class ShellViewModel : ObservableObject, IDisposable
     public SidebarViewModel Sidebar { get; }
     public ArticleListViewModel List { get; }
     public ArticleViewModel Article { get; }
+    public SettingsViewModel Settings { get; }
 
     /// <summary>The open overlay panel (Add Feed, Edit Feed, Edit Folder, a confirmation), or null.</summary>
     [ObservableProperty]
@@ -91,15 +85,6 @@ public sealed partial class ShellViewModel : ObservableObject, IDisposable
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(RefreshCommand))]
     public partial bool IsRefreshing { get; set; }
-
-    /// <summary>Automatic, Light, Dark: which theme slot shows (D22).</summary>
-    public IReadOnlyList<ThemeChoiceViewModel> Appearances { get; }
-
-    /// <summary>Palettes for the light slot.</summary>
-    public IReadOnlyList<ThemeChoiceViewModel> LightThemes { get; }
-
-    /// <summary>Palettes for the dark slot.</summary>
-    public IReadOnlyList<ThemeChoiceViewModel> DarkThemes { get; }
 
     /// <summary>Runs a pending debounced reload now; for tests.</summary>
     public void FlushPendingReload()
@@ -180,14 +165,20 @@ public sealed partial class ShellViewModel : ObservableObject, IDisposable
     {
         var previous = _lastSettings;
         _lastSettings = settings;
-        UpdateThemeChoices(settings);
+        Settings.Apply(settings);
         Article.ApplySettings(settings);
         if (previous.Filter != settings.Filter || previous.SortNewestFirst != settings.SortNewestFirst
             || previous.GroupByDate != settings.GroupByDate || previous.DisplayFavicons != settings.DisplayFavicons
             || previous.GrayscaleFavicons != settings.GrayscaleFavicons
             || !previous.ExpandedFolders.SequenceEqual(settings.ExpandedFolders)
             || !previous.CollapsedSections.SequenceEqual(settings.CollapsedSections))
-            ReloadAll();
+        {
+            Sidebar.Reload();
+            List.Title = Sidebar.Title(List.Stream);
+            // The phone's pick of Unread or Starred changes the filter and has already built the list for it.
+            List.ApplySettings(settings);
+            UpdateEmptyState();
+        }
         UpdateRefreshState();
     });
 
@@ -214,46 +205,6 @@ public sealed partial class ShellViewModel : ObservableObject, IDisposable
 
     [RelayCommand]
     private void ShowFilter(StreamFilter filter) => _settings.Update(s => s.Filter = filter);
-
-    [RelayCommand]
-    private void SetTheme(AppTheme theme) => _settings.Update(s => s.Theme = theme);
-
-    /// <summary>Picks the light slot's palette and shows it: the appearance leaves Automatic for Light (D22).</summary>
-    [RelayCommand]
-    private void SetLightTheme(string id) => _settings.Update(s =>
-    {
-        s.LightTheme = id;
-        s.Theme = AppTheme.Light;
-    });
-
-    /// <summary>Picks the dark slot's palette and shows it: the appearance leaves Automatic for Dark (D22).</summary>
-    [RelayCommand]
-    private void SetDarkTheme(string id) => _settings.Update(s =>
-    {
-        s.DarkTheme = id;
-        s.Theme = AppTheme.Dark;
-    });
-
-    private void UpdateThemeChoices(AppSettings settings)
-    {
-        var light = ThemeCatalogue.Resolve(settings.LightTheme, dark: false).Id;
-        var dark = ThemeCatalogue.Resolve(settings.DarkTheme, dark: true).Id;
-        foreach (var choice in Appearances)
-            choice.IsChecked = Equals(choice.Key, settings.Theme);
-        foreach (var choice in LightThemes)
-            choice.IsChecked = Equals(choice.Key, light);
-        foreach (var choice in DarkThemes)
-            choice.IsChecked = Equals(choice.Key, dark);
-    }
-
-    [RelayCommand]
-    private void ToggleGrayscaleFavicons() => _settings.Update(s => s.GrayscaleFavicons = !s.GrayscaleFavicons);
-
-    [RelayCommand]
-    private void SetSortNewestFirst(bool newestFirst) => _settings.Update(s => s.SortNewestFirst = newestFirst);
-
-    [RelayCommand]
-    private void SetGroupByDate(bool group) => _settings.Update(s => s.GroupByDate = group);
 
     [RelayCommand]
     private void NextArticle()
@@ -310,10 +261,42 @@ public sealed partial class ShellViewModel : ObservableObject, IDisposable
     {
         if (Panel is AddFeedViewModel)
             return;
-        var panel = new AddFeedViewModel(_store, (input, ct) => _finder.FindAllAsync(input, ct), SaveFeed, ImportOpmlAsync);
+        var panel = CreateAddFeed();
         panel.Saved += (_, e) => ShowNewFeed(e.Feed, e.FolderId);
         ShowPanel(panel);
     }
+
+    // The desktop shows these as overlay panels (A6); the phone pushes a page for each (A16).
+
+    public AddFeedViewModel CreateAddFeed() =>
+        new(_store, (input, ct) => _finder.FindAllAsync(input, ct), SaveFeed, ImportOpmlAsync);
+
+    /// <summary>Null when the feed is gone.</summary>
+    public EditFeedViewModel? CreateEditFeed(Feed feed) =>
+        _store.Feed(feed.Id) is { } current ? new EditFeedViewModel(_store, current) : null;
+
+    /// <summary>Null when the folder is gone.</summary>
+    public EditFolderViewModel? CreateEditFolder(long folderId, Action<Feed> editFeed, Action<Folder> delete) =>
+        _store.Folders().FirstOrDefault(f => f.Id == folderId) is { } folder
+            ? new EditFolderViewModel(_store, folder, editFeed, delete)
+            : null;
+
+    public NewFolderViewModel CreateNewFolder() => new(_store);
+
+    public ManageFeedsViewModel CreateManageFeeds() => new(_store, _settings, _images, _ui);
+
+    public ConfirmViewModel ConfirmDeleteFolder(Folder folder) => new(
+        $"Delete “{folder.Title}”?",
+        "The folder is deleted. Its feeds stay and move to Feeds.",
+        "Delete Folder",
+        () => _store.DeleteFolder(folder.Id, deleteFeeds: false));
+
+    /// <summary>Deletes the feed and all its articles, starred ones too, for good (A14).</summary>
+    public ConfirmViewModel ConfirmRemoveFeed(Feed feed) => new(
+        $"Remove “{feed.Title}”?",
+        "The feed and all its articles, starred ones included, are deleted for good.",
+        "Remove Feed",
+        () => _store.DeleteFeed(feed.Id));
 
     /// <summary>Replaces any open panel with <paramref name="panel"/>.</summary>
     private void ShowPanel(PanelViewModel panel)
@@ -330,30 +313,20 @@ public sealed partial class ShellViewModel : ObservableObject, IDisposable
     [RelayCommand]
     private void EditFeed(Feed feed)
     {
-        if (_store.Feed(feed.Id) is { } current)
-            ShowPanel(new EditFeedViewModel(_store, current));
+        if (CreateEditFeed(feed) is { } panel)
+            ShowPanel(panel);
     }
 
     [RelayCommand]
     private void EditFolder(long folderId)
     {
-        if (_store.Folders().FirstOrDefault(f => f.Id == folderId) is { } folder)
-            ShowPanel(new EditFolderViewModel(_store, folder, f => EditFeed(f), ConfirmDeleteFolder));
+        if (CreateEditFolder(folderId, f => EditFeed(f), f => ShowPanel(ConfirmDeleteFolder(f))) is { } panel)
+            ShowPanel(panel);
     }
 
-    private void ConfirmDeleteFolder(Folder folder) => ShowPanel(new ConfirmViewModel(
-        $"Delete “{folder.Title}”?",
-        "The folder is deleted. Its feeds stay and move to Feeds.",
-        "Delete Folder",
-        () => _store.DeleteFolder(folder.Id, deleteFeeds: false)));
-
-    /// <summary>Asks, then deletes the feed and all its articles, starred ones too, for good (A14).</summary>
+    /// <summary>Asks, then deletes the feed and all its articles (A14).</summary>
     [RelayCommand]
-    private void RemoveFeed(Feed feed) => ShowPanel(new ConfirmViewModel(
-        $"Remove “{feed.Title}”?",
-        "The feed and all its articles, starred ones included, are deleted for good.",
-        "Remove Feed",
-        () => _store.DeleteFeed(feed.Id)));
+    private void RemoveFeed(Feed feed) => ShowPanel(ConfirmRemoveFeed(feed));
 
     [RelayCommand]
     private void OpenSite(Feed feed)

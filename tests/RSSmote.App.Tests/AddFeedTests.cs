@@ -49,6 +49,22 @@ public sealed class AddFeedTests : IDisposable
     }
 
     [Fact]
+    public async Task The_phone_page_saves_its_one_pick_without_selecting_a_stream()
+    {
+        var page = _f.Shell.CreateAddFeed();
+        page.Address = "blog.example";
+        await page.SearchCommand.ExecuteAsync(null);
+        Assert.True(page.HasResults);
+        Assert.Equal("Found 1 feed", page.FoundText);
+        Assert.Equal("1 article · blog.example/feed.xml", page.Results[0].Detail);
+
+        page.PickResultCommand.Execute(page.Results[0]);
+        page.SaveCommand.Execute(null);
+        Assert.Single(_f.Store.Feeds(), f => f.Url == FeedUrl);
+        Assert.Null(_f.Shell.Panel);
+    }
+
+    [Fact]
     public async Task A_feed_already_stored_cannot_be_picked()
     {
         _f.Store.AddFeed(FeedUrl, "Example Blog", null, null);

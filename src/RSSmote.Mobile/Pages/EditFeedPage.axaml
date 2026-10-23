@@ -1,0 +1,66 @@
+<p:PhonePage xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:c="urn:RSSmote.App.Controls"
+             xmlns:vm="using:RSSmote.App.ViewModels"
+             xmlns:p="using:RSSmote.Mobile.Pages"
+             xmlns:v="using:RSSmote.Mobile.Views"
+             x:Class="RSSmote.Mobile.Pages.EditFeedPage"
+             x:DataType="vm:EditFeedViewModel"
+             Title="Edit Feed" BackTitle="Feeds">
+    <!-- Edit Feed (M7, D27): name, the address it is fetched from, its folder, the site, the icon, and removal. -->
+    <p:PhonePage.BarButton>
+        <Button Classes="phoneBarText strong" Content="Save" Command="{Binding SaveCommand}" />
+    </p:PhonePage.BarButton>
+    <ScrollViewer>
+        <StackPanel Margin="0,0,0,24">
+            <c:Favicon x:Name="FeedIcon" Size="56" Radius="13" HorizontalAlignment="Center" Margin="0,10,0,14"
+                       Title="{Binding Title}" TileBrush="{DynamicResource Brush.Bg.FaviconTile}"
+                       LetterBrush="{DynamicResource Brush.Ink.OnTile}" />
+            <Border Classes="phoneCard">
+                <StackPanel>
+                    <Border Classes="phoneRowLine">
+                        <Grid Classes="phoneSwitchRow" ColumnDefinitions="76,*" ColumnSpacing="12">
+                            <TextBlock Classes="phoneRow phoneLabel" Text="Name" />
+                            <TextBox Grid.Column="1" Classes="phoneField" Text="{Binding Name}" />
+                        </Grid>
+                    </Border>
+                    <Border Classes="phoneRowLine last">
+                        <Grid Classes="phoneSwitchRow" ColumnDefinitions="76,*" ColumnSpacing="12">
+                            <TextBlock Classes="phoneRow phoneLabel" Text="Address" />
+                            <TextBlock Grid.Column="1" Classes="phoneRow phoneLabel" Text="{Binding Feed.Url}"
+                                       TextTrimming="CharacterEllipsis" />
+                        </Grid>
+                    </Border>
+                </StackPanel>
+            </Border>
+            <TextBlock Classes="phoneGroup" Text="Folder" Margin="28,18,28,6" />
+            <v:FolderChips DataContext="{Binding Picker}" />
+            <Border Classes="phoneCard" Margin="16,24,16,0">
+                <StackPanel>
+                    <Border Classes="phoneRowLine">
+                        <Button Classes="phoneRow" Click="OnOpenSiteClick">
+                            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
+                                <c:Icon Classes="lead" Data="{StaticResource Icon.ExternalLink}" />
+                                <TextBlock Grid.Column="1" Text="{Binding OpenSiteTitle}" VerticalAlignment="Center"
+                                           TextTrimming="CharacterEllipsis" />
+                            </Grid>
+                        </Button>
+                    </Border>
+                    <Border Classes="phoneRowLine last">
+                        <Button Classes="phoneRow" Click="OnReloadIconClick">
+                            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
+                                <c:Icon Classes="lead" Data="{StaticResource Icon.Refresh}" />
+                                <TextBlock Grid.Column="1" Text="Reload Icon" VerticalAlignment="Center" />
+                            </Grid>
+                        </Button>
+                    </Border>
+                </StackPanel>
+            </Border>
+            <Border Classes="phoneCard" Margin="16,24,16,0">
+                <Button Classes="phoneRow danger" Content="Remove Feed…" Click="OnRemoveClick" />
+            </Border>
+            <TextBlock Classes="phoneFootnote"
+                       Text="The feed and all its articles, starred ones included, are deleted for good." />
+        </StackPanel>
+    </ScrollViewer>
+</p:PhonePage>

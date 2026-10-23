@@ -1,0 +1,29 @@
+<ContentPage xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:RSSmote.App.ViewModels"
+             xmlns:v="using:RSSmote.Mobile.Views"
+             x:Class="RSSmote.Mobile.Pages.ConfirmSheet"
+             x:DataType="vm:ConfirmViewModel"
+             AutomaticallyApplySafeAreaPadding="False"
+             Background="{DynamicResource Brush.Scrim}"
+             NavigationPage.HasNavigationBar="False">
+    <!-- Asks before Remove Feed or Delete Folder (D29): a sheet over a scrim; a tap on the scrim cancels. -->
+    <Panel>
+        <Button Classes="phoneScrim" Command="{Binding CloseCommand}" />
+        <Border Classes="phoneSheet"
+                Padding="{Binding $parent[ContentPage].SafeAreaPadding, Converter={x:Static v:PhoneConverters.BottomInset}}">
+            <StackPanel Margin="16,22,16,12">
+                <TextBlock Classes="phonePageTitle" Text="{Binding Title}" HorizontalAlignment="Center"
+                           TextAlignment="Center" TextWrapping="Wrap" />
+                <TextBlock Classes="phoneFootnote" Text="{Binding Message}" TextAlignment="Center" Margin="12,6,12,20" />
+                <Border Classes="phoneCard" Margin="0" Background="{DynamicResource Brush.Bg.Pill}">
+                    <Button x:Name="Action" Classes="phoneRow danger" Content="{Binding ActionTitle}" Command="{Binding ConfirmCommand}" />
+                </Border>
+                <Border Classes="phoneCard" Margin="0,8,0,0" Background="{DynamicResource Brush.Bg.Pill}">
+                    <Button Classes="phoneRow" HorizontalContentAlignment="Center" FontWeight="SemiBold"
+                            Content="Cancel" Command="{Binding CloseCommand}" />
+                </Border>
+            </StackPanel>
+        </Border>
+    </Panel>
+</ContentPage>

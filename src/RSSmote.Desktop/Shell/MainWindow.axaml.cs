@@ -27,15 +27,15 @@ public partial class MainWindow : Window
     {
         DataContext = shell;
         var items = AllItems(NativeMenu.GetMenu(this)).ToList();
-        Fill(items, "Appearance", shell.Appearances);
-        Fill(items, "Light Theme", shell.LightThemes);
-        Fill(items, "Dark Theme", shell.DarkThemes);
+        Fill(items, "Appearance", shell.Settings.Appearances);
+        Fill(items, "Light Theme", shell.Settings.LightThemes);
+        Fill(items, "Dark Theme", shell.Settings.DarkThemes);
     }
 
     private static IEnumerable<NativeMenuItem> AllItems(NativeMenu? menu) =>
         menu?.Items.OfType<NativeMenuItem>().SelectMany(i => AllItems(i.Menu).Prepend(i)) ?? [];
 
-    private static void Fill(List<NativeMenuItem> items, string header, IReadOnlyList<ThemeChoiceViewModel> choices)
+    private static void Fill(List<NativeMenuItem> items, string header, IReadOnlyList<ChoiceViewModel> choices)
     {
         if (items.FirstOrDefault(i => i.Header == header)?.Menu is { } menu)
             foreach (var item in ChoiceItems(choices))
@@ -43,7 +43,7 @@ public partial class MainWindow : Window
     }
 
     /// <summary>Radio items for the macOS menu bar; a native menu has no ItemsSource, so they follow the choices here.</summary>
-    private static IEnumerable<NativeMenuItem> ChoiceItems(IReadOnlyList<ThemeChoiceViewModel> choices)
+    private static IEnumerable<NativeMenuItem> ChoiceItems(IReadOnlyList<ChoiceViewModel> choices)
     {
         foreach (var choice in choices)
         {
@@ -54,7 +54,7 @@ public partial class MainWindow : Window
             };
             choice.PropertyChanged += (_, e) =>
             {
-                if (e.PropertyName == nameof(ThemeChoiceViewModel.IsChecked))
+                if (e.PropertyName == nameof(ChoiceViewModel.IsChecked))
                     item.IsChecked = choice.IsChecked;
             };
             yield return item;

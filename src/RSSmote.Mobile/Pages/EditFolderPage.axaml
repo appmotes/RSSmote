@@ -1,0 +1,44 @@
+<p:PhonePage xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:c="urn:RSSmote.App.Controls"
+             xmlns:vm="using:RSSmote.App.ViewModels"
+             xmlns:p="using:RSSmote.Mobile.Pages"
+             x:Class="RSSmote.Mobile.Pages.EditFolderPage"
+             x:DataType="vm:EditFolderViewModel"
+             Title="Edit Folder" BackTitle="Feeds">
+    <!-- Edit Folder (D27): its name, its feeds (each opens Edit Feed), and Delete Folder…, which keeps the feeds. -->
+    <p:PhonePage.BarButton>
+        <Button Classes="phoneBarText strong" Content="Save" Command="{Binding SaveCommand}" />
+    </p:PhonePage.BarButton>
+    <ScrollViewer>
+        <StackPanel Margin="0,0,0,24">
+            <Border Classes="phoneCard" Margin="16,10,16,0">
+                <Grid Classes="phoneSwitchRow" ColumnDefinitions="76,*" ColumnSpacing="12">
+                    <TextBlock Classes="phoneRow phoneLabel" Text="Name" />
+                    <TextBox Grid.Column="1" Classes="phoneField" Text="{Binding Name}" />
+                </Grid>
+            </Border>
+            <TextBlock Classes="phoneGroup" Text="{Binding Subtitle}" Margin="28,18,28,6" IsVisible="{Binding HasFeeds}" />
+            <Border Classes="phoneCard" IsVisible="{Binding HasFeeds}">
+                <ItemsControl Classes="phoneRows" ItemsSource="{Binding Feeds}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="vm:FolderFeedRow">
+                            <Border Classes="phoneRowLine">
+                                <Button Classes="phoneRow" Click="OnFeedClick" Tag="{Binding}">
+                                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+                                        <TextBlock Text="{Binding Title}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
+                                        <c:Icon Grid.Column="1" Classes="chevron" />
+                                    </Grid>
+                                </Button>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </Border>
+            <Border Classes="phoneCard" Margin="16,24,16,0">
+                <Button Classes="phoneRow danger" Content="Delete Folder…" Command="{Binding DeleteCommand}" />
+            </Border>
+            <TextBlock Classes="phoneFootnote" Text="Its feeds stay and move out of the folder." />
+        </StackPanel>
+    </ScrollViewer>
+</p:PhonePage>

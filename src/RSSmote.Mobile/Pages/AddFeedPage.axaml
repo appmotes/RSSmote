@@ -1,0 +1,52 @@
+<p:PhonePage xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:c="urn:RSSmote.App.Controls"
+             xmlns:vm="using:RSSmote.App.ViewModels"
+             xmlns:p="using:RSSmote.Mobile.Pages"
+             xmlns:v="using:RSSmote.Mobile.Views"
+             x:Class="RSSmote.Mobile.Pages.AddFeedPage"
+             x:DataType="vm:AddFeedViewModel"
+             Title="Add Feed" BackTitle="Settings">
+    <!-- Add Feed (M8, D27): an address, the feeds found there as radio rows, a folder, one primary button. No OPML. -->
+    <ScrollViewer>
+        <StackPanel Margin="0,0,0,24">
+            <Border Classes="phoneAddress">
+                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
+                    <c:Icon Data="{StaticResource Icon.Search}" Size="20" Foreground="{DynamicResource Brush.Ink.Secondary}"
+                            VerticalAlignment="Center" />
+                    <TextBox x:Name="Address" Grid.Column="1" Classes="phoneField" Text="{Binding Address}"
+                             PlaceholderText="Feed or website address" />
+                </Grid>
+            </Border>
+            <TextBlock x:Name="Hint" Classes="phoneFootnote" Classes.error="{Binding HasError}" />
+
+            <StackPanel IsVisible="{Binding HasResults}">
+                <TextBlock Classes="phoneGroup" Text="{Binding FoundText}" Margin="28,18,28,6" />
+                <Border Classes="phoneCard">
+                    <ItemsControl Classes="phoneRows" ItemsSource="{Binding Results}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate x:DataType="vm:FoundFeedRowViewModel">
+                                <Border Classes="phoneRowLine">
+                                    <Button Classes="phoneRow radio" IsEnabled="{Binding !IsSaved}"
+                                            Command="{Binding $parent[p:PhonePage].((vm:AddFeedViewModel)DataContext).PickResultCommand}"
+                                            CommandParameter="{Binding}">
+                                        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
+                                            <Border Classes="phoneRadio" Classes.on="{Binding IsOn}" />
+                                            <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                                <TextBlock Text="{Binding Title}" TextTrimming="CharacterEllipsis" />
+                                                <TextBlock Classes="phoneSubtitle" Text="{Binding Detail}" />
+                                            </StackPanel>
+                                        </Grid>
+                                    </Button>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </Border>
+                <TextBlock Classes="phoneGroup" Text="Folder" Margin="28,18,28,6" />
+                <v:FolderChips DataContext="{Binding Picker}" />
+                <Button Classes="phonePrimary" Content="Add Feed" Command="{Binding SaveCommand}" />
+            </StackPanel>
+        </StackPanel>
+    </ScrollViewer>
+</p:PhonePage>

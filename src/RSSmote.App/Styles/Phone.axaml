@@ -60,6 +60,10 @@
     <Style Selector="Border.phoneRowLine.last">
         <Setter Property="BorderThickness" Value="0" />
     </Style>
+    <!-- Rows generated into a card: the last one draws no hairline either. -->
+    <Style Selector="ItemsControl.phoneRows ContentPresenter:nth-last-child(1) Border.phoneRowLine">
+        <Setter Property="BorderThickness" Value="0" />
+    </Style>
 
     <!-- Article rows (D25): a source line, the title in up to three lines, one line of summary. -->
     <Style Selector="TextBlock.phoneMeta">
@@ -159,5 +163,302 @@
             <Setter Property="Background" Value="{DynamicResource Brush.Bg.Pill}" />
             <Setter Property="Foreground" Value="{DynamicResource Brush.Accent}" />
         </Style>
+    </Style>
+
+    <!-- Settings pages (D27): a label over each card, rows with a lead icon, a value and a chevron. -->
+    <Style Selector="TextBlock.phoneGroup">
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="FontWeight" Value="Medium" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Ink.Secondary}" />
+        <Setter Property="Margin" Value="28,16,28,6" />
+    </Style>
+    <Style Selector="TextBlock.phoneFootnote">
+        <Setter Property="FontSize" Value="13" />
+        <Setter Property="LineHeight" Value="18" />
+        <Setter Property="TextWrapping" Value="Wrap" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Ink.Secondary}" />
+        <Setter Property="Margin" Value="28,8,28,0" />
+    </Style>
+    <Style Selector="TextBlock.phoneFootnote.error">
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Ink.Danger}" />
+    </Style>
+    <Style Selector="c|Icon.lead">
+        <Setter Property="Size" Value="20" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Ink.Icon}" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+    <Style Selector="c|Icon.chevron">
+        <Setter Property="Size" Value="18" />
+        <Setter Property="Data" Value="{StaticResource Icon.ChevronRight}" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Ink.Read}" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+    <Style Selector="c|Icon.check">
+        <Setter Property="Size" Value="20" />
+        <Setter Property="StrokeThickness" Value="2" />
+        <Setter Property="Data" Value="{StaticResource Icon.Check}" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Accent}" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+    <!-- The label before a field in a row, and a read-only value in its place. -->
+    <Style Selector="TextBlock.phoneLabel">
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Ink.Secondary}" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+    <Style Selector="TextBlock.phoneValue">
+        <Setter Property="FontSize" Value="{StaticResource TextTheme.Phone.Secondary.Size}" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Ink.Secondary}" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+    <!-- A row whose control is a switch: the row itself is not a button. -->
+    <Style Selector="Grid.phoneSwitchRow">
+        <Setter Property="MinHeight" Value="{StaticResource Size.Phone.Row}" />
+        <Setter Property="Margin" Value="{StaticResource Thickness.Phone.CardMargin}" />
+    </Style>
+    <Style Selector="Button.phoneRow:disabled">
+        <Setter Property="Opacity" Value="0.4" />
+    </Style>
+    <Style Selector="Button.phoneRow:disabled /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="Transparent" />
+    </Style>
+    <Style Selector="Button.phoneRow.tall">
+        <Setter Property="MinHeight" Value="{StaticResource Size.Phone.RowSubtitle}" />
+    </Style>
+    <!-- A radio row with a subtitle (D28). -->
+    <Style Selector="Button.phoneRow.radio">
+        <Setter Property="MinHeight" Value="60" />
+    </Style>
+    <Style Selector="Button.phoneRow.danger">
+        <Setter Property="HorizontalContentAlignment" Value="Center" />
+        <Setter Property="FontWeight" Value="Medium" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Ink.Danger}" />
+        <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter, ^:pressed /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Ink.Danger}" />
+        </Style>
+    </Style>
+    <Style Selector="TextBlock.phoneSubtitle">
+        <Setter Property="FontSize" Value="13" />
+        <Setter Property="Margin" Value="0,2,0,0" />
+        <Setter Property="TextTrimming" Value="CharacterEllipsis" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Ink.Secondary}" />
+    </Style>
+    <Style Selector="TextBlock.phoneSubtitle.error">
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Ink.Danger}" />
+    </Style>
+
+    <!-- A switch: a 44 × 26 track, the accent when on, with a knob that keeps its colour on either (D27). The
+         control moves PART_MovingKnobs along Canvas.Left by PART_SwitchKnob's width, so that width is the knob's
+         travel, 18 (P23). -->
+    <Style Selector="ToggleSwitch.phone">
+        <Setter Property="OnContent" Value="{x:Null}" />
+        <Setter Property="OffContent" Value="{x:Null}" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Border x:Name="Track" Width="44" Height="26" CornerRadius="13" Background="{DynamicResource Brush.Bg.Pill}">
+                    <Canvas x:Name="PART_SwitchKnob" Width="18" Height="22" Margin="2" HorizontalAlignment="Left">
+                        <Panel x:Name="PART_MovingKnobs" Width="22" Height="22">
+                            <Border CornerRadius="11" Background="{DynamicResource Brush.Bg.Knob}"
+                                    BoxShadow="{DynamicResource BoxShadows.Raised}" />
+                        </Panel>
+                    </Canvas>
+                </Border>
+            </ControlTemplate>
+        </Setter>
+        <Style Selector="^ /template/ Panel#PART_MovingKnobs">
+            <Setter Property="Canvas.Left" Value="0" />
+        </Style>
+        <Style Selector="^:checked /template/ Border#Track">
+            <Setter Property="Background" Value="{DynamicResource Brush.Accent}" />
+        </Style>
+        <Style Selector="^:checked /template/ Panel#PART_MovingKnobs">
+            <Setter Property="Canvas.Left" Value="18" />
+        </Style>
+    </Style>
+
+    <!-- A radio mark for a row with a subtitle: a ring, filled with the accent when on (D27). -->
+    <Style Selector="Border.phoneRadio">
+        <Setter Property="Width" Value="22" />
+        <Setter Property="Height" Value="22" />
+        <Setter Property="CornerRadius" Value="11" />
+        <Setter Property="BorderThickness" Value="2" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Ink.Read}" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+    <Style Selector="Border.phoneRadio.on">
+        <Setter Property="BorderThickness" Value="7" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Accent}" />
+    </Style>
+
+    <!-- A palette's swatch, drawn inside a ThemeVariantScope of that palette: its page and its accent (D27). -->
+    <Style Selector="Border.phoneSwatch">
+        <Setter Property="Width" Value="24" />
+        <Setter Property="Height" Value="24" />
+        <Setter Property="CornerRadius" Value="12" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Line.Separator}" />
+        <Setter Property="Background" Value="{DynamicResource Brush.Bg.Article}" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+    <Style Selector="Border.phoneSwatch > Border">
+        <Setter Property="Width" Value="9" />
+        <Setter Property="Height" Value="9" />
+        <Setter Property="CornerRadius" Value="5" />
+        <Setter Property="Background" Value="{DynamicResource Brush.Accent}" />
+        <Setter Property="HorizontalAlignment" Value="Center" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+
+    <!-- Folder chips on the phone (D9 at touch size). -->
+    <Style Selector="Button.phoneChip">
+        <Setter Property="MinHeight" Value="36" />
+        <Setter Property="Padding" Value="14,0" />
+        <Setter Property="CornerRadius" Value="{StaticResource CornerRadius.Chip}" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Background" Value="{DynamicResource Brush.Bg.PanelRow}" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Ink.Primary}" />
+        <Setter Property="FontSize" Value="{StaticResource TextTheme.Phone.Secondary.Size}" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter, ^:pressed /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource Brush.Bg.PanelRow}" />
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Ink.Primary}" />
+        </Style>
+        <Style Selector="^:pressed">
+            <Setter Property="RenderTransform" Value="none" />
+            <Setter Property="Opacity" Value="0.7" />
+        </Style>
+    </Style>
+    <Style Selector="Button.phoneChip.add">
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Accent}" />
+    </Style>
+    <Style Selector="Button.phoneChip.add:pointerover /template/ ContentPresenter#PART_ContentPresenter,
+                     Button.phoneChip.add:pressed /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Accent}" />
+    </Style>
+    <Style Selector="Button.phoneChip.on /template/ ContentPresenter#PART_ContentPresenter,
+                     Button.phoneChip.on:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource Brush.Accent}" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Ink.OnAccent}" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+    </Style>
+
+    <!-- Text in a bar: back's label, Save, New Folder; all in the accent. -->
+    <Style Selector="Button.phoneBarText">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="MinHeight" Value="{StaticResource Size.Phone.Target}" />
+        <Setter Property="Padding" Value="6,0" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="FontSize" Value="{StaticResource TextTheme.Phone.Row.Size}" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Accent}" />
+        <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter, ^:pressed /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Accent}" />
+        </Style>
+        <Style Selector="^:pressed">
+            <Setter Property="RenderTransform" Value="none" />
+            <Setter Property="Opacity" Value="0.6" />
+        </Style>
+        <Style Selector="^:disabled">
+            <Setter Property="Opacity" Value="0.4" />
+        </Style>
+        <Style Selector="^:disabled /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Accent}" />
+        </Style>
+    </Style>
+    <Style Selector="Button.phoneBarText.phoneGroupAction">
+        <Setter Property="MinHeight" Value="32" />
+        <Setter Property="Padding" Value="4,0" />
+        <Setter Property="FontSize" Value="{StaticResource TextTheme.Phone.Secondary.Size}" />
+        <Setter Property="FontWeight" Value="Medium" />
+    </Style>
+    <Style Selector="Button.phoneBarText.strong">
+        <Setter Property="FontWeight" Value="SemiBold" />
+    </Style>
+
+    <!-- The one primary action at the foot of a page: a 50 tall accent button across the card margins. -->
+    <Style Selector="Button.phonePrimary">
+        <Setter Property="Height" Value="50" />
+        <Setter Property="Margin" Value="16,22,16,0" />
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+        <Setter Property="HorizontalContentAlignment" Value="Center" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="CornerRadius" Value="{StaticResource CornerRadius.Card}" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="FontSize" Value="{StaticResource TextTheme.Phone.PageTitle.Size}" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Background" Value="{DynamicResource Brush.Accent}" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Ink.OnAccent}" />
+        <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter, ^:pressed /template/ ContentPresenter#PART_ContentPresenter, ^:disabled /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource Brush.Accent}" />
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Ink.OnAccent}" />
+        </Style>
+        <Style Selector="^:pressed">
+            <Setter Property="RenderTransform" Value="none" />
+            <Setter Property="Opacity" Value="0.8" />
+        </Style>
+        <Style Selector="^:disabled">
+            <Setter Property="Opacity" Value="0.4" />
+        </Style>
+    </Style>
+
+    <!-- A field inside a card row: no well and no edge; the row is the field. -->
+    <Style Selector="TextBox.phoneField">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="MinHeight" Value="0" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="FontSize" Value="{StaticResource TextTheme.Phone.Row.Size}" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Ink.Primary}" />
+        <Setter Property="CaretBrush" Value="{DynamicResource Brush.Accent}" />
+        <Style Selector="^:pointerover /template/ Border#PART_BorderElement, ^:focus /template/ Border#PART_BorderElement">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
+        </Style>
+    </Style>
+    <!-- The filter box over a list of feeds: a 40 tall well on the pill. -->
+    <Style Selector="Border.phoneSearch">
+        <Setter Property="Height" Value="40" />
+        <Setter Property="Margin" Value="16,4" />
+        <Setter Property="Padding" Value="12,0" />
+        <Setter Property="CornerRadius" Value="10" />
+        <Setter Property="Background" Value="{DynamicResource Brush.Bg.Pill}" />
+    </Style>
+    <!-- The address field of Add Feed: a 48 tall card with a 2 pt accent ring while it has focus (D2). -->
+    <Style Selector="Border.phoneAddress">
+        <Setter Property="Height" Value="48" />
+        <Setter Property="Margin" Value="16,6,16,0" />
+        <Setter Property="Padding" Value="14,0" />
+        <Setter Property="CornerRadius" Value="{StaticResource CornerRadius.Card}" />
+        <Setter Property="BorderThickness" Value="2" />
+        <Setter Property="BorderBrush" Value="Transparent" />
+        <Setter Property="Background" Value="{DynamicResource Brush.Bg.List}" />
+    </Style>
+    <Style Selector="Border.phoneAddress:focus-within">
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Accent}" />
+    </Style>
+
+    <!-- The bottom sheet that asks before Remove Feed or Delete Folder (D29). -->
+    <Style Selector="Button.phoneScrim">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+        <Setter Property="VerticalAlignment" Value="Stretch" />
+        <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter, ^:pressed /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="Transparent" />
+        </Style>
+        <Style Selector="^:pressed">
+            <Setter Property="RenderTransform" Value="none" />
+        </Style>
+    </Style>
+    <Style Selector="Border.phoneSheet">
+        <Setter Property="Background" Value="{DynamicResource Brush.Bg.Panel}" />
+        <Setter Property="CornerRadius" Value="16,16,0,0" />
+        <Setter Property="BoxShadow" Value="{DynamicResource BoxShadows.Panel}" />
+        <Setter Property="VerticalAlignment" Value="Bottom" />
     </Style>
 </Styles>

@@ -36,7 +36,6 @@ public sealed partial class SidebarViewModel : ObservableObject
     private readonly Dictionary<long, Bitmap?> _favicons = new();
     private bool _reloading;
     private string _refreshText = "";
-    private int _feedCount;
 
     public SidebarViewModel(Store store, SettingsStore settings, IImageLoader images, IUiDispatcher ui,
                             SidebarLayout layout = SidebarLayout.Desktop)
@@ -76,6 +75,10 @@ public sealed partial class SidebarViewModel : ObservableObject
     /// <summary>The sidebar status bar: when the library was last refreshed and how many feeds it holds.</summary>
     [ObservableProperty]
     public partial string StatusText { get; set; } = "";
+
+    /// <summary>How many feeds the library holds.</summary>
+    [ObservableProperty]
+    public partial int FeedCount { get; private set; }
 
     /// <summary>At least one feed failed its last refresh.</summary>
     [ObservableProperty]
@@ -199,7 +202,7 @@ public sealed partial class SidebarViewModel : ObservableObject
         }
         AddSection(rows, FoldersSection, folderRows, collapsedSections);
 
-        _feedCount = feeds.Count;
+        FeedCount = feeds.Count;
         HasFailures = feeds.Any(f => f.LastError is not null);
         UpdateStatusText();
 
@@ -317,7 +320,7 @@ public sealed partial class SidebarViewModel : ObservableObject
         UpdateStatusText();
     }
 
-    private void UpdateStatusText() => StatusText = $"{_refreshText} · {ItemFormatting.FeedCountText(_feedCount)}";
+    private void UpdateStatusText() => StatusText = $"{_refreshText} · {ItemFormatting.FeedCountText(FeedCount)}";
 
     public Bitmap? FaviconFor(long feedId) => _favicons.GetValueOrDefault(feedId);
 }

@@ -35,19 +35,19 @@
                             <NativeMenuItem Header="Light Theme"><NativeMenu /></NativeMenuItem>
                             <NativeMenuItem Header="Dark Theme"><NativeMenu /></NativeMenuItem>
                             <NativeMenuItemSeparator />
-                            <NativeMenuItem Header="Grayscale Favicons" Command="{Binding ToggleGrayscaleFaviconsCommand}" />
+                            <NativeMenuItem Header="Grayscale Favicons" Command="{Binding Settings.ToggleGrayscaleFaviconsCommand}" />
                         </NativeMenu>
                     </NativeMenuItem>
                     <NativeMenuItem Header="Sort Unread Items">
                         <NativeMenu>
-                            <NativeMenuItem Header="Newest First" Command="{Binding SetSortNewestFirstCommand}" CommandParameter="{x:True}" />
-                            <NativeMenuItem Header="Oldest First" Command="{Binding SetSortNewestFirstCommand}" CommandParameter="{x:False}" />
+                            <NativeMenuItem Header="Newest First" Command="{Binding Settings.SetSortNewestFirstCommand}" CommandParameter="{x:True}" />
+                            <NativeMenuItem Header="Oldest First" Command="{Binding Settings.SetSortNewestFirstCommand}" CommandParameter="{x:False}" />
                         </NativeMenu>
                     </NativeMenuItem>
                     <NativeMenuItem Header="Group Items">
                         <NativeMenu>
-                            <NativeMenuItem Header="By Date" Command="{Binding SetGroupByDateCommand}" CommandParameter="{x:True}" />
-                            <NativeMenuItem Header="None" Command="{Binding SetGroupByDateCommand}" CommandParameter="{x:False}" />
+                            <NativeMenuItem Header="By Date" Command="{Binding Settings.SetGroupByDateCommand}" CommandParameter="{x:True}" />
+                            <NativeMenuItem Header="None" Command="{Binding Settings.SetGroupByDateCommand}" CommandParameter="{x:False}" />
                         </NativeMenu>
                     </NativeMenuItem>
                     <NativeMenuItemSeparator />

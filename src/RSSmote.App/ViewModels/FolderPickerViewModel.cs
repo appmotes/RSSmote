@@ -53,6 +53,15 @@ public sealed partial class FolderPickerViewModel : ObservableObject
             row.IsOn = row.Folder.Id == Selected?.Id;
     }
 
+    /// <summary>No folder: the "None" chip.</summary>
+    [RelayCommand]
+    private void SelectNone()
+    {
+        Selected = null;
+        foreach (var row in Folders)
+            row.IsOn = false;
+    }
+
     private bool CanAddFolder() => !string.IsNullOrWhiteSpace(NewFolderName);
 
     [RelayCommand(CanExecute = nameof(CanAddFolder))]

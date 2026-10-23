@@ -1,5 +1,6 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using RSSmote.App.Formatting;
 using RSSmote.Core.Models;
 using RSSmote.Data;
 
@@ -19,9 +20,13 @@ public sealed partial class EditFeedViewModel : PanelViewModel
         Picker = new FolderPickerViewModel(store, feed.FolderId);
     }
 
+    public Feed Feed => _feed;
+
     public string Title => _feed.Title;
 
     public string Subtitle => AddressText(_feed.Url);
+
+    public string OpenSiteTitle => ItemFormatting.OpenSiteTitle(_feed);
 
     public FolderPickerViewModel Picker { get; }
 
@@ -45,6 +50,25 @@ public sealed partial class EditFeedViewModel : PanelViewModel
         Uri.TryCreate(url, UriKind.Absolute, out var uri) && uri.Scheme is "http" or "https"
             ? uri.Host + (uri.PathAndQuery == "/" ? "" : uri.PathAndQuery)
             : url;
+}
+
+/// <summary>Name a new folder; saving an existing name keeps that folder.</summary>
+public sealed partial class NewFolderViewModel(Store store) : PanelViewModel
+{
+    [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(SaveCommand))]
+    public partial string Name { get; set; } = "";
+
+    private bool CanSave() => !string.IsNullOrWhiteSpace(Name);
+
+    [RelayCommand(CanExecute = nameof(CanSave))]
+    private void Save()
+    {
+        var name = Name.Trim();
+        if (store.FolderNamed(name) is null)
+            store.AddFolder(name);
+        Close();
+    }
 }
 
 /// <summary>One feed listed in the Edit Folder panel; picking it opens that feed's panel.</summary>

@@ -47,12 +47,31 @@ public sealed class SidebarPhoneTests : IDisposable
     }
 
     [Fact]
+    public void Picking_a_stream_that_changes_the_filter_builds_the_list_once()
+    {
+        var ui = new ShellFixture.QueuedUi();
+        using var f = new ShellFixture(s => s.Filter = StreamFilter.All, SidebarLayout.Phone, ui);
+        var builds = 0;
+        f.Shell.List.Rows.CollectionChanged += (_, e) =>
+        {
+            if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Reset)
+                builds++;
+        };
+
+        f.Shell.Sidebar.SelectedRow = f.Row("Unread");
+        ui.RunAll();
+        Assert.Equal(StreamFilter.Unread, f.Settings.Current.Filter);
+        Assert.Equal(4, f.Shell.List.Articles.Count());
+        Assert.Equal(1, builds);
+    }
+
+    [Fact]
     public void The_list_line_counts_unread_or_starred_and_names_the_order()
     {
         _f.Shell.Sidebar.SelectedRow = _f.Row("Unread");
         Assert.Equal("4 unread · newest first", _f.Shell.List.PhoneSubtitle);
 
-        _f.Shell.SetSortNewestFirstCommand.Execute(false);
+        _f.Shell.Settings.SetSortNewestFirstCommand.Execute(false);
         _f.Shell.Sidebar.SelectedRow = _f.Row("Starred");
         Assert.Equal("0 starred · oldest first", _f.Shell.List.PhoneSubtitle);
     }

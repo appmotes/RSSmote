@@ -1,0 +1,20 @@
+<p:PhonePage xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:RSSmote.App.ViewModels"
+             xmlns:p="using:RSSmote.Mobile.Pages"
+             x:Class="RSSmote.Mobile.Pages.NewFolderPage"
+             x:DataType="vm:NewFolderViewModel"
+             Title="New Folder" BackTitle="Feeds">
+    <!-- New Folder (D27): a name; Save adds it to Manage Feeds. -->
+    <p:PhonePage.BarButton>
+        <Button Classes="phoneBarText strong" Content="Save" Command="{Binding SaveCommand}" />
+    </p:PhonePage.BarButton>
+    <StackPanel>
+        <Border Classes="phoneCard" Margin="16,10,16,0">
+            <Grid Classes="phoneSwitchRow" ColumnDefinitions="76,*" ColumnSpacing="12">
+                <TextBlock Classes="phoneRow phoneLabel" Text="Name" />
+                <TextBox x:Name="NameField" Grid.Column="1" Classes="phoneField" Text="{Binding Name}" PlaceholderText="Folder" />
+            </Grid>
+        </Border>
+    </StackPanel>
+</p:PhonePage>

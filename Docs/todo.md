@@ -15,7 +15,8 @@ Linux strip layout (P2).
 
 **W1 — Sync services** (Feedbin, Fever, …). Deliberately out of scope for now.
 
-**N9 — Settings window and article context menus.** General · Reading · Appearance · Feeds (TableView, D17);
+**N9 — Settings window and article context menus.** General · Reading · Appearance · Feeds (TableView, D17),
+over the same `SettingsViewModel` and `ManageFeedsViewModel` the phone uses;
 article-list context menu (mark above/below as read, star, open in browser). Sidebar menus are done (A6). The
 Settings button goes in the sidebar status bar.
 
@@ -45,3 +46,12 @@ D entry.
 during a transition, a native view attached under a `NavigationPage`, or the WebView package's iOS support; the page's first layout happens a whole width off screen, P20) and switch
 the iOS head back from the fallback renderer. The fallback also shows no remote images on iOS. Done when an article
 with images and a YouTube embed shows in the simulator with the native view.
+
+**N18 — An Android Debug build stalls its UI thread during the first refresh.** On a freshly booted API 35 emulator
+(`-memory 4096`, host load ~10) a Debug build (`-t:Install`) takes 17.6 s to start and then blocks the main thread
+for 22 s and 6 s while the startup refresh runs (`Choreographer: Skipped 1307 frames`); input in that window ends in
+an ANR, and the dialog returns after every Wait. Offline there is no long stall; Release on the same emulator starts
+in 2.0 s and skips at most 42 frames. Stack samples show the main thread in Mono's type loader and interpreted code,
+not waiting on the store's lock. Find which refresh work runs on the UI thread (the store-change handlers and their
+reloads, A16) and whether Debug runs interpreted. Done when a Debug start on a fresh emulator skips under 120 frames
+during the first refresh.

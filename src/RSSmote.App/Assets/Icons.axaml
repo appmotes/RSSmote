@@ -24,4 +24,13 @@
     <StreamGeometry x:Key="Icon.Globe">M 2 12 A 10 10 0 1 0 22 12 A 10 10 0 1 0 2 12 Z M 12 2 a 14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0 -20 M 2 12 h 20</StreamGeometry>
     <StreamGeometry x:Key="Icon.ExternalLink">M 15 3 h 6 v 6 M 10 14 21 3 M 18 13 v 6 a 2 2 0 0 1 -2 2 H 5 a 2 2 0 0 1 -2 -2 V 8 a 2 2 0 0 1 2 -2 h 6</StreamGeometry>
     <StreamGeometry x:Key="Icon.Check">M 20 6 9 17 l -5 -5</StreamGeometry>
+    <StreamGeometry x:Key="Icon.Download">M 21 15 v 4 a 2 2 0 0 1 -2 2 H 5 a 2 2 0 0 1 -2 -2 v -4 M 7 10 l 5 5 5 -5 M 12 15 V 3</StreamGeometry>
+    <StreamGeometry x:Key="Icon.Upload">M 21 15 v 4 a 2 2 0 0 1 -2 2 H 5 a 2 2 0 0 1 -2 -2 v -4 M 17 8 l -5 -5 -5 5 M 12 3 v 12</StreamGeometry>
+    <StreamGeometry x:Key="Icon.Palette">M 13 6.5 A 0.5 0.5 0 1 0 14 6.5 A 0.5 0.5 0 1 0 13 6.5 Z M 17 10.5 A 0.5 0.5 0 1 0 18 10.5 A 0.5 0.5 0 1 0 17 10.5 Z M 8 7.5 A 0.5 0.5 0 1 0 9 7.5 A 0.5 0.5 0 1 0 8 7.5 Z M 6 12.5 A 0.5 0.5 0 1 0 7 12.5 A 0.5 0.5 0 1 0 6 12.5 Z M 12 2 C 6.5 2 2 6.5 2 12 s 4.5 10 10 10 c 0.93 0 1.65 -0.75 1.65 -1.69 0 -0.44 -0.18 -0.84 -0.44 -1.13 -0.29 -0.29 -0.44 -0.65 -0.44 -1.13 a 1.64 1.64 0 0 1 1.67 -1.67 h 2 c 3.05 0 5.56 -2.5 5.56 -5.55 C 21.97 6.01 17.46 2 12 2 Z</StreamGeometry>
+    <StreamGeometry x:Key="Icon.Eye">M 2 12 s 3 -7 10 -7 10 7 10 7 -3 7 -10 7 -10 -7 -10 -7 Z M 9 12 A 3 3 0 1 0 15 12 A 3 3 0 1 0 9 12 Z</StreamGeometry>
+    <StreamGeometry x:Key="Icon.SortDown">M 3 16 l 4 4 4 -4 M 7 20 V 4 M 11 4 h 10 M 11 8 h 7 M 11 12 h 4</StreamGeometry>
+    <StreamGeometry x:Key="Icon.Calendar">M 5 4 H 19 A 2 2 0 0 1 21 6 V 20 A 2 2 0 0 1 19 22 H 5 A 2 2 0 0 1 3 20 V 6 A 2 2 0 0 1 5 4 Z M 16 2 v 4 M 8 2 v 4 M 3 10 h 18</StreamGeometry>
+    <StreamGeometry x:Key="Icon.Clock">M 2 12 A 10 10 0 1 0 22 12 A 10 10 0 1 0 2 12 Z M 12 6 v 6 l 4 2</StreamGeometry>
+    <StreamGeometry x:Key="Icon.Archive">M 3 3 H 21 A 1 1 0 0 1 22 4 V 7 A 1 1 0 0 1 21 8 H 3 A 1 1 0 0 1 2 7 V 4 A 1 1 0 0 1 3 3 Z M 4 8 v 11 a 2 2 0 0 0 2 2 h 12 a 2 2 0 0 0 2 -2 V 8 M 10 12 h 4</StreamGeometry>
+    <StreamGeometry x:Key="Icon.ChevronsUpDown">M 7 15 l 5 5 5 -5 M 7 9 l 5 -5 5 5</StreamGeometry>
 </ResourceDictionary>

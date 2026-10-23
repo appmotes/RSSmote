@@ -131,6 +131,76 @@ public class ReadingFlowTests
         f.Dispose();
     }
 
+    /// <summary>The first article row whose bottom is below the top of the list's viewport, and where it sits.</summary>
+    private static (long Id, double Y) TopRow(ArticleListPage page)
+    {
+        var scroller = page.GetVisualDescendants().OfType<ScrollViewer>().First();
+        return page.FindControl<ListBox>("Rows")!.GetRealizedContainers()
+            .Where(c => c.DataContext is ArticleRowViewModel)
+            .Select(c => (Id: ((ArticleRowViewModel)c.DataContext!).Id, Y: c.TranslatePoint(default, scroller)!.Value.Y, c.Bounds.Height))
+            .Where(r => r.Y + r.Height > 0)
+            .OrderBy(r => r.Y)
+            .Select(r => (r.Id, r.Y))
+            .First();
+    }
+
+    [AvaloniaFact]
+    public void A_reload_while_an_article_is_open_keeps_the_list_where_it_was()
+    {
+        var (f, shell, window) = Open("Sand");
+        f.Store.Upsert(f.Wired.Id, [.. Enumerable.Range(0, 200).Select(i => new ParsedItem($"m{i}", $"Item {i}",
+            $"https://example.com/m{i}", null, "<p>x</p>", "x", null, ShellFixture.Now.AddMinutes(-60 - i)))]);
+        f.Shell.FlushPendingReload();
+        f.Shell.Sidebar.SelectedRow = f.Row("Unread");
+        Settle();
+        var page = Assert.IsType<ArticleListPage>(shell.NavigationStack[^1]);
+        var scroller = page.GetVisualDescendants().OfType<ScrollViewer>().First();
+        scroller.Offset = new Vector(0, 3000);
+        Settle();
+        var before = TopRow(page);
+
+        f.Shell.List.SelectedRow = f.Shell.List.Articles.First(a => a.Id == before.Id);
+        Settle();
+        Assert.IsType<ArticlePage>(shell.NavigationStack[^1]);
+        f.Store.Upsert(f.Wired.Id, [.. Enumerable.Range(0, 30).Select(i => new ParsedItem($"n{i}", $"New {i}",
+            $"https://example.com/n{i}", null, "<p>x</p>", "x", null, ShellFixture.Now.AddMinutes(-i)))]);
+        f.Shell.FlushPendingReload();
+        Settle();
+
+        _ = shell.PopAsync();
+        Settle();
+        var after = TopRow(page);
+        Assert.Equal(before.Id, after.Id);
+        Assert.InRange(after.Y, before.Y - 1, before.Y + 1);
+        window.Close();
+        f.Dispose();
+    }
+
+    [AvaloniaFact]
+    public void A_reload_while_the_list_shows_keeps_its_top_row_in_place()
+    {
+        var (f, shell, window) = Open("Sand");
+        f.Store.Upsert(f.Wired.Id, [.. Enumerable.Range(0, 200).Select(i => new ParsedItem($"m{i}", $"Item {i}",
+            $"https://example.com/m{i}", null, "<p>x</p>", "x", null, ShellFixture.Now.AddMinutes(-60 - i)))]);
+        f.Shell.FlushPendingReload();
+        f.Shell.Sidebar.SelectedRow = f.Row("Unread");
+        Settle();
+        var page = Assert.IsType<ArticleListPage>(shell.NavigationStack[^1]);
+        page.GetVisualDescendants().OfType<ScrollViewer>().First().Offset = new Vector(0, 3000);
+        Settle();
+        var before = TopRow(page);
+
+        f.Store.Upsert(f.Wired.Id, [.. Enumerable.Range(0, 30).Select(i => new ParsedItem($"n{i}", $"New {i}",
+            $"https://example.com/n{i}", null, "<p>x</p>", "x", null, ShellFixture.Now.AddMinutes(-i)))]);
+        f.Shell.FlushPendingReload();
+        Settle();
+        var after = TopRow(page);
+        Assert.Equal(before.Id, after.Id);
+        Assert.InRange(after.Y, before.Y - 1, before.Y + 1);
+        window.Close();
+        f.Dispose();
+    }
+
     [AvaloniaFact]
     public void The_system_back_pops_a_page_and_leaves_the_root_to_the_system()
     {

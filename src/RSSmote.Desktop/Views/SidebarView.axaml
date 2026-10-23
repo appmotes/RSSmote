@@ -33,19 +33,19 @@
                                     <MenuItem Header="All Items" InputGesture="Ctrl+3" Command="{Binding ShowFilterCommand}" CommandParameter="{x:Static m:StreamFilter.All}" />
                                     <Separator />
                                     <MenuItem Header="Theme">
-                                        <MenuItem Header="Appearance" Classes="choices" ItemsSource="{Binding Appearances}" />
-                                        <MenuItem Header="Light Theme" Classes="choices" ItemsSource="{Binding LightThemes}" />
-                                        <MenuItem Header="Dark Theme" Classes="choices" ItemsSource="{Binding DarkThemes}" />
+                                        <MenuItem Header="Appearance" Classes="choices" ItemsSource="{Binding Settings.Appearances}" />
+                                        <MenuItem Header="Light Theme" Classes="choices" ItemsSource="{Binding Settings.LightThemes}" />
+                                        <MenuItem Header="Dark Theme" Classes="choices" ItemsSource="{Binding Settings.DarkThemes}" />
                                         <Separator />
-                                        <MenuItem Header="Grayscale Favicons" Command="{Binding ToggleGrayscaleFaviconsCommand}" />
+                                        <MenuItem Header="Grayscale Favicons" Command="{Binding Settings.ToggleGrayscaleFaviconsCommand}" />
                                     </MenuItem>
                                     <MenuItem Header="Sort Unread Items">
-                                        <MenuItem Header="Newest First" Command="{Binding SetSortNewestFirstCommand}" CommandParameter="{x:True}" />
-                                        <MenuItem Header="Oldest First" Command="{Binding SetSortNewestFirstCommand}" CommandParameter="{x:False}" />
+                                        <MenuItem Header="Newest First" Command="{Binding Settings.SetSortNewestFirstCommand}" CommandParameter="{x:True}" />
+                                        <MenuItem Header="Oldest First" Command="{Binding Settings.SetSortNewestFirstCommand}" CommandParameter="{x:False}" />
                                     </MenuItem>
                                     <MenuItem Header="Group Items">
-                                        <MenuItem Header="By Date" Command="{Binding SetGroupByDateCommand}" CommandParameter="{x:True}" />
-                                        <MenuItem Header="None" Command="{Binding SetGroupByDateCommand}" CommandParameter="{x:False}" />
+                                        <MenuItem Header="By Date" Command="{Binding Settings.SetGroupByDateCommand}" CommandParameter="{x:True}" />
+                                        <MenuItem Header="None" Command="{Binding Settings.SetGroupByDateCommand}" CommandParameter="{x:False}" />
                                     </MenuItem>
                                 </MenuFlyout>
                             </Button.Flyout>

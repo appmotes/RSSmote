@@ -28,10 +28,14 @@ public sealed partial class ConfirmViewModel(string title, string message, strin
     public string Message { get; } = message;
     public string ActionTitle { get; } = actionTitle;
 
+    /// <summary>Raised after the action ran, just before <see cref="PanelViewModel.Closed"/>.</summary>
+    public event EventHandler? Confirmed;
+
     [RelayCommand]
     private void Confirm()
     {
         confirm();
+        Confirmed?.Invoke(this, EventArgs.Empty);
         Close();
     }
 }

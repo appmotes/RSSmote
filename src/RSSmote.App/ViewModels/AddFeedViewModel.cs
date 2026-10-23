@@ -1,6 +1,7 @@
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using RSSmote.App.Formatting;
 using RSSmote.Core.Discovery;
 using RSSmote.Core.Models;
 using RSSmote.Data;
@@ -20,6 +21,11 @@ public sealed partial class FoundFeedRowViewModel(FoundFeed found, bool saved) :
     public FoundFeed Found { get; } = found;
     public string Title { get; } = found.Feed.Title ?? found.Url.Host;
     public string Subtitle { get; } = saved ? "Already added · " + found.Url.AbsoluteUri : found.Url.AbsoluteUri;
+
+    /// <summary>"24 articles · nightsky.example/feed.xml": the phone's line under a found feed.</summary>
+    public string Detail { get; } = (saved ? "Already added · " : ItemFormatting.ArticleCountText(found.Feed.Items.Count) + " · ")
+                                    + EditFeedViewModel.AddressText(found.Url.AbsoluteUri);
+
     public bool IsSaved { get; } = saved;
 
     [ObservableProperty]
@@ -85,6 +91,11 @@ public sealed partial class AddFeedViewModel : PanelViewModel
 
     /// <summary>"1 FEED FOUND" over the results (upper-case in the string, D6).</summary>
     public string FoundTitle => Results.Count == 1 ? "1 FEED FOUND" : $"{Results.Count} FEEDS FOUND";
+
+    /// <summary>"Found 2 feeds": the phone's group header over the results.</summary>
+    public string FoundText => Results.Count == 1 ? "Found 1 feed" : $"Found {Results.Count} feeds";
+
+    public bool HasResults => Results.Count > 0;
 
     public bool HasError => Error is not null;
 
@@ -159,6 +170,8 @@ public sealed partial class AddFeedViewModel : PanelViewModel
         Page = AddFeedPage.Results;
         OnPropertyChanged(nameof(CanSave));
         OnPropertyChanged(nameof(FoundTitle));
+        OnPropertyChanged(nameof(FoundText));
+        OnPropertyChanged(nameof(HasResults));
     }
 
     private void OnResultChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -172,6 +185,16 @@ public sealed partial class AddFeedViewModel : PanelViewModel
     {
         if (!row.IsSaved)
             row.IsOn = !row.IsOn;
+    }
+
+    /// <summary>The phone picks one found feed, as radio rows (D27).</summary>
+    [RelayCommand]
+    private void PickResult(FoundFeedRowViewModel row)
+    {
+        if (row.IsSaved)
+            return;
+        foreach (var other in Results)
+            other.IsOn = ReferenceEquals(other, row);
     }
 
     [RelayCommand]

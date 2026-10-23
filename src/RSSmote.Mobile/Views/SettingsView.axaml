@@ -1,9 +1,134 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             x:Class="RSSmote.Mobile.Views.SettingsView">
-    <!-- The Settings root (D27). -->
-    <StackPanel>
-        <Border Height="{StaticResource Size.Phone.TopBar}" />
-        <TextBlock Classes="phoneLargeTitle" Text="Settings" Margin="20,2,20,8" />
-    </StackPanel>
+             xmlns:c="urn:RSSmote.App.Controls"
+             xmlns:vm="using:RSSmote.App.ViewModels"
+             x:Class="RSSmote.Mobile.Views.SettingsView"
+             x:DataType="vm:ShellViewModel">
+    <!-- The Settings root (D27): Feeds, Display, Articles and Refresh as cards, then the version. -->
+    <ScrollViewer>
+        <StackPanel Margin="0,0,0,24">
+            <Border Height="{StaticResource Size.Phone.TopBar}" />
+            <TextBlock Classes="phoneLargeTitle" Text="Settings" Margin="20,2,20,8" />
+
+            <TextBlock Classes="phoneGroup" Text="Feeds" />
+            <Border Classes="phoneCard">
+                <StackPanel>
+                    <Border Classes="phoneRowLine">
+                        <Button Classes="phoneRow" Click="OnAddFeedClick">
+                            <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+                                <c:Icon Classes="lead" Data="{StaticResource Icon.Plus}" />
+                                <TextBlock Grid.Column="1" Text="Add Feed" VerticalAlignment="Center" />
+                                <c:Icon Grid.Column="2" Classes="chevron" />
+                            </Grid>
+                        </Button>
+                    </Border>
+                    <Border Classes="phoneRowLine">
+                        <Button Classes="phoneRow" Click="OnManageFeedsClick">
+                            <Grid ColumnDefinitions="Auto,*,Auto,Auto" ColumnSpacing="12">
+                                <c:Icon Classes="lead" Data="{StaticResource Icon.Folder}" />
+                                <TextBlock Grid.Column="1" Text="Manage Feeds" VerticalAlignment="Center" />
+                                <TextBlock Grid.Column="2" Classes="phoneValue" Text="{Binding Sidebar.FeedCount}" />
+                                <c:Icon Grid.Column="3" Classes="chevron" />
+                            </Grid>
+                        </Button>
+                    </Border>
+                    <!-- Import and Export open their pages in phase 4 (M10, M11). -->
+                    <Border Classes="phoneRowLine">
+                        <Button Classes="phoneRow" IsEnabled="False">
+                            <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+                                <c:Icon Classes="lead" Data="{StaticResource Icon.Download}" />
+                                <TextBlock Grid.Column="1" Text="Import Feeds" VerticalAlignment="Center" />
+                                <c:Icon Grid.Column="2" Classes="chevron" />
+                            </Grid>
+                        </Button>
+                    </Border>
+                    <Border Classes="phoneRowLine last">
+                        <Button Classes="phoneRow" IsEnabled="False">
+                            <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+                                <c:Icon Classes="lead" Data="{StaticResource Icon.Upload}" />
+                                <TextBlock Grid.Column="1" Text="Export Feeds" VerticalAlignment="Center" />
+                                <c:Icon Grid.Column="2" Classes="chevron" />
+                            </Grid>
+                        </Button>
+                    </Border>
+                </StackPanel>
+            </Border>
+
+            <TextBlock Classes="phoneGroup" Text="Display" />
+            <Border Classes="phoneCard">
+                <Button Classes="phoneRow" Click="OnAppearanceClick">
+                    <Grid ColumnDefinitions="Auto,*,Auto,Auto" ColumnSpacing="12">
+                        <c:Icon Classes="lead" Data="{StaticResource Icon.Palette}" />
+                        <TextBlock Grid.Column="1" Text="Appearance" VerticalAlignment="Center" />
+                        <TextBlock Grid.Column="2" Classes="phoneValue" Text="{Binding Settings.AppearanceText}" />
+                        <c:Icon Grid.Column="3" Classes="chevron" />
+                    </Grid>
+                </Button>
+            </Border>
+
+            <TextBlock Classes="phoneGroup" Text="Articles" />
+            <Border Classes="phoneCard">
+                <StackPanel>
+                    <Border Classes="phoneRowLine">
+                        <Grid Classes="phoneSwitchRow" ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+                            <c:Icon Classes="lead" Data="{StaticResource Icon.Eye}" />
+                            <TextBlock Grid.Column="1" Classes="phoneRow" Text="Read when opened" VerticalAlignment="Center" />
+                            <ToggleSwitch Grid.Column="2" Classes="phone" IsChecked="{Binding Settings.MarkAsReadOnSelect}" />
+                        </Grid>
+                    </Border>
+                    <Border Classes="phoneRowLine">
+                        <Grid Classes="phoneSwitchRow" ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+                            <c:Icon Classes="lead" Data="{StaticResource Icon.SortDown}" />
+                            <TextBlock Grid.Column="1" Classes="phoneRow" Text="Newest first" VerticalAlignment="Center" />
+                            <ToggleSwitch Grid.Column="2" Classes="phone" IsChecked="{Binding Settings.SortNewestFirst}" />
+                        </Grid>
+                    </Border>
+                    <Border Classes="phoneRowLine last">
+                        <Grid Classes="phoneSwitchRow" ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+                            <c:Icon Classes="lead" Data="{StaticResource Icon.Calendar}" />
+                            <TextBlock Grid.Column="1" Classes="phoneRow" Text="Group by date" VerticalAlignment="Center" />
+                            <ToggleSwitch Grid.Column="2" Classes="phone" IsChecked="{Binding Settings.GroupByDate}" />
+                        </Grid>
+                    </Border>
+                </StackPanel>
+            </Border>
+
+            <TextBlock Classes="phoneGroup" Text="Refresh" />
+            <Border Classes="phoneCard">
+                <StackPanel>
+                    <Border Classes="phoneRowLine">
+                        <Button x:Name="IntervalRow" Classes="phoneRow">
+                            <Button.Flyout>
+                                <MenuFlyout ItemsSource="{Binding Settings.RefreshIntervals}" Placement="BottomEdgeAlignedRight"
+                                            FlyoutPresenterClasses="choices phone" />
+                            </Button.Flyout>
+                            <Grid ColumnDefinitions="Auto,*,Auto,Auto" ColumnSpacing="12">
+                                <c:Icon Classes="lead" Data="{StaticResource Icon.Clock}" />
+                                <TextBlock Grid.Column="1" Text="Every" VerticalAlignment="Center" />
+                                <TextBlock Grid.Column="2" Classes="phoneValue" Text="{Binding Settings.RefreshIntervalText}" />
+                                <c:Icon Grid.Column="3" Classes="chevron" Size="16" Data="{StaticResource Icon.ChevronsUpDown}"
+                                        Foreground="{DynamicResource Brush.Ink.Secondary}" Margin="-8,0,0,0" />
+                            </Grid>
+                        </Button>
+                    </Border>
+                    <Border Classes="phoneRowLine last">
+                        <Button x:Name="KeepRow" Classes="phoneRow">
+                            <Button.Flyout>
+                                <MenuFlyout ItemsSource="{Binding Settings.KeepReadDays}" Placement="BottomEdgeAlignedRight"
+                                            FlyoutPresenterClasses="choices phone" />
+                            </Button.Flyout>
+                            <Grid ColumnDefinitions="Auto,*,Auto,Auto" ColumnSpacing="12">
+                                <c:Icon Classes="lead" Data="{StaticResource Icon.Archive}" />
+                                <TextBlock Grid.Column="1" Text="Keep read" VerticalAlignment="Center" />
+                                <TextBlock Grid.Column="2" Classes="phoneValue" Text="{Binding Settings.KeepReadText}" />
+                                <c:Icon Grid.Column="3" Classes="chevron" Size="16" Data="{StaticResource Icon.ChevronsUpDown}"
+                                        Foreground="{DynamicResource Brush.Ink.Secondary}" Margin="-8,0,0,0" />
+                            </Grid>
+                        </Button>
+                    </Border>
+                </StackPanel>
+            </Border>
+            <TextBlock Classes="phoneMeta" Text="{Binding Settings.VersionText}" Margin="28,14,28,0" />
+        </StackPanel>
+    </ScrollViewer>
 </UserControl>

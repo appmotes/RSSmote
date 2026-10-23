@@ -1,6 +1,7 @@
 using Avalonia.Media.Imaging;
 using CommunityToolkit.Mvvm.ComponentModel;
 using RSSmote.App.Controls.Templates;
+using RSSmote.App.Formatting;
 using RSSmote.Core.Models;
 
 namespace RSSmote.App.ViewModels;
@@ -41,7 +42,7 @@ public sealed partial class SidebarRowViewModel : ObservableObject
     public bool HasCount => Count > 0;
 
     /// <summary>The feed row's "Open example.com" menu item.</summary>
-    public string OpenSiteTitle => Feed?.Host is { } host ? "Open " + host : "Open Website";
+    public string OpenSiteTitle => ItemFormatting.OpenSiteTitle(Feed);
 
     public bool IsFaviconGrayscale { get; init; } = true;
 

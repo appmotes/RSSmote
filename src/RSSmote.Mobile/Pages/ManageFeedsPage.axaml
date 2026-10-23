@@ -1,0 +1,61 @@
+<p:PhonePage xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:c="urn:RSSmote.App.Controls"
+             xmlns:vm="using:RSSmote.App.ViewModels"
+             xmlns:p="using:RSSmote.Mobile.Pages"
+             x:Class="RSSmote.Mobile.Pages.ManageFeedsPage"
+             x:DataType="vm:ManageFeedsViewModel"
+             Title="Manage Feeds" BackTitle="Settings">
+    <!-- Manage Feeds (M6, D27): a group per folder with Edit, then the feeds in no folder; a feed opens Edit Feed. -->
+    <p:PhonePage.BarButton>
+        <Button Classes="phoneBarText" Content="New Folder" Click="OnNewFolderClick" />
+    </p:PhonePage.BarButton>
+    <DockPanel>
+        <Border DockPanel.Dock="Top" Classes="phoneSearch">
+            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="8">
+                <c:Icon Data="{StaticResource Icon.Search}" Size="18" Foreground="{DynamicResource Brush.Ink.Read}"
+                        VerticalAlignment="Center" />
+                <TextBox Grid.Column="1" Classes="phoneField" PlaceholderText="Filter feeds" Text="{Binding FilterText}" />
+            </Grid>
+        </Border>
+        <ScrollViewer>
+            <ItemsControl ItemsSource="{Binding Groups}" Margin="0,0,0,24">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate x:DataType="vm:ManagedGroup">
+                        <StackPanel>
+                            <Grid ColumnDefinitions="*,Auto" Margin="28,12,24,2" MinHeight="32">
+                                <TextBlock Classes="phoneGroup" Margin="0" Text="{Binding Title}" VerticalAlignment="Center" />
+                                <Button Grid.Column="1" Classes="phoneBarText phoneGroupAction" Content="Edit"
+                                        IsVisible="{Binding IsFolder}" Click="OnEditFolderClick" Tag="{Binding Folder}" />
+                            </Grid>
+                            <Border Classes="phoneCard" IsVisible="{Binding HasFeeds}">
+                                <ItemsControl Classes="phoneRows" ItemsSource="{Binding Feeds}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate x:DataType="vm:ManagedFeedViewModel">
+                                            <Border Classes="phoneRowLine">
+                                                <Button Classes="phoneRow tall" Click="OnFeedClick" Tag="{Binding}">
+                                                    <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+                                                        <c:Favicon Size="20" Radius="5" Source="{Binding Favicon}" Title="{Binding Title}"
+                                                                   IsGrayscale="{Binding IsFaviconGrayscale}"
+                                                                   TileBrush="{DynamicResource Brush.Bg.FaviconTile}"
+                                                                   LetterBrush="{DynamicResource Brush.Ink.OnTile}" />
+                                                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                                            <TextBlock Text="{Binding Title}" TextTrimming="CharacterEllipsis" />
+                                                            <TextBlock Classes="phoneSubtitle" Classes.error="{Binding HasError}"
+                                                                       Text="{Binding Subtitle}" />
+                                                        </StackPanel>
+                                                        <c:Icon Grid.Column="2" Classes="chevron" />
+                                                    </Grid>
+                                                </Button>
+                                            </Border>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </Border>
+                        </StackPanel>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+    </DockPanel>
+</p:PhonePage>

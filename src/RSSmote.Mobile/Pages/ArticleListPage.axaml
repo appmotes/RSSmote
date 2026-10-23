@@ -60,11 +60,11 @@
                  Text="{Binding List.SearchText}" PlaceholderText="Filter" />
         <!-- The title scrolls away with the rows (D25): one scroller holds both, and the list inside it still
              realises only the rows in view. -->
-        <ScrollViewer>
+        <ScrollViewer x:Name="Scroller">
             <StackPanel>
                 <TextBlock Classes="phoneLargeTitle" Text="{Binding List.Title}" Margin="20,2,20,0" />
                 <TextBlock Classes="phoneSecondary" Text="{Binding List.PhoneSubtitle}" Margin="20,2,20,6" />
-                <ListBox x:Name="Rows" Classes="phoneList" ItemsSource="{Binding List.Rows}"
+                <ListBox x:Name="Rows" Classes="phoneList" ItemsSource="{Binding List.Rows}" AutoScrollToSelectedItem="False"
                          ScrollViewer.VerticalScrollBarVisibility="Disabled"
                          SelectedItem="{Binding List.SelectedRow}" Background="Transparent">
                     <ListBox.DataTemplates>

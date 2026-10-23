@@ -1,12 +1,30 @@
-<!-- Radio items generated from a list of ThemeChoiceViewModel (D22): appearance and the two theme slots. -->
+<!-- Radio items generated from a list of ChoiceViewModel: appearance and the two theme slots (D22), the phone's pickers. -->
 <Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="using:RSSmote.App.ViewModels">
-    <Style Selector="MenuItem.choices > MenuItem" x:DataType="vm:ThemeChoiceViewModel">
+    <Style Selector="MenuItem.choices > MenuItem, MenuFlyoutPresenter.choices > MenuItem" x:DataType="vm:ChoiceViewModel">
         <Setter Property="Header" Value="{Binding Header}" />
         <Setter Property="CommandParameter" Value="{Binding Key}" />
         <Setter Property="Command" Value="{Binding Command}" />
         <Setter Property="ToggleType" Value="Radio" />
         <Setter Property="IsChecked" Value="{Binding IsChecked, Mode=OneWay}" />
+    </Style>
+    <!-- A picker's menu on the phone: a panel in the palette's colours, rows at touch height (D28). -->
+    <Style Selector="MenuFlyoutPresenter.phone">
+        <Setter Property="Background" Value="{DynamicResource Brush.Bg.Panel}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Line.Separator}" />
+        <Setter Property="CornerRadius" Value="{StaticResource CornerRadius.Card}" />
+    </Style>
+    <Style Selector="MenuFlyoutPresenter.phone > MenuItem">
+        <Setter Property="MinHeight" Value="{StaticResource Size.Phone.Row}" />
+        <Setter Property="MinWidth" Value="180" />
+        <Setter Property="FontSize" Value="{StaticResource TextTheme.Phone.Row.Size}" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Ink.Primary}" />
+        <Style Selector="^:pointerover /template/ Border#PART_LayoutRoot, ^:selected /template/ Border#PART_LayoutRoot, ^:pressed /template/ Border#PART_LayoutRoot">
+            <Setter Property="Background" Value="{DynamicResource Brush.Bg.Hover}" />
+        </Style>
+        <Style Selector="^:pointerover /template/ ContentPresenter#PART_HeaderPresenter, ^:selected /template/ ContentPresenter#PART_HeaderPresenter">
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Ink.Primary}" />
+        </Style>
     </Style>
 </Styles>

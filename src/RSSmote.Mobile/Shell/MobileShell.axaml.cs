@@ -1,4 +1,5 @@
 using Avalonia.Controls;
+using Avalonia.VisualTree;
 using RSSmote.App.ViewModels;
 using RSSmote.Core.Models;
 using RSSmote.Mobile.Pages;
@@ -13,6 +14,7 @@ namespace RSSmote.Mobile.Shell;
 public partial class MobileShell : NavigationPage
 {
     private readonly ShellViewModel? _shell;
+    private readonly Dictionary<Page, PanelViewModel> _panels = [];
     private TopLevel? _topLevel;
 
     public MobileShell() => InitializeComponent();
@@ -27,10 +29,65 @@ public partial class MobileShell : NavigationPage
         shell.List.ArticleSelected += OnArticleSelected;
         Pushed += (_, _) => MatchBackground();
         Popped += OnPopped;
+        PageRemoved += (_, e) => ReleasePanel(e.Page);
         MatchBackground();
     }
 
     public RootPage Root => (RootPage)Content!;
+
+    public ShellViewModel? ViewModel => _shell;
+
+    /// <summary>The shell a view inside it belongs to.</summary>
+    public static MobileShell? Of(Avalonia.Visual visual) => visual.FindAncestorOfType<MobileShell>();
+
+    /// <summary>
+    /// Pushes a page for one of the panels the desktop shows as an overlay (A6): the panel closing (Save, Add Feed)
+    /// pops its page, and a page that goes any other way disposes its panel.
+    /// </summary>
+    public Task PushPanelAsync(Page page, PanelViewModel panel)
+    {
+        page.DataContext = panel;
+        _panels[page] = panel;
+        panel.Closed += (_, _) => Close(page);
+        return PushAsync(page);
+    }
+
+    /// <summary>Takes a page off the stack, whether it is on top or under another.</summary>
+    public void Close(Page page)
+    {
+        if (!NavigationStack.Contains(page))
+            return;
+        if (ReferenceEquals(Top, page))
+            _ = PopAsync();
+        else
+            RemovePage(page);
+    }
+
+    /// <summary>
+    /// Asks in a bottom sheet (D29); <paramref name="confirmed"/> runs after the action, once the sheet is gone, since
+    /// the stack ignores a pop while another transition runs (P24).
+    /// </summary>
+    public Task ConfirmAsync(ConfirmViewModel confirm, Action? confirmed = null)
+    {
+        var sheet = new ConfirmSheet { DataContext = confirm };
+        var ran = false;
+        confirm.Confirmed += (_, _) => ran = true;
+        confirm.Closed += async (_, _) =>
+        {
+            if (ModalStack.Contains(sheet))
+                await PopModalAsync();
+            if (ran)
+                confirmed?.Invoke();
+        };
+        return PushModalAsync(sheet);
+    }
+
+    private void ReleasePanel(Page page)
+    {
+        if (_panels.Remove(page, out var panel))
+            panel.Dispose();
+        (page as IDisposable)?.Dispose();
+    }
 
     /// <summary>
     /// As the view's root nobody hands this page the safe-area insets or the system back, so it takes both from its
@@ -75,6 +132,12 @@ public partial class MobileShell : NavigationPage
     {
         if (e.Handled)
             return;
+        if (ModalStack.Count > 0)
+        {
+            _ = PopModalAsync();
+            e.Handled = true;
+            return;
+        }
         var back = new Avalonia.Interactivity.RoutedEventArgs(PageNavigationSystemBackButtonPressedEvent);
         RaiseEvent(back);
         e.Handled = back.Handled;
@@ -96,6 +159,7 @@ public partial class MobileShell : NavigationPage
 
     private void OnPopped(object? sender, NavigationEventArgs e)
     {
+        ReleasePanel(e.Page);
         if (e.Page is ArticlePage && _shell is not null)
             _shell.List.SelectedRow = null;
         if (Top is RootPage)

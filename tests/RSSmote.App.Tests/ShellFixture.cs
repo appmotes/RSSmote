@@ -78,7 +78,20 @@ public sealed class ShellFixture : IDisposable
         public void Open(Uri url, bool inBackground) => Opened.Add((url, inBackground));
     }
 
-    public ShellFixture(Action<AppSettings>? settings = null, SidebarLayout layout = SidebarLayout.Desktop)
+    /// <summary>Runs posted actions only when asked, as the UI thread does after the current one returns.</summary>
+    public sealed class QueuedUi : IUiDispatcher
+    {
+        private readonly Queue<Action> _queue = new();
+        public void Post(Action action) => _queue.Enqueue(action);
+
+        public void RunAll()
+        {
+            while (_queue.TryDequeue(out var action))
+                action();
+        }
+    }
+
+    public ShellFixture(Action<AppSettings>? settings = null, SidebarLayout layout = SidebarLayout.Desktop, IUiDispatcher? ui = null)
     {
         Store = new Store(Path.Combine(_folder, "rssmote.sqlite"), Clock);
         Settings = new SettingsStore(Path.Combine(_folder, "settings.json"));
@@ -105,7 +118,7 @@ public sealed class ShellFixture : IDisposable
         Store.SetUnread(read, false);
 
         Shell = new ShellViewModel(Store, Settings, refresher: null, new FeedFinder(FeedFinder.CreateHttpClient(Http)), Files,
-            Images, Launcher, new ImmediateUi(), Clock, layout);
+            Images, Launcher, ui ?? new ImmediateUi(), Clock, layout);
     }
 
     private static ParsedItem Item(string guid, string title, DateTimeOffset published, string summary, string? image = null) =>

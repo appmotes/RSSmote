@@ -1,0 +1,18 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:RSSmote.App.ViewModels"
+             x:Class="RSSmote.Mobile.Views.FolderChips"
+             x:DataType="vm:FolderPickerViewModel">
+    <!-- A feed's folder as chips (D9, D27): None, each folder, and New, which names a folder and picks it. -->
+    <Border Classes="phoneCard">
+        <StackPanel>
+            <WrapPanel x:Name="Chips" ItemSpacing="8" LineSpacing="8" Margin="14,12" />
+            <Border x:Name="NewRow" Classes="phoneRowLine" BorderThickness="0,1,0,0" IsVisible="False">
+                <Grid Classes="phoneSwitchRow" ColumnDefinitions="*,Auto" ColumnSpacing="12">
+                    <TextBox x:Name="NewName" Classes="phoneField" PlaceholderText="Folder name" Text="{Binding NewFolderName}" />
+                    <Button Grid.Column="1" Classes="phoneBarText strong" Content="Add" Command="{Binding AddFolderCommand}" />
+                </Grid>
+            </Border>
+        </StackPanel>
+    </Border>
+</UserControl>

@@ -23,6 +23,7 @@ public sealed partial class ArticleListViewModel : ObservableObject
     private readonly TimeProvider _clock;
     private readonly Func<long, Feed?> _feedLookup;
     private bool _reloading;
+    private AppSettings? _builtWith;
 
     public ArticleListViewModel(Store store, SettingsStore settings, IImageLoader images, IUiDispatcher ui,
                                 TimeProvider clock, Func<long, Feed?> feedLookup)
@@ -46,6 +47,12 @@ public sealed partial class ArticleListViewModel : ObservableObject
 
     /// <summary>Raised when the selected article changes, including to none.</summary>
     public event EventHandler<ArticleRowViewModel?>? ArticleSelected;
+
+    /// <summary>Raised just before and just after <see cref="Rows"/> is rebuilt, so a view can keep its place.</summary>
+    public event EventHandler? Rebuilding;
+
+    /// <inheritdoc cref="Rebuilding"/>
+    public event EventHandler? Rebuilt;
 
     [ObservableProperty]
     public partial string Title { get; set; } = "";
@@ -148,11 +155,21 @@ public sealed partial class ArticleListViewModel : ObservableObject
     /// <summary>No view shows the list any more; see <see cref="IsShown"/>.</summary>
     public void Hide() => IsShown = false;
 
+    /// <summary>Rebuilds the rows only when a setting they are built from differs from the last build.</summary>
+    public void ApplySettings(AppSettings settings)
+    {
+        if (_builtWith is { } built && built.Filter == settings.Filter && built.SortNewestFirst == settings.SortNewestFirst
+            && built.GroupByDate == settings.GroupByDate && built.GrayscaleFavicons == settings.GrayscaleFavicons
+            && built.DisplayFavicons == settings.DisplayFavicons)
+            return;
+        Reload(keepSelection: true);
+    }
+
     public void Reload(bool keepSelection)
     {
         if (!IsShown)
             return;
-        var settings = _settings.Current;
+        var settings = _builtWith = _settings.Current;
         Filter = settings.Filter;
         var selected = keepSelection ? SelectedArticle : null;
         var items = _store.Items(Stream, settings.Filter, SearchText, settings.SortNewestFirst).ToList();
@@ -183,6 +200,7 @@ public sealed partial class ArticleListViewModel : ObservableObject
             rows.Add(selected?.Id == item.Id ? selected : new ArticleRowViewModel(item, now, settings.GrayscaleFavicons));
         }
 
+        Rebuilding?.Invoke(this, EventArgs.Empty);
         _reloading = true;
         try
         {
@@ -195,6 +213,7 @@ public sealed partial class ArticleListViewModel : ObservableObject
         {
             _reloading = false;
         }
+        Rebuilt?.Invoke(this, EventArgs.Empty);
         UpdateSubtitle();
         UpdateStatusText(rows.Count(r => r is ArticleRowViewModel), settings.SortNewestFirst);
         UpdateEmptyText(rows.Count == 0, settings.Filter);

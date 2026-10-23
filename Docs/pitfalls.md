@@ -175,3 +175,42 @@ title and first day heading only. The headless clock lands a fraction off (401.9
 `ReadingFlowTests` parks the page at exactly one width and counts 0 rows, 8 when the page is laid out in place first.
 `MobileShell` replaces the theme's `PageSlide` with `LaidOutPageSlide`, which runs a layout pass before the slide
 starts.
+
+**P21 — A page's `TopCommandBar` does not inherit the page's data context.** `NavigationPage` hosts the bar's content
+in its own template, outside the page, so `{Binding SaveCommand}` on a bar button resolves against nothing and the
+button stays inert. Headless: the Save button of Edit Feed had a null `DataContext` and a null `Command`
+(Avalonia 12.1.4). `PhonePage.BarButton` binds the button's `DataContext` to the page's.
+
+**P22 — Values the `NavigationPage` template sets beat a plain style.** The template sets the header's
+`Grid.Column` and margin, the back button's foreground and the modal layer's background, and a template value
+outranks a style setter, so a style selecting `/template/ ContentPresenter#PART_Header` changed nothing. A selector
+with a pseudo-class (`:not(:disabled)`) is a style trigger, which outranks the template; `MobileShell.axaml` uses that
+for the header, the back button and the modal layer. Measured headless (Avalonia 12.1.4): the header stayed in
+column 1 with the plain style and spanned the bar with the trigger. A negative margin on that header shrank its
+text to the presenter's own desired width (88 of 100 for "Appearance", trimmed): `ContentPresenter` sizes a
+non-stretched child from its own `DesiredSize`, margin included.
+
+**P23 — `ToggleSwitch` moves its knob by `PART_SwitchKnob`'s width.** A custom template must name a `Panel`
+`PART_MovingKnobs` inside `PART_SwitchKnob`; on a device the control sets the knob's `Canvas.Left` itself, using
+the width of `PART_SwitchKnob` as the travel, whatever a style says. With a 22 wide canvas the knob overshot the
+44 pt track by 4 pt on the iPhone 17 Pro simulator, while the headless render looked right. The phone switch makes
+the canvas 18 wide, the travel.
+
+**P24 — `NavigationPage` ignores a push or pop while a transition runs.** Avalonia documents it for
+`PushModalAsync`; pops behave the same. Removing a feed popped Edit Feed from the sheet's confirm handler, and the
+sheet's own pop, a moment later, was dropped: the sheet stayed over Manage Feeds (iOS simulator, Release).
+`MobileShell.ConfirmAsync` awaits the sheet's pop before it runs the follow-up. `SettingsFlowTests` holds the
+transitions open to show it.
+
+**P25 — Rebuilding the article list moves its scroll position.** `ArticleListViewModel.Reload` replaces every row;
+with the title and list in one `ScrollViewer` (D25) the offset stays as a number while the rows under it change, so
+new articles above push the reader's place down, and a rebuild while an article covers the list lands elsewhere.
+`ArticleListPage` anchors the top row around `Rebuilding`/`Rebuilt` and on return, and turns off
+`AutoScrollToSelectedItem`, which put the last-read row at the top. The page is detached while an article covers it:
+`NavigatedFrom` fires after detaching and `NavigatedTo` before layout, so the anchor is taken in
+`OnDetachedFromVisualTree`, when the rows still hold their layout relative to each other. Measured headless with 200
+rows and 30 new ones (`ReadingFlowTests`): the top row moved from id 35 to 4 while shown and to 27 behind an article.
+
+**P26 — The phones decode bitmaps as RGBA.** `Favicon.Grayscale` handled BGRA only and returned anything else
+unchanged, so "Grayscale Favicons" did nothing on iOS and Android while the desktop showed grey. It now converts
+both orders. Seen on the iPhone 17 Pro simulator and the API 35 emulator (Release); `FaviconTests` checks both.
