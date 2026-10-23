@@ -33,7 +33,8 @@ public sealed partial class ShellViewModel : ObservableObject, IDisposable
     private AppSettings _lastSettings;
 
     public ShellViewModel(Store store, SettingsStore settings, Refresher? refresher, FeedFinder finder, IFilePicker files,
-                          IImageLoader images, ILauncher launcher, IUiDispatcher ui, TimeProvider clock)
+                          IImageLoader images, ILauncher launcher, IUiDispatcher ui, TimeProvider clock,
+                          SidebarLayout layout = SidebarLayout.Desktop)
     {
         _store = store;
         _settings = settings;
@@ -45,7 +46,7 @@ public sealed partial class ShellViewModel : ObservableObject, IDisposable
         _clock = clock;
         _lastSettings = settings.Current;
 
-        Sidebar = new SidebarViewModel(store, settings, images, ui);
+        Sidebar = new SidebarViewModel(store, settings, images, ui, layout);
         List = new ArticleListViewModel(store, settings, images, ui, clock, id => store.Feed(id));
         Article = new ArticleViewModel();
         Article.ApplySettings(settings.Current);
@@ -68,7 +69,11 @@ public sealed partial class ShellViewModel : ObservableObject, IDisposable
         if (refresher is not null)
             refresher.StateChanged += OnRefreshStateChanged;
 
-        ShowStream(Sidebar.SelectedStream);
+        // The phone opens on the Feeds root: its list is built when a stream is picked (A16).
+        if (layout == SidebarLayout.Phone)
+            List.Hide();
+        else
+            ShowStream(Sidebar.SelectedStream);
         UpdateRefreshState();
     }
 
@@ -199,7 +204,10 @@ public sealed partial class ShellViewModel : ObservableObject, IDisposable
     private bool CanRefresh() => _refresher is not null && !IsRefreshing;
 
     [RelayCommand(CanExecute = nameof(CanRefresh))]
-    private void Refresh() => _ = _refresher?.RefreshAllAsync();
+    private void Refresh() => _ = RefreshAsync();
+
+    /// <summary>Refreshes every feed; completes when the pass ends, or at once without a refresher.</summary>
+    public Task RefreshAsync() => _refresher?.RefreshAllAsync() ?? Task.CompletedTask;
 
     [RelayCommand]
     private void MarkAllRead() => _store.MarkAllRead(List.Stream);

@@ -1,9 +1,80 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             x:Class="RSSmote.Mobile.Views.FeedsView">
-    <!-- The Feeds root (D24). -->
-    <StackPanel>
-        <Border Height="{StaticResource Size.Phone.TopBar}" />
-        <TextBlock Classes="phoneLargeTitle" Text="Feeds" Margin="20,2,20,8" />
-    </StackPanel>
+             xmlns:c="urn:RSSmote.App.Controls"
+             xmlns:vm="using:RSSmote.App.ViewModels"
+             xmlns:v="using:RSSmote.Mobile.Views"
+             x:Class="RSSmote.Mobile.Views.FeedsView"
+             x:DataType="vm:ShellViewModel">
+    <!-- The Feeds root (D24): streams, Folders and Feeds as cards on the canvas; pull down to refresh. -->
+    <RefreshContainer x:Name="Refresh" RefreshRequested="OnRefreshRequested">
+        <ScrollViewer x:Name="Scroller">
+            <StackPanel Margin="0,0,0,24">
+                <Border Height="{StaticResource Size.Phone.TopBar}" />
+                <TextBlock Classes="phoneLargeTitle" Text="Feeds" Margin="20,2,20,0" />
+                <TextBlock Classes="phoneSecondary" Text="{Binding Sidebar.StatusText}" Margin="20,2,20,14" />
+                <ItemsControl x:Name="Groups">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="v:FeedGroup">
+                            <StackPanel>
+                                <Button Classes="phoneSection" IsVisible="{Binding HasHeader}"
+                                        Click="OnSectionClick" Tag="{Binding Header}">
+                                    <Grid ColumnDefinitions="*,Auto">
+                                        <TextBlock Text="{Binding Header.Title, FallbackValue=''}" VerticalAlignment="Center" />
+                                        <Panel Grid.Column="1" VerticalAlignment="Center">
+                                            <c:Icon Size="18" Data="{StaticResource Icon.ChevronDown}" IsVisible="{Binding Header.IsExpanded, FallbackValue=False}" />
+                                            <c:Icon Size="18" Data="{StaticResource Icon.ChevronRight}" IsVisible="{Binding !Header.IsExpanded, FallbackValue=False}" />
+                                        </Panel>
+                                    </Grid>
+                                </Button>
+                                <Border Classes="phoneCard" IsVisible="{Binding HasRows}">
+                                    <ItemsControl ItemsSource="{Binding Rows}">
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate x:DataType="v:FeedGroupRow">
+                                                <Border Classes="phoneRowLine" Classes.last="{Binding IsLast}">
+                                                    <Grid>
+                                                        <Button Classes="phoneRow" Click="OnRowClick" Tag="{Binding Row}">
+                                                            <Grid ColumnDefinitions="20,*,Auto,Auto" ColumnSpacing="12"
+                                                                  Margin="{Binding Row.IsInFolder, Converter={x:Static v:FeedsView.IndentConverter}}">
+                                                                <c:Icon Size="20" Foreground="{DynamicResource Brush.Accent}"
+                                                                        IsVisible="{Binding Row.IsSmart}"
+                                                                        Data="{Binding Row.Filter, Converter={x:Static v:PhoneConverters.FilterIcon}}" />
+                                                                <c:Favicon IsVisible="{Binding Row.IsFeed}" Size="18" Radius="4"
+                                                                           Source="{Binding Row.Favicon}" Title="{Binding Row.Title}"
+                                                                           IsGrayscale="{Binding Row.IsFaviconGrayscale}"
+                                                                           TileBrush="{DynamicResource Brush.Bg.FaviconTile}"
+                                                                           LetterBrush="{DynamicResource Brush.Ink.OnTile}" />
+                                                                <TextBlock Grid.Column="1" Text="{Binding Row.Title}" VerticalAlignment="Center"
+                                                                           TextTrimming="CharacterEllipsis" />
+                                                                <c:Icon Grid.Column="2" Size="18" IsVisible="{Binding Row.HasError}"
+                                                                        Foreground="{DynamicResource Brush.Ink.Danger}"
+                                                                        Data="{StaticResource Icon.CircleAlert}" />
+                                                                <TextBlock Grid.Column="3" Classes="phoneSecondary" VerticalAlignment="Center"
+                                                                           IsVisible="{Binding Row.HasCount}" Text="{Binding Row.Count}" />
+                                                            </Grid>
+                                                        </Button>
+                                                        <!-- Over the row's icon slot: a folder's chevron opens it in place; the rest of the row opens its list. -->
+                                                        <Button Classes="phoneIcon" IsVisible="{Binding Row.HasDisclosure}" HorizontalAlignment="Left"
+                                                                Margin="4,0,0,0" Click="OnDisclosureClick" Tag="{Binding Row}">
+                                                            <Panel>
+                                                                <c:Icon Data="{StaticResource Icon.ChevronRight}" Size="18"
+                                                                        Foreground="{DynamicResource Brush.Ink.Secondary}"
+                                                                        IsVisible="{Binding !Row.IsExpanded}" />
+                                                                <c:Icon Data="{StaticResource Icon.ChevronDown}" Size="18"
+                                                                        Foreground="{DynamicResource Brush.Ink.Secondary}"
+                                                                        IsVisible="{Binding Row.IsExpanded}" />
+                                                            </Panel>
+                                                        </Button>
+                                                    </Grid>
+                                                </Border>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                </Border>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </StackPanel>
+        </ScrollViewer>
+    </RefreshContainer>
 </UserControl>

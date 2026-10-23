@@ -153,8 +153,22 @@ public sealed class ArticleHost : Decorator
     {
         ArticleRenderer.Native => true,
         ArticleRenderer.Fallback => false,
-        _ => NativeAdapters.Any(type => WebViewAdapterInfo.GetAdapterInfo(type) is { IsSupported: true, IsInstalled: true }),
+        // Android ships its system web view, which the package drives without an adapter query.
+        _ => OperatingSystem.IsAndroid() || NativeAdapters.Any(IsAvailable),
     };
+
+    /// <summary>An adapter built for another OS throws from its type initializer when asked (P17).</summary>
+    private static bool IsAvailable(WebViewAdapterType type)
+    {
+        try
+        {
+            return WebViewAdapterInfo.GetAdapterInfo(type) is { IsSupported: true, IsInstalled: true };
+        }
+        catch (TypeInitializationException)
+        {
+            return false;
+        }
+    }
 
     /// <summary>Space: scrolls a page; false at the end of the article so the caller can move on.</summary>
     public async Task<bool> ScrollPageAsync(bool up)

@@ -17,8 +17,9 @@ public sealed class ImageCache(HttpClient http) : IImageLoader
 {
     private readonly ConcurrentDictionary<string, Task<Bitmap?>> _cache = new();
 
+    /// <summary>Fetches on the thread pool, so no part of a request runs on the caller's (UI) thread (A11).</summary>
     public Task<Bitmap?> LoadAsync(string url, int decodeWidth) =>
-        _cache.GetOrAdd($"{decodeWidth}|{url}", _ => FetchAsync(url, decodeWidth));
+        _cache.GetOrAdd($"{decodeWidth}|{url}", _ => Task.Run(() => FetchAsync(url, decodeWidth)));
 
     public void Forget(string url)
     {

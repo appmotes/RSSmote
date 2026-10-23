@@ -54,6 +54,10 @@ public sealed partial class ArticleListViewModel : ObservableObject
     [ObservableProperty]
     public partial string Subtitle { get; set; } = "";
 
+    /// <summary>"3 unread · newest first": the line under the phone list's title (D25).</summary>
+    [ObservableProperty]
+    public partial string PhoneSubtitle { get; set; } = "";
+
     /// <summary>The count badge next to the title; empty when there is nothing to count.</summary>
     [ObservableProperty]
     public partial string CountText { get; set; } = "";
@@ -129,15 +133,25 @@ public sealed partial class ArticleListViewModel : ObservableObject
 
     public ArticleRowViewModel? SelectedArticle => SelectedRow as ArticleRowViewModel;
 
+    /// <summary>A view shows the list. While false (a phone back on its Feeds root) store changes leave the rows
+    /// alone, and the next <see cref="Show"/> rebuilds them.</summary>
+    public bool IsShown { get; private set; } = true;
+
     public void Show(ArticleStream stream, string title)
     {
+        IsShown = true;
         Stream = stream;
         Title = title;
         Reload(keepSelection: false);
     }
 
+    /// <summary>No view shows the list any more; see <see cref="IsShown"/>.</summary>
+    public void Hide() => IsShown = false;
+
     public void Reload(bool keepSelection)
     {
+        if (!IsShown)
+            return;
         var settings = _settings.Current;
         Filter = settings.Filter;
         var selected = keepSelection ? SelectedArticle : null;
@@ -206,6 +220,8 @@ public sealed partial class ArticleListViewModel : ObservableObject
         var count = _store.Count(Stream, filter);
         Subtitle = ItemFormatting.CountText(count, filter);
         CountText = count > 0 ? count.ToString(System.Globalization.CultureInfo.CurrentCulture) : "";
+        PhoneSubtitle = $"{count} {(filter == StreamFilter.Starred ? "starred" : "unread")} · "
+                        + (_settings.Current.SortNewestFirst ? "newest first" : "oldest first");
     }
 
     private void UpdateEmptyText(bool empty, StreamFilter filter)

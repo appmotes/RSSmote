@@ -1,5 +1,6 @@
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Controls.Primitives;
 using Avalonia.Headless.XUnit;
 using Avalonia.VisualTree;
 using RSSmote.App.Controls.Headless;
@@ -48,10 +49,10 @@ public class ShellRenderTests
         var window = PhoneRender.Show(shell, "Sand");
         PhoneRender.Save(window, "phone-layout");
 
-        var bar = shell.Root.FeedsTab.FindAncestorOfType<Border>()!;
-        var top = bar.TranslatePoint(new Point(0, 0), window)!.Value.Y;
+        var bar = shell.Root.FeedsTab.FindAncestorOfType<UniformGrid>()!;
+        var bottom = bar.TranslatePoint(new Point(0, bar.Bounds.Height), window)!.Value.Y;
         Assert.Equal(49, bar.Bounds.Height);
-        Assert.Equal(PhoneRender.Height - 49, top);
+        Assert.Equal(PhoneRender.Height, bottom);
         Assert.Equal(22, shell.Root.FeedsTab.FindDescendantOfType<Icon>()!.Bounds.Height);
         window.Close();
     }

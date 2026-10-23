@@ -40,3 +40,8 @@ saved, and cancelling leaves the library untouched (a test in `RSSmote.App.Tests
 **W3 — Tablet layout.** The mobile design covers the phone only (D23–D28). A tablet in landscape needs its own
 answer (list and article side by side, or three columns as on desktop). Done when it is drawn and recorded as a
 D entry.
+
+**N16 — Native article view on iOS (P16).** Find why `NativeWebView` stays blank inside `MobileShell` (a page pushed
+during a transition, a native view attached under a `NavigationPage`, or the WebView package's iOS support; the page's first layout happens a whole width off screen, P20) and switch
+the iOS head back from the fallback renderer. The fallback also shows no remote images on iOS. Done when an article
+with images and a YouTube embed shows in the simulator with the native view.

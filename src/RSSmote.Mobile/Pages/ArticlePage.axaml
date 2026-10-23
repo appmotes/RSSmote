@@ -1,0 +1,46 @@
+<ContentPage xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:c="urn:RSSmote.App.Controls"
+             xmlns:vm="using:RSSmote.App.ViewModels"
+             xmlns:v="using:RSSmote.Mobile.Views"
+             x:Class="RSSmote.Mobile.Pages.ArticlePage"
+             x:DataType="vm:ShellViewModel"
+             AutomaticallyApplySafeAreaPadding="False"
+             Header="{Binding Article.PositionText}"
+             Background="{DynamicResource Brush.Bg.Article}">
+    <!-- The article (D26): the page fills the screen; Read, Star, Browser, Previous and Next sit in the bottom bar. -->
+    <NavigationPage.BackButtonContent>
+        <c:Icon Data="{StaticResource Icon.ChevronLeft}" Size="24" Foreground="{DynamicResource Brush.Ink.Icon}" />
+    </NavigationPage.BackButtonContent>
+    <ContentPage.BottomCommandBar>
+        <Border Padding="{Binding $parent[ContentPage].SafeAreaPadding, Converter={x:Static v:PhoneConverters.BottomInset}}" Background="{DynamicResource Brush.Bg.Article}"
+                BorderBrush="{DynamicResource Brush.Line.Separator}" BorderThickness="0,1,0,0">
+            <UniformGrid Rows="1" Columns="5" Margin="12,0" Height="{StaticResource Size.Phone.BottomBar}">
+                <Button Classes="phoneIcon" Command="{Binding ToggleReadCommand}"
+                        ToolTip.Tip="Mark as Read" HorizontalAlignment="Center">
+                    <c:Icon Data="{StaticResource Icon.Circle}" IsFilled="{Binding Article.IsUnread}" />
+                </Button>
+                <Button Classes="phoneIcon" Classes.on="{Binding Article.IsStarred}" Command="{Binding ToggleStarredCommand}"
+                        ToolTip.Tip="Star" HorizontalAlignment="Center">
+                    <c:Icon Data="{StaticResource Icon.Star}" IsFilled="{Binding Article.IsStarred}" />
+                </Button>
+                <Button Classes="phoneIcon" Command="{Binding OpenInBrowserCommand}"
+                        ToolTip.Tip="Open in Browser" HorizontalAlignment="Center">
+                    <c:Icon Data="{StaticResource Icon.Globe}" />
+                </Button>
+                <Button Classes="phoneIcon" Click="OnPreviousClick" ToolTip.Tip="Previous Article" HorizontalAlignment="Center">
+                    <c:Icon Data="{StaticResource Icon.ChevronUp}" />
+                </Button>
+                <Button Classes="phoneIcon" Click="OnNextClick" ToolTip.Tip="Next Article" HorizontalAlignment="Center">
+                    <c:Icon Data="{StaticResource Icon.ChevronDown}" />
+                </Button>
+            </UniformGrid>
+        </Border>
+    </ContentPage.BottomCommandBar>
+
+    <c:ArticleHost x:Name="Host" IsVisible="{Binding Article.HasArticle}"
+                   Document="{Binding Article.Document}"
+                   ArticleFont="{Binding Article.Font}"
+                   ArticleFontSize="{Binding Article.FontSize}"
+                   LinkClicked="OnLinkClicked" />
+</ContentPage>

@@ -41,8 +41,8 @@ published per RID: `osx-arm64`, `osx-x64`, `win-x64`, `win-arm64`, `linux-x64`, 
 refresher, image cache, launcher, UI dispatcher, clock), applies the theme — the palette of the slot the settings
 name, or for Automatic the slot the OS asks for, re-applied when either changes (D22) — builds `ShellViewModel` from
 those services, creates the root control and starts the refresher; desktop shutdown disposes them. The head passes an
-`IShellHost` (`App.Host`) that supplies its launcher and creates its root (`CreateRoot(shell)`), so `App` never names
-a screen: `AppBuilder.Configure(() => new App { Host = new DesktopShellHost() })`. `App` handles three lifetimes:
+`IShellHost` (`App.Host`) that supplies its launcher and its `Layout` (desktop columns or phone stack) and creates
+its root (`CreateRoot(shell)`), so `App` never names a screen: `AppBuilder.Configure(() => new App { Host = new DesktopShellHost() })`. `App` handles three lifetimes:
 
 | Lifetime | Head | Root goes to | File dialogs belong to |
 |---|---|---|---|
@@ -171,11 +171,22 @@ dotnet build src/RSSmote.iOS/RSSmote.iOS.csproj -r iossimulator-arm64
 ```
 
 Android needs the API 36 platform and JDK 17 or later, and a Debug build reaches an emulator through `-t:Install`
-(P12); iOS needs the Xcode version the `ios` workload names.
+(P12), a Release APK through `adb install -r --no-incremental` (P19); iOS needs the Xcode version the `ios` workload names.
 
 **A16 — Phone shell.** `MobileShellHost` creates `MobileShell`, a `NavigationPage` that is the whole stack (D23).
 Its root page, `RootPage` (a `ContentPage` with no navigation bar), holds the tab bar in `BottomCommandBar` and shows
 `FeedsView` or `SettingsView` as its content; `RootPage.Show(RootTab)` switches them, and both views are created once.
-The bar belongs to the root page, so a pushed page has none. `MobileShell` carries `Bg.Sidebar` as its background
-because the page does not reach under the safe-area insets (P14). Screens push onto `MobileShell`; nothing else holds
-navigation state.
+The bar belongs to the root page, so a pushed page has none. `MobileShell` sets the shared `SidebarViewModel` to
+`SidebarLayout.Phone` (D24) and drives the stack from the view-models: `Sidebar.StreamSelected` on the root pushes
+`ArticleListPage`, `List.ArticleSelected` on the list pushes `ArticlePage`, and popping the article clears the list's
+selection. A phone pick never stays selected, so the same row opens again; Previous and Next stay inside the list.
+The shell's background and its top bar follow the top page, because the strips under the safe-area insets show the
+shell (P14), the shell takes the insets and the system back itself (P15, P18), and it slides pages with
+`LaidOutPageSlide`, which lays the incoming page out in place first (P20). Pushed pages live in
+`RSSmote.Mobile/Pages`, root content in `Views`; nothing but `MobileShell` holds navigation state. A refresh that
+changes only counts updates the sidebar rows in place, so a touch that began on a row is not lost when the rows are
+rebuilt. The article list is built only while its page is in the stack: the host's `IShellHost.Layout` tells
+`ShellViewModel` to start on the Feeds root without a list, `List.Show` builds it when a stream is picked, and
+`List.Hide` on the way back to the root stops store changes from rebuilding rows nobody sees. The list page puts its
+large title and the `ListBox` in one `ScrollViewer`, so the title scrolls away with the rows (D25) and the list still
+realises only the rows in view.

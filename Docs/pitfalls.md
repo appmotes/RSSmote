@@ -125,3 +125,53 @@ out inside the status-bar and home-indicator insets, and its background goes wit
 the `NavigationPage`'s own background, white by default. Seen on the iPhone 17 Pro simulator with Avalonia 12.1.4.
 `MobileShell` sets `Bg.Sidebar`, the root page's background, so the strips match it (A16). A pushed page with another
 background will meet the same strip; not yet measured.
+
+**P15 — The phone shell's `NavigationPage` gets no safe-area insets of its own.** As the view's root nobody sets its
+`SafeAreaPadding`, so its top bar is drawn under the status bar, while the pages below it are inset on their own and
+the root page looks right. `MobileShell` copies `TopLevel.InsetsManager.SafeAreaPadding` into its `SafeAreaPadding`
+and follows `SafeAreaChanged`; the bar then sits below the status bar and the shell hands its pages only the bottom
+inset. Measured on the iPhone 17 Pro simulator with Avalonia 12.1.4, together with a local `Padding` of zero on the
+shell and `AutomaticallyApplySafeAreaPadding="False"` on the pushed pages, which leaves no gap under the bar. On Android the value
+read inside `SafeAreaChanged` is still in device pixels (136 for a 51.8 inset at 2.625) and settles afterwards
+without a second event, so the shell reads it once the dispatcher is idle. A `ContentPage` pads only its content,
+never its `BottomCommandBar`, so the phone pages turn the automatic padding off, put the top inset on their content
+and the bottom inset under their bar (`PhoneConverters.TopInset`, `BottomInset`). Measured on the API 35 emulator.
+
+**P16 — `NativeWebView` shows nothing inside the phone shell on iOS.** The article page pushed onto `MobileShell` stays
+blank although WebKit loads (its process logs to the system log); the same document renders with the fallback
+renderer. Seen on the iPhone 17 Pro simulator, iOS 26.5, Avalonia 12.1.4 and Avalonia.Controls.WebView 12.1.1; the
+cause is not found yet (N16). The iOS head sets `ArticleHost.DefaultRenderer` to the fallback meanwhile.
+
+**P17 — Asking `WebViewAdapterInfo` about another OS's adapter can crash.** On Android,
+`WebViewAdapterInfo.GetAdapterInfo(WebViewAdapterType.WkWebView)` throws a `TypeInitializationException` from
+`MaciosWebViewAdapter`, and the article page crashed as it was created. `ArticleHost` treats a throwing adapter as
+absent and takes the native view on Android without asking, since the package drives the system web view there.
+Seen in a Release build on an API 35 emulator with Avalonia.Controls.WebView 12.1.1.
+
+**P18 — The system back never reaches a `NavigationPage` that is the view's root.** Avalonia forwards
+`TopLevel.BackRequested` to a page only through `PageNavigationHost`; without one, Android's back button or edge
+swipe goes unhandled and the system closes the app from any page. `MobileShell` subscribes to its top level's
+`BackRequested` and raises `Page.PageNavigationSystemBackButtonPressedEvent` on itself, which pops the top page and
+leaves the root's back unhandled, so the system still closes the app there. Seen in a Release build on the API 35
+emulator with Avalonia 12.1.4: article → list → Feeds → home after the fix, home from the list before it.
+`ReadingFlowTests` raises `BackRequested` on the window. Read from the 12.1.4 source, not tried: `PageNavigationHost`
+also hands its page the safe-area insets (P15).
+
+**P19 — `adb install` installs incrementally, and the first launch then dies with an ANR.** On the API 35 emulator
+`adb install -r` streams the APK through incfs; ART does not compile it (`adb shell dumpsys package dexopt`:
+`status=run-from-apk`), class verification crawls at about 100 bytecodes/s, and the process is killed as "failed to
+complete startup" before any managed code runs (`App` never starts). `adb install -r --no-incremental` gives
+`status=verify` and a first launch of 1.9 s (`am start -W`, Release). A starved emulator (2 GB with swap, host load
+near 20) shows the same ANR on later launches too, and an emulator that has run for most of an hour with many
+installs took 17 s for a launch that took 1.8 s after a restart (same APK, main thread inside Mono's type loader).
+Measure startup on a freshly booted, idle emulator started with `-memory 4096`.
+
+**P20 — A list on a page that slides in realises no rows.** `PageSlide` starts the incoming page exactly one width
+to the right, and the page's first layout happens there. The effective viewport follows the render transform, so it
+only touches the page's edge; `Rect.Intersect` treats an edge as empty, and the `VirtualizingStackPanel` realises
+nothing. The slide itself runs no layout, so the rows appear only with the next layout pass, sometimes well after the
+page has settled. Seen on the iPhone 17 Pro simulator (Release, Avalonia 12.1.4): the article list slid in with its
+title and first day heading only. The headless clock lands a fraction off (401.99 of 402) and hides it;
+`ReadingFlowTests` parks the page at exactly one width and counts 0 rows, 8 when the page is laid out in place first.
+`MobileShell` replaces the theme's `PageSlide` with `LaidOutPageSlide`, which runs a layout pass before the slide
+starts.

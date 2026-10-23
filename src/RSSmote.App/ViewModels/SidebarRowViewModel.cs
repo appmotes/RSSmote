@@ -33,6 +33,13 @@ public sealed partial class SidebarRowViewModel : ObservableObject
 
     public bool IsFeed => Kind == SidebarRowKind.Feed;
 
+    public bool IsSmart => Kind == SidebarRowKind.Smart;
+
+    /// <summary>A feed listed under its folder, indented one level.</summary>
+    public bool IsInFolder => Feed?.FolderId is not null;
+
+    public bool HasCount => Count > 0;
+
     /// <summary>The feed row's "Open example.com" menu item.</summary>
     public string OpenSiteTitle => Feed?.Host is { } host ? "Open " + host : "Open Website";
 
@@ -45,6 +52,7 @@ public sealed partial class SidebarRowViewModel : ObservableObject
     public partial string Title { get; set; }
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasCount))]
     public partial int Count { get; set; }
 
     [ObservableProperty]
@@ -54,7 +62,11 @@ public sealed partial class SidebarRowViewModel : ObservableObject
     public partial bool IsExpanded { get; set; }
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasDisclosure))]
     public partial bool IsExpandable { get; set; } = true;
+
+    /// <summary>A folder with feeds to show carries a chevron that opens it in place.</summary>
+    public bool HasDisclosure => IsFolder && IsExpandable;
 
     [ObservableProperty]
     public partial bool HasError { get; set; }

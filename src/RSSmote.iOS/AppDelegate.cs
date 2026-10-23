@@ -1,6 +1,7 @@
 using Avalonia;
 using Avalonia.iOS;
 using Foundation;
+using RSSmote.App.Controls.Headless;
 using RSSmote.Mobile;
 
 namespace RSSmote.iOS;
@@ -9,8 +10,12 @@ namespace RSSmote.iOS;
 [Register("AppDelegate")]
 public partial class AppDelegate : AvaloniaAppDelegate<App.App>
 {
-    protected override AppBuilder CreateAppBuilder() =>
-        AppBuilder.Configure(() => new App.App { Host = new MobileShellHost() }).UseiOS(this);
+    protected override AppBuilder CreateAppBuilder()
+    {
+        // The native web view shows nothing inside the phone shell yet (P16, N16); the article uses the fallback.
+        ArticleHost.DefaultRenderer = ArticleRenderer.Fallback;
+        return AppBuilder.Configure(() => new App.App { Host = new MobileShellHost() }).UseiOS(this);
+    }
 
     protected override AppBuilder CustomizeAppBuilder(AppBuilder builder) => base.CustomizeAppBuilder(builder).WithInterFont();
 }

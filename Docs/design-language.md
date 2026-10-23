@@ -177,6 +177,8 @@ Licence notice in `Assets/Icons/LICENSE-lucide.txt`.
 | Folder | `Icon.Folder` | folder |
 | Feed fallback | `Icon.Rss` | rss |
 | Next article | `Icon.ChevronDown` | chevron-down |
+| Previous article (phone) | `Icon.ChevronUp` | chevron-up |
+| Feed error (phone) | `Icon.CircleAlert` | circle-alert |
 | Settings | `Icon.Settings` | settings |
 | Menu (Win/Linux) | `Icon.Menu` | ellipsis |
 | Open website | `Icon.Globe`, `Icon.ExternalLink` | globe, external-link |

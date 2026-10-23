@@ -78,7 +78,7 @@ public sealed class ShellFixture : IDisposable
         public void Open(Uri url, bool inBackground) => Opened.Add((url, inBackground));
     }
 
-    public ShellFixture(Action<AppSettings>? settings = null)
+    public ShellFixture(Action<AppSettings>? settings = null, SidebarLayout layout = SidebarLayout.Desktop)
     {
         Store = new Store(Path.Combine(_folder, "rssmote.sqlite"), Clock);
         Settings = new SettingsStore(Path.Combine(_folder, "settings.json"));
@@ -105,7 +105,7 @@ public sealed class ShellFixture : IDisposable
         Store.SetUnread(read, false);
 
         Shell = new ShellViewModel(Store, Settings, refresher: null, new FeedFinder(FeedFinder.CreateHttpClient(Http)), Files,
-            Images, Launcher, new ImmediateUi(), Clock);
+            Images, Launcher, new ImmediateUi(), Clock, layout);
     }
 
     private static ParsedItem Item(string guid, string title, DateTimeOffset published, string summary, string? image = null) =>

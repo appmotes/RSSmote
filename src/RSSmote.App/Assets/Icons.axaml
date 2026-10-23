@@ -15,6 +15,8 @@
     <StreamGeometry x:Key="Icon.ChevronLeft">M 15 18 l -6 -6 6 -6</StreamGeometry>
     <StreamGeometry x:Key="Icon.ChevronRight">M 9 18 l 6 -6 -6 -6</StreamGeometry>
     <StreamGeometry x:Key="Icon.ChevronDown">M 6 9 l 6 6 6 -6</StreamGeometry>
+    <StreamGeometry x:Key="Icon.ChevronUp">M 18 15 l -6 -6 -6 6</StreamGeometry>
+    <StreamGeometry x:Key="Icon.CircleAlert">M 2 12 A 10 10 0 1 0 22 12 A 10 10 0 1 0 2 12 Z M 12 8 v 4 M 12 16 h 0.01</StreamGeometry>
     <StreamGeometry x:Key="Icon.Folder">M 20 20 a 2 2 0 0 0 2 -2 V 8 a 2 2 0 0 0 -2 -2 h -7.9 a 2 2 0 0 1 -1.69 -0.9 L 9.6 3.9 A 2 2 0 0 0 7.93 3 H 4 a 2 2 0 0 0 -2 2 v 13 a 2 2 0 0 0 2 2 Z</StreamGeometry>
     <StreamGeometry x:Key="Icon.Rss">M 4 11 a 9 9 0 0 1 9 9 M 4 4 a 16 16 0 0 1 16 16 M 4 19 A 1 1 0 1 0 6 19 A 1 1 0 1 0 4 19 Z</StreamGeometry>
     <StreamGeometry x:Key="Icon.Settings">M 9.671 4.136 a 2.34 2.34 0 0 1 4.659 0 2.34 2.34 0 0 0 3.319 1.915 2.34 2.34 0 0 1 2.33 4.033 2.34 2.34 0 0 0 0 3.831 2.34 2.34 0 0 1 -2.33 4.033 2.34 2.34 0 0 0 -3.319 1.915 2.34 2.34 0 0 1 -4.659 0 2.34 2.34 0 0 0 -3.32 -1.915 2.34 2.34 0 0 1 -2.33 -4.033 2.34 2.34 0 0 0 0 -3.831 A 2.34 2.34 0 0 1 6.35 6.051 a 2.34 2.34 0 0 0 3.319 -1.915 M 9 12 A 3 3 0 1 0 15 12 A 3 3 0 1 0 9 12 Z</StreamGeometry>

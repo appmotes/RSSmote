@@ -72,7 +72,7 @@ public partial class App : Application
             platform.ColorValuesChanged += OnColorValuesChanged;
 
         _shell = new ShellViewModel(_services.Store, _services.Settings, _services.Refresher, _services.Finder, _services.Files, _services.Images,
-            _services.Launcher, _services.Ui, _services.Clock);
+            _services.Launcher, _services.Ui, _services.Clock, host.Layout);
         return _shell;
     }
 

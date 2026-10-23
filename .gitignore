@@ -480,3 +480,6 @@ $RECYCLE.BIN/
 
 # Vim temporary swap files
 *.swp
+
+# Temporary mobile working notes, mockups and screenshots
+src/RSSmote.Mobile/_work/

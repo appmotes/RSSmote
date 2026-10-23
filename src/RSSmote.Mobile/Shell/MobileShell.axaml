@@ -1,4 +1,26 @@
 <NavigationPage xmlns="https://github.com/avaloniaui"
                 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                 x:Class="RSSmote.Mobile.Shell.MobileShell"
-                Background="{DynamicResource Brush.Bg.Sidebar}" />
+                Background="{DynamicResource Brush.Bg.Sidebar}"
+                BarHeight="{StaticResource Size.Phone.TopBar}">
+    <!-- The top bar, status-bar strip included, takes the shell's background, which follows the top page (P14).
+         Back is a chevron in the accent, from each page's BackButtonContent. -->
+    <NavigationPage.Styles>
+        <Style Selector="NavigationPage /template/ Border#PART_NavigationBar">
+            <Setter Property="Background" Value="{Binding $parent[NavigationPage].Background}" />
+        </Style>
+        <Style Selector="NavigationPage /template/ Path#PART_BackButtonDefaultIcon">
+            <Setter Property="IsVisible" Value="False" />
+        </Style>
+        <Style Selector="NavigationPage /template/ Button#PART_BackButton">
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Accent}" />
+            <Setter Property="Padding" Value="0,0,8,0" />
+        </Style>
+        <Style Selector="NavigationPage /template/ ContentPresenter#PART_Header">
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Ink.Secondary}" />
+            <Setter Property="FontSize" Value="15" />
+            <Setter Property="HorizontalContentAlignment" Value="Center" />
+            <Setter Property="Margin" Value="0,0,56,0" />
+        </Style>
+    </NavigationPage.Styles>
+</NavigationPage>

@@ -1,0 +1,201 @@
+using Avalonia;
+using Avalonia.Controls;
+using Avalonia.Headless.XUnit;
+using Avalonia.Threading;
+using Avalonia.VisualTree;
+using RSSmote.App.ViewModels;
+using RSSmote.Core.Models;
+using RSSmote.Core.Parsing;
+using RSSmote.Mobile.Pages;
+using RSSmote.Mobile.Shell;
+
+namespace RSSmote.Mobile.Tests;
+
+/// <summary>Feeds → article list → article on the phone (D23–D26).</summary>
+public class ReadingFlowTests
+{
+    private static void Settle()
+    {
+        for (var i = 0; i < 20; i++)
+        {
+            Dispatcher.UIThread.RunJobs();
+            Avalonia.Headless.AvaloniaHeadlessPlatform.ForceRenderTimerTick();
+        }
+    }
+
+    private static (ShellFixture Fixture, MobileShell Shell, Avalonia.Controls.Window Window) Open(string palette)
+    {
+        var f = new ShellFixture(s => s.ExpandedFolders = [1]);
+        var shell = new MobileShell(f.Shell) { PageTransition = null };
+        var window = PhoneRender.Show(shell, palette);
+        Settle();
+        return (f, shell, window);
+    }
+
+    [AvaloniaTheory]
+    [InlineData("Sand")]
+    [InlineData("Ember")]
+    public void Feeds_root_renders_streams_folders_and_feeds(string palette)
+    {
+        var (f, shell, window) = Open(palette);
+        Assert.Equal(SidebarLayout.Phone, f.Shell.Sidebar.Layout);
+        PhoneRender.Save(window, $"phone-m1-{palette}");
+        window.Close();
+        f.Dispose();
+    }
+
+    [AvaloniaTheory]
+    [InlineData("Sand")]
+    [InlineData("Ember")]
+    public void Picking_a_stream_then_an_article_pushes_the_list_and_the_article(string palette)
+    {
+        var (f, shell, window) = Open(palette);
+
+        f.Shell.Sidebar.SelectedRow = f.Row("Unread");
+        Settle();
+        Assert.IsType<ArticleListPage>(shell.NavigationStack[^1]);
+        PhoneRender.Save(window, $"phone-m2-{palette}");
+
+        f.Shell.List.SelectedRow = f.Shell.List.Articles.First();
+        Settle();
+        Assert.IsType<ArticlePage>(shell.NavigationStack[^1]);
+        Assert.Equal("1 of 4", f.Shell.Article.PositionText);
+        PhoneRender.Save(window, $"phone-m3-{palette}");
+        window.Close();
+        f.Dispose();
+    }
+
+    [AvaloniaFact]
+    public void Going_back_clears_the_picks_so_the_same_rows_open_again()
+    {
+        var (f, shell, window) = Open("Sand");
+        f.Shell.Sidebar.SelectedRow = f.Row("WIRED");
+        Settle();
+        f.Shell.List.SelectedRow = f.Shell.List.Articles.First();
+        Settle();
+        Assert.Equal(["RootPage", "ArticleListPage", "ArticlePage"], shell.NavigationStack.Select(p => p.GetType().Name));
+
+        _ = shell.PopAsync();
+        Settle();
+        Assert.IsType<ArticleListPage>(shell.NavigationStack[^1]);
+        Assert.Null(f.Shell.List.SelectedRow);
+
+        _ = shell.PopAsync();
+        Settle();
+        Assert.IsType<RootPage>(shell.NavigationStack[^1]);
+        f.Shell.Sidebar.SelectedRow = f.Row("WIRED");
+        Settle();
+        Assert.IsType<ArticleListPage>(shell.NavigationStack[^1]);
+        window.Close();
+        f.Dispose();
+    }
+
+    [AvaloniaFact]
+    public void The_list_filter_buttons_set_the_filter()
+    {
+        var (f, shell, window) = Open("Sand");
+        f.Shell.Sidebar.SelectedRow = f.Row("Unread");
+        Settle();
+        f.Shell.ShowFilterCommand.Execute(StreamFilter.All);
+        Settle();
+        Assert.Equal(StreamFilter.All, f.Shell.List.Filter);
+        Assert.Equal(5, f.Shell.List.Articles.Count());
+        window.Close();
+        f.Dispose();
+    }
+
+    [AvaloniaFact]
+    public void The_list_title_scrolls_away_and_only_rows_in_view_are_realised()
+    {
+        var (f, shell, window) = Open("Sand");
+        f.Store.Upsert(f.Wired.Id, [.. Enumerable.Range(0, 200).Select(i => new ParsedItem($"m{i}", $"Item {i}",
+            $"https://example.com/m{i}", null, "<p>x</p>", "x", null, ShellFixture.Now.AddMinutes(-60 - i)))]);
+        f.Shell.FlushPendingReload();
+        f.Shell.Sidebar.SelectedRow = f.Row("Unread");
+        Settle();
+        var page = Assert.IsType<ArticleListPage>(shell.NavigationStack[^1]);
+        var rows = page.FindControl<ListBox>("Rows")!;
+        var scroller = page.GetVisualDescendants().OfType<ScrollViewer>().First();
+        var title = page.GetVisualDescendants().OfType<TextBlock>().First(t => t.Classes.Contains("phoneLargeTitle"));
+        Assert.InRange(rows.GetRealizedContainers().Count(), 1, 20);
+        Assert.InRange(title.TranslatePoint(default, page)!.Value.Y, 0, 200);
+
+        scroller.Offset = new Vector(0, 3000);
+        Settle();
+        Assert.Equal(3000, scroller.Offset.Y);
+        // Scrolled out of view, the title's row is either above the page or recycled.
+        Assert.True(title.TranslatePoint(default, page) is not { } at || at.Y < 0);
+        Assert.InRange(rows.GetRealizedContainers().Count(), 1, 20);
+        PhoneRender.Save(window, "phone-m2-scrolled");
+        window.Close();
+        f.Dispose();
+    }
+
+    [AvaloniaFact]
+    public void The_system_back_pops_a_page_and_leaves_the_root_to_the_system()
+    {
+        var (f, shell, window) = Open("Sand");
+        f.Shell.Sidebar.SelectedRow = f.Row("Unread");
+        Settle();
+
+        var back = new Avalonia.Interactivity.RoutedEventArgs(TopLevel.BackRequestedEvent);
+        window.RaiseEvent(back);
+        Settle();
+        Assert.True(back.Handled);
+        Assert.IsType<RootPage>(shell.NavigationStack[^1]);
+
+        var again = new Avalonia.Interactivity.RoutedEventArgs(TopLevel.BackRequestedEvent);
+        window.RaiseEvent(again);
+        Assert.False(again.Handled);
+        window.Close();
+        f.Dispose();
+    }
+
+    /// <summary>Holds the incoming page exactly one width to the right, as a slide's first frame does on a device.</summary>
+    private sealed class ParkedSlide(bool layOutFirst, double width) : Avalonia.Animation.IPageTransition
+    {
+        public Task Start(Visual? from, Visual? to, bool forward, CancellationToken cancellationToken)
+        {
+            if (layOutFirst)
+                LaidOutPageSlide.LayOutInPlace(to);
+            if (to is not null)
+                to.RenderTransform = new Avalonia.Media.TranslateTransform(width, 0);
+            return Task.Delay(Timeout.Infinite, cancellationToken);
+        }
+    }
+
+    [AvaloniaTheory]
+    [InlineData(false, 0)]
+    [InlineData(true, 8)]
+    public void A_list_pushed_one_width_aside_realises_its_rows_only_when_laid_out_in_place_first(bool layOutFirst, int rows)
+    {
+        var f = new ShellFixture(s => s.ExpandedFolders = [1]);
+        f.Store.Upsert(f.Wired.Id, [.. Enumerable.Range(0, 200).Select(i => new ParsedItem($"m{i}", $"Item {i}",
+            $"https://example.com/m{i}", null, "<p>x</p>", "x", null, ShellFixture.Now.AddMinutes(-60 - i)))]);
+        f.Shell.FlushPendingReload();
+        var shell = new MobileShell(f.Shell);
+        var window = PhoneRender.Show(shell, "Sand");
+        Settle();
+        shell.PageTransition = new ParkedSlide(layOutFirst, shell.Bounds.Width);
+
+        f.Shell.Sidebar.SelectedRow = f.Row("Unread");
+        Settle();
+        var page = Assert.IsType<ArticleListPage>(shell.NavigationStack[^1]);
+        Assert.Equal(shell.Bounds.Width, page.TranslatePoint(default, window)!.Value.X);
+        Assert.Equal(rows, page.FindControl<ListBox>("Rows")!.GetRealizedContainers().Count(c => c.DataContext is ArticleRowViewModel));
+        window.Close();
+        f.Dispose();
+    }
+
+    [AvaloniaFact]
+    public void The_shell_lays_each_page_out_in_place_before_it_slides()
+    {
+        using var f = new ShellFixture();
+        var shell = new MobileShell(f.Shell);
+        var window = PhoneRender.Show(shell, "Sand");
+        Assert.IsType<LaidOutPageSlide>(shell.PageTransition);
+        shell.PageTransition = new Avalonia.Animation.PageSlide(TimeSpan.FromMilliseconds(250));
+        Assert.Equal(TimeSpan.FromMilliseconds(250), Assert.IsType<LaidOutPageSlide>(shell.PageTransition).Duration);
+        window.Close();
+    }
+}

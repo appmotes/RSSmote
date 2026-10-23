@@ -17,4 +17,6 @@ public sealed class MobileShellHost : IShellHost
     public ILauncher Launcher { get; }
 
     public Control CreateRoot(ShellViewModel shell) => _root = new MobileShell(shell);
+
+    public SidebarLayout Layout => SidebarLayout.Phone;
 }

@@ -9,6 +9,17 @@ using RSSmote.Data;
 
 namespace RSSmote.App.ViewModels;
 
+/// <summary>Which list of streams the sidebar view-model builds.</summary>
+public enum SidebarLayout
+{
+    /// <summary>One smart row named by the filter, feeds hidden by the filter, a lasting selection (D10).</summary>
+    Desktop,
+
+    /// <summary>The phone's Feeds root: Unread, Starred and All Items rows, unread counts, every feed listed, and no
+    /// lasting selection, so the same row can be picked again after coming back (D24).</summary>
+    Phone,
+}
+
 /// <summary>
 /// The sidebar: the filter-named smart stream, then collapsible Folders and Feeds sections (D10). Under the
 /// Unread and Starred filters only feeds with something to show are listed, plus the selected one.
@@ -27,17 +38,35 @@ public sealed partial class SidebarViewModel : ObservableObject
     private string _refreshText = "";
     private int _feedCount;
 
-    public SidebarViewModel(Store store, SettingsStore settings, IImageLoader images, IUiDispatcher ui)
+    public SidebarViewModel(Store store, SettingsStore settings, IImageLoader images, IUiDispatcher ui,
+                            SidebarLayout layout = SidebarLayout.Desktop)
     {
         _store = store;
         _settings = settings;
         _images = images;
         _ui = ui;
+        _layout = layout;
         SelectedStream = new ArticleStream.All();
         Reload();
     }
 
     public ObservableCollection<SidebarRowViewModel> Rows { get; } = [];
+
+    private SidebarLayout _layout;
+
+    public SidebarLayout Layout
+    {
+        get => _layout;
+        set
+        {
+            if (_layout == value)
+                return;
+            _layout = value;
+            Reload();
+        }
+    }
+
+    private bool IsPhone => _layout == SidebarLayout.Phone;
 
     /// <summary>Raised when the user picks another stream.</summary>
     public event EventHandler<ArticleStream>? StreamSelected;
@@ -63,7 +92,17 @@ public sealed partial class SidebarViewModel : ObservableObject
         {
             // Section headers toggle instead of selecting.
             Toggle(newValue);
-            SelectedRow = Rows.FirstOrDefault(r => r.Stream == SelectedStream);
+            SelectedRow = IsPhone ? null : Rows.FirstOrDefault(r => r.Stream == SelectedStream);
+            return;
+        }
+        if (IsPhone)
+        {
+            // Every pick opens a list; a stream row also chooses the filter it is named after.
+            SelectedStream = newValue.Stream;
+            if (newValue.Kind == SidebarRowKind.Smart && _settings.Current.Filter != newValue.Filter)
+                _settings.Update(s => s.Filter = newValue.Filter);
+            StreamSelected?.Invoke(this, SelectedStream);
+            SelectedRow = null;
             return;
         }
         if (newValue.Stream == SelectedStream)
@@ -117,8 +156,9 @@ public sealed partial class SidebarViewModel : ObservableObject
     public void Reload()
     {
         var settings = _settings.Current;
+        var phone = IsPhone;
         var filter = settings.Filter;
-        var counts = _store.Counts(filter);
+        var counts = _store.Counts(phone ? StreamFilter.Unread : filter);
         var folders = _store.Folders();
         var feeds = _store.Feeds();
         var expandedFolders = settings.ExpandedFolders.ToHashSet();
@@ -126,12 +166,16 @@ public sealed partial class SidebarViewModel : ObservableObject
 
         int CountOf(Feed f) => counts.GetValueOrDefault(f.Id);
         bool IsSelected(ArticleStream s) => s == SelectedStream;
-        bool Visible(Feed f) => filter == StreamFilter.All || CountOf(f) > 0 || IsSelected(new ArticleStream.OfFeed(f.Id));
+        bool Visible(Feed f) => phone || filter == StreamFilter.All || CountOf(f) > 0 || IsSelected(new ArticleStream.OfFeed(f.Id));
 
-        var rows = new List<SidebarRowViewModel>
-        {
-            new(SidebarRowKind.Smart, ItemFormatting.FilterTitle(filter), new ArticleStream.All()) { Count = counts.Values.Sum(), Filter = filter },
-        };
+        var rows = phone
+            ? new List<SidebarRowViewModel>
+            {
+                SmartRow(StreamFilter.Unread, counts.Values.Sum()),
+                SmartRow(StreamFilter.Starred, _store.Count(new ArticleStream.All(), StreamFilter.Starred)),
+                SmartRow(StreamFilter.All, 0),
+            }
+            : [SmartRow(filter, counts.Values.Sum())];
 
         var folderRows = new List<SidebarRowViewModel>();
         foreach (var folder in folders)
@@ -140,7 +184,7 @@ public sealed partial class SidebarViewModel : ObservableObject
             var visible = inFolder.Where(Visible).ToList();
             var selectedInside = IsSelected(new ArticleStream.InFolder(folder.Id))
                                  || inFolder.Any(f => IsSelected(new ArticleStream.OfFeed(f.Id)));
-            if (filter != StreamFilter.All && visible.Count == 0 && !selectedInside)
+            if (!phone && filter != StreamFilter.All && visible.Count == 0 && !selectedInside)
                 continue;
             var expanded = expandedFolders.Contains(folder.Id);
             folderRows.Add(new SidebarRowViewModel(SidebarRowKind.Folder, folder.Title, new ArticleStream.InFolder(folder.Id))
@@ -166,9 +210,32 @@ public sealed partial class SidebarViewModel : ObservableObject
         _reloading = true;
         try
         {
-            Rows.Clear();
-            foreach (var row in rows)
-                Rows.Add(row);
+            // Same rows as before (a refresh changing counts): update them in place, so the views keep their
+            // containers and a touch that began on a row still ends on it.
+            if (Rows.Count == rows.Count && Rows.Zip(rows).All(p => SameRow(p.First, p.Second)))
+            {
+                foreach (var (shown, fresh) in Rows.Zip(rows))
+                {
+                    shown.Title = fresh.Title;
+                    shown.Count = fresh.Count;
+                    shown.IsExpanded = fresh.IsExpanded;
+                    shown.IsExpandable = fresh.IsExpandable;
+                    shown.HasError = fresh.HasError;
+                    shown.Favicon = fresh.Favicon ?? shown.Favicon;
+                }
+                rows = [.. Rows];
+            }
+            else
+            {
+                Rows.Clear();
+                foreach (var row in rows)
+                    Rows.Add(row);
+            }
+            if (phone)
+            {
+                SelectedRow = null;
+                return;
+            }
             // A selected feed hidden by a collapsed folder or section hands the selection to what is still shown.
             var parent = ParentOf(SelectedStream, feeds);
             SelectedRow = rows.FirstOrDefault(r => r.Stream == SelectedStream)
@@ -183,6 +250,13 @@ public sealed partial class SidebarViewModel : ObservableObject
         if (SelectedStream != previous)
             StreamSelected?.Invoke(this, SelectedStream);
     }
+
+    private static bool SameRow(SidebarRowViewModel a, SidebarRowViewModel b) =>
+        a.Kind == b.Kind && a.Stream == b.Stream && a.SectionKey == b.SectionKey && a.Filter == b.Filter
+        && a.Feed == b.Feed && a.IsFaviconGrayscale == b.IsFaviconGrayscale;
+
+    private static SidebarRowViewModel SmartRow(StreamFilter filter, int count) =>
+        new(SidebarRowKind.Smart, ItemFormatting.FilterTitle(filter), new ArticleStream.All()) { Count = count, Filter = filter };
 
     private static ArticleStream? ParentOf(ArticleStream stream, IReadOnlyList<Feed> feeds) =>
         stream is ArticleStream.OfFeed f && feeds.FirstOrDefault(x => x.Id == f.FeedId)?.FolderId is { } folderId

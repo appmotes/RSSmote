@@ -1,0 +1,119 @@
+<ContentPage xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:c="urn:RSSmote.App.Controls"
+             xmlns:vm="using:RSSmote.App.ViewModels"
+             xmlns:v="using:RSSmote.Mobile.Views"
+             x:Class="RSSmote.Mobile.Pages.ArticleListPage"
+             x:DataType="vm:ShellViewModel"
+             AutomaticallyApplySafeAreaPadding="False"
+             Background="{DynamicResource Brush.Bg.List}">
+    <!-- The article list (D25): the stream's name and count, rows with a source line and up to three lines of title. -->
+    <NavigationPage.BackButtonContent>
+        <StackPanel Orientation="Horizontal" Spacing="2">
+            <c:Icon Data="{StaticResource Icon.ChevronLeft}" Size="24" Foreground="{DynamicResource Brush.Accent}" />
+            <TextBlock Text="Feeds" FontSize="{StaticResource TextTheme.Phone.Row.Size}" VerticalAlignment="Center"
+                       Foreground="{DynamicResource Brush.Accent}" />
+        </StackPanel>
+    </NavigationPage.BackButtonContent>
+    <ContentPage.BottomCommandBar>
+        <Border Padding="{Binding $parent[ContentPage].SafeAreaPadding, Converter={x:Static v:PhoneConverters.BottomInset}}" Background="{DynamicResource Brush.Bg.List}"
+                BorderBrush="{DynamicResource Brush.Line.Separator}" BorderThickness="0,1,0,0">
+            <Grid ColumnDefinitions="Auto,*,Auto" Margin="8,0" Height="{StaticResource Size.Phone.BottomBar}">
+                <Button Classes="phoneIcon" Command="{Binding MarkAllReadCommand}" ToolTip.Tip="Mark All as Read">
+                    <c:Icon Data="{StaticResource Icon.CheckCircle}" />
+                </Button>
+                <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center" Spacing="6">
+                    <Button Classes="phoneFilter"
+                            Classes.on="{Binding List.Filter, Converter={x:Static v:PhoneConverters.FilterIs}, ConverterParameter=Starred}"
+                            Click="OnFilterClick" Tag="Starred">
+                        <StackPanel Orientation="Horizontal" Spacing="7">
+                            <c:Icon Data="{StaticResource Icon.Star}" Size="20" VerticalAlignment="Center" />
+                            <TextBlock Text="Starred" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </Button>
+                    <Button Classes="phoneFilter"
+                            Classes.on="{Binding List.Filter, Converter={x:Static v:PhoneConverters.FilterIs}, ConverterParameter=Unread}"
+                            Click="OnFilterClick" Tag="Unread">
+                        <StackPanel Orientation="Horizontal" Spacing="7">
+                            <c:Icon Data="{StaticResource Icon.CircleDot}" Size="20" VerticalAlignment="Center" />
+                            <TextBlock Text="Unread" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </Button>
+                    <Button Classes="phoneFilter"
+                            Classes.on="{Binding List.Filter, Converter={x:Static v:PhoneConverters.FilterIs}, ConverterParameter=All}"
+                            Click="OnFilterClick" Tag="All">
+                        <StackPanel Orientation="Horizontal" Spacing="7">
+                            <c:Icon Data="{StaticResource Icon.AlignLeft}" Size="20" VerticalAlignment="Center" />
+                            <TextBlock Text="All Items" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+                <Button Grid.Column="2" Classes="phoneIcon" Click="OnSearchClick" ToolTip.Tip="Filter">
+                    <c:Icon Data="{StaticResource Icon.Search}" />
+                </Button>
+            </Grid>
+        </Border>
+    </ContentPage.BottomCommandBar>
+
+    <DockPanel>
+        <TextBox x:Name="Search" DockPanel.Dock="Top" Classes="filter" IsVisible="False" Margin="16,4,16,6"
+                 Text="{Binding List.SearchText}" PlaceholderText="Filter" />
+        <!-- The title scrolls away with the rows (D25): one scroller holds both, and the list inside it still
+             realises only the rows in view. -->
+        <ScrollViewer>
+            <StackPanel>
+                <TextBlock Classes="phoneLargeTitle" Text="{Binding List.Title}" Margin="20,2,20,0" />
+                <TextBlock Classes="phoneSecondary" Text="{Binding List.PhoneSubtitle}" Margin="20,2,20,6" />
+                <ListBox x:Name="Rows" Classes="phoneList" ItemsSource="{Binding List.Rows}"
+                         ScrollViewer.VerticalScrollBarVisibility="Disabled"
+                         SelectedItem="{Binding List.SelectedRow}" Background="Transparent">
+                    <ListBox.DataTemplates>
+                        <DataTemplate x:DataType="vm:DateHeaderViewModel">
+                            <Grid ColumnDefinitions="*,Auto" Margin="20,18,20,6">
+                                <TextBlock Classes="caps" Text="{Binding Title}" />
+                                <TextBlock Grid.Column="1" Classes="caps" Text="{Binding Count}" />
+                            </Grid>
+                        </DataTemplate>
+                        <DataTemplate x:DataType="vm:ArticleRowViewModel">
+                            <Border Classes="phoneRowLine">
+                                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="14" Margin="20,12,20,14">
+                                    <StackPanel Spacing="4">
+                                        <Grid ColumnDefinitions="Auto,*,Auto,Auto" ColumnSpacing="8">
+                                            <c:Favicon Size="16" Radius="4" VerticalAlignment="Center"
+                                                       Source="{Binding Favicon}" Title="{Binding FeedTitle}"
+                                                       IsGrayscale="{Binding IsFaviconGrayscale}"
+                                                       TileBrush="{DynamicResource Brush.Bg.FaviconTile}"
+                                                       LetterBrush="{DynamicResource Brush.Ink.OnTile}" />
+                                            <TextBlock Grid.Column="1" Classes="phoneMeta" Text="{Binding FeedTitle}"
+                                                       TextTrimming="CharacterEllipsis" />
+                                            <c:Icon Grid.Column="2" Data="{StaticResource Icon.Star}" Size="14" IsFilled="True"
+                                                    Foreground="{DynamicResource Brush.Accent}" IsVisible="{Binding IsStarred}"
+                                                    VerticalAlignment="Center" />
+                                            <TextBlock Grid.Column="3" Classes="phoneMeta" Text="{Binding TimeText}" />
+                                        </Grid>
+                                        <TextBlock Classes="phoneItemTitle" Classes.read="{Binding !IsUnread}"
+                                                   Text="{Binding Title}" />
+                                        <TextBlock Classes="phoneSecondary" Text="{Binding Summary}"
+                                                   MaxLines="1" TextTrimming="CharacterEllipsis" />
+                                    </StackPanel>
+                                    <Border Grid.Column="1" Width="{StaticResource Size.Phone.Thumb}"
+                                            Height="{StaticResource Size.Phone.Thumb}" CornerRadius="9" ClipToBounds="True"
+                                            VerticalAlignment="Top" Margin="0,22,0,0"
+                                            Background="{DynamicResource Brush.Bg.Pill}" IsVisible="{Binding HasThumbnail}">
+                                        <Image Source="{Binding Thumbnail}" Stretch="UniformToFill" />
+                                    </Border>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ListBox.DataTemplates>
+                </ListBox>
+                <StackPanel IsVisible="{Binding List.IsEmpty}" HorizontalAlignment="Center"
+                            Spacing="4" Margin="32,120,32,0">
+                    <TextBlock Classes="phonePageTitle" Text="{Binding List.EmptyTitle}" HorizontalAlignment="Center" />
+                    <TextBlock Classes="phoneSecondary" Text="{Binding List.EmptySubtitle}" HorizontalAlignment="Center"
+                               TextAlignment="Center" TextWrapping="Wrap" />
+                </StackPanel>
+            </StackPanel>
+        </ScrollViewer>
+    </DockPanel>
+</ContentPage>

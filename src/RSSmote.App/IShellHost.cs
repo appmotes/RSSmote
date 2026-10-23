@@ -11,4 +11,7 @@ public interface IShellHost
 
     /// <summary>The main window under the desktop lifetime; the main view under a mobile one.</summary>
     Control CreateRoot(ShellViewModel shell);
+
+    /// <summary>Desktop columns or the phone stack, known before the shell view-model is built.</summary>
+    SidebarLayout Layout { get; }
 }

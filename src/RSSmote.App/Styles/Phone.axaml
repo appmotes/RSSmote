@@ -1,0 +1,163 @@
+<!-- Phone views (D23–D28): grouped cards, rows, bars and icon buttons. -->
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:c="urn:RSSmote.App.Controls">
+
+    <!-- A group of rows on the canvas (D24). -->
+    <Style Selector="Border.phoneCard">
+        <Setter Property="Background" Value="{DynamicResource Brush.Bg.List}" />
+        <Setter Property="CornerRadius" Value="{StaticResource CornerRadius.Card}" />
+        <Setter Property="Margin" Value="{StaticResource Thickness.Phone.CardMargin}" />
+        <Setter Property="ClipToBounds" Value="True" />
+    </Style>
+
+    <!-- A section header above a card: label left, chevron right, all of it one target. -->
+    <Style Selector="Button.phoneSection">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="CornerRadius" Value="0" />
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+        <Setter Property="MinHeight" Value="{StaticResource Size.Phone.Target}" />
+        <Setter Property="Padding" Value="28,10,24,4" />
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="FontWeight" Value="Medium" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Ink.Secondary}" />
+        <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter, ^:pressed /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Ink.Secondary}" />
+        </Style>
+    </Style>
+
+    <!-- One row in a card; the hairline under it is drawn by the row's own border. -->
+    <Style Selector="Button.phoneRow">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="CornerRadius" Value="0" />
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="MinHeight" Value="{StaticResource Size.Phone.Row}" />
+        <Setter Property="Padding" Value="{StaticResource Thickness.Phone.CardMargin}" />
+        <Setter Property="FontSize" Value="{StaticResource TextTheme.Phone.Row.Size}" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Ink.Primary}" />
+        <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Ink.Primary}" />
+        </Style>
+        <Style Selector="^:pressed /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource Brush.Bg.Hover}" />
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Ink.Primary}" />
+        </Style>
+        <Style Selector="^:pressed">
+            <Setter Property="RenderTransform" Value="none" />
+        </Style>
+    </Style>
+    <Style Selector="Border.phoneRowLine">
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Line.Separator}" />
+        <Setter Property="BorderThickness" Value="0,0,0,1" />
+    </Style>
+    <Style Selector="Border.phoneRowLine.last">
+        <Setter Property="BorderThickness" Value="0" />
+    </Style>
+
+    <!-- Article rows (D25): a source line, the title in up to three lines, one line of summary. -->
+    <Style Selector="TextBlock.phoneMeta">
+        <Setter Property="FontSize" Value="13" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Ink.Secondary}" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+    <Style Selector="TextBlock.phoneItemTitle">
+        <Setter Property="FontSize" Value="{StaticResource TextTheme.Phone.PageTitle.Size}" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="LineHeight" Value="22" />
+        <Setter Property="MaxLines" Value="3" />
+        <Setter Property="TextWrapping" Value="Wrap" />
+        <Setter Property="TextTrimming" Value="CharacterEllipsis" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Ink.Primary}" />
+    </Style>
+    <Style Selector="TextBlock.phoneItemTitle.read">
+        <Setter Property="FontWeight" Value="Regular" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Ink.Read}" />
+    </Style>
+    <Style Selector="ListBox.phoneList ListBoxItem">
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="Margin" Value="0" />
+        <Setter Property="MinHeight" Value="0" />
+        <Setter Property="CornerRadius" Value="0" />
+        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+        <Setter Property="Background" Value="Transparent" />
+    </Style>
+    <Style Selector="ListBox.phoneList ListBoxItem:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="Transparent" />
+    </Style>
+    <Style Selector="ListBox.phoneList ListBoxItem:pressed /template/ ContentPresenter#PART_ContentPresenter,
+                     ListBox.phoneList ListBoxItem:selected /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource Brush.Selection.List}" />
+    </Style>
+
+    <!-- An icon button in a bar: a 44 pt target around a 22 pt icon (D28). -->
+    <Style Selector="Button.phoneIcon">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="Width" Value="{StaticResource Size.Phone.Target}" />
+        <Setter Property="Height" Value="{StaticResource Size.Phone.Target}" />
+        <Setter Property="HorizontalContentAlignment" Value="Center" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Ink.Icon}" />
+        <Style Selector="^ c|Icon">
+            <Setter Property="Size" Value="{StaticResource Size.Phone.Icon}" />
+        </Style>
+        <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter, ^:pressed /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Ink.Icon}" />
+        </Style>
+        <Style Selector="^:pressed">
+            <Setter Property="RenderTransform" Value="none" />
+            <Setter Property="Opacity" Value="0.6" />
+        </Style>
+    </Style>
+    <Style Selector="Button.phoneIcon.on">
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Accent}" />
+    </Style>
+    <Style Selector="Button.phoneIcon.on:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Accent}" />
+    </Style>
+
+    <!-- The filter: the active state is a labelled pill, the others plain icons (D25). -->
+    <Style Selector="Button.phoneFilter">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="MinWidth" Value="{StaticResource Size.Phone.Target}" />
+        <Setter Property="Height" Value="36" />
+        <Setter Property="Padding" Value="11,0" />
+        <Setter Property="CornerRadius" Value="18" />
+        <Setter Property="HorizontalContentAlignment" Value="Center" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Ink.Icon}" />
+        <Style Selector="^ TextBlock">
+            <Setter Property="IsVisible" Value="False" />
+        </Style>
+        <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter, ^:pressed /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Ink.Icon}" />
+        </Style>
+    </Style>
+    <Style Selector="Button.phoneFilter.on">
+        <Setter Property="Background" Value="{DynamicResource Brush.Bg.Pill}" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Accent}" />
+        <Setter Property="Padding" Value="16,0" />
+        <Style Selector="^ TextBlock">
+            <Setter Property="IsVisible" Value="True" />
+        </Style>
+        <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter, ^:pressed /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource Brush.Bg.Pill}" />
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Accent}" />
+        </Style>
+    </Style>
+</Styles>
