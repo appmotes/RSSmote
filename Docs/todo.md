@@ -60,9 +60,8 @@ during the first refresh.
 → `DefaultRenderLoop.Add`) in about 1 ms; reruns pass. Seen with `ElevationTests` (phosphor), `DesignCaptureTests` and
 `SidebarMenuRenderTests`. Done when ten first runs after `clean` pass.
 
-**W4 — Check the phone's remaining behaviour on a device.** Headless only so far: the article list keeping its top
-row across a refresh (P25), and refresh on coming back from the background (`ShellViewModel.RefreshIfStale`). Also
-decide the Delete Folder sheet's text, which says the feeds "move to Feeds" (the desktop's section) while the phone
-calls that group "No folder" (`ShellViewModel.ConfirmDeleteFolder`). Done when both are seen on the iOS simulator and
-the API 35 emulator and the text reads right on both heads.
+**W4 — Check refresh on resume on a device.** `ShellViewModel.RefreshIfStale` runs when the app comes back from the
+background and the last pass is older than the interval; it is tested headless only. The list keeping its top row
+across a refresh (P25) was seen on the iPhone 17 Pro simulator, not yet on the API 35 emulator. Done when a resume
+after the interval starts a refresh on both, and the list keeps its place on Android.
 

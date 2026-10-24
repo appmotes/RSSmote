@@ -306,7 +306,7 @@ public sealed partial class ShellViewModel : ObservableObject, IDisposable
 
     public ConfirmViewModel ConfirmDeleteFolder(Folder folder) => new(
         $"Delete “{folder.Title}”?",
-        "The folder is deleted. Its feeds stay and move to Feeds.",
+        "The folder is deleted. Its feeds stay and move out of the folder.",
         "Delete Folder",
         () => _store.DeleteFolder(folder.Id, deleteFeeds: false));
 
