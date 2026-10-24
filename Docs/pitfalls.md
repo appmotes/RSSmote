@@ -37,7 +37,8 @@ go into `Styles/*.axaml` as plain style classes.
 
 **L5 — Controls placed directly in an `ItemsControl` are their own containers.** Selectors aimed at
 `ContentPresenter` containers never match them. Target the controls through the logical tree instead, e.g.
-`c|PanelGroup > c|PanelRow:nth-child(n+2)`. Measured with the gallery test.
+`c|Group > c|Row:nth-child(n+2)` for rows written straight into a group. Measured with the gallery test, on a
+grouped-row control that has since been removed.
 
 **P7 — `Panel.Render` is sealed.** A panel subclass cannot draw decorations; draw them on the children
 (borders) or in a separate control.

@@ -24,7 +24,6 @@
                             <c:TitleStrip.Trailing>
                                 <StackPanel Orientation="Horizontal">
                                     <Button Classes="icon" ToolTip.Tip="Refresh"><c:Icon Data="{StaticResource Icon.Refresh}" /></Button>
-                                    <Button Classes="icon" ToolTip.Tip="Add Feed"><c:Icon Data="{StaticResource Icon.Plus}" Size="17" /></Button>
                                 </StackPanel>
                             </c:TitleStrip.Trailing>
                         </c:TitleStrip>
@@ -35,6 +34,9 @@
                                     <TextBlock Text="Today at 13.33 · 5 feeds" VerticalAlignment="Center" />
                                 </StackPanel>
                             </c:StatusBar.Leading>
+                            <c:StatusBar.Trailing>
+                                <Button Classes="icon" ToolTip.Tip="Settings"><c:Icon Data="{StaticResource Icon.Settings}" /></Button>
+                            </c:StatusBar.Trailing>
                         </c:StatusBar>
                         <ListBox Classes="sidebar" SelectedIndex="0">
                             <c:SidebarRow Kind="Smart" Title="Unread" Count="4" />
@@ -90,37 +92,31 @@
                     </Border>
                 </Border>
 
-                <Border Width="{StaticResource Size.Panel.Width}" VerticalAlignment="Top" Background="{DynamicResource Brush.Bg.Panel}"
-                        CornerRadius="{StaticResource CornerRadius.Panel}" BoxShadow="{DynamicResource BoxShadows.Panel}">
-                    <StackPanel>
-                        <Grid Classes="sheetHeader" ColumnDefinitions="*,Auto">
-                            <TextBlock Classes="largeTitle" Text="Edit Feed" />
-                            <Button Grid.Column="1" Classes="icon"><c:Icon Data="{StaticResource Icon.X}" /></Button>
-                        </Grid>
-                        <TextBlock Classes="sheetSubtitle" Text="devblogs.microsoft.com/dotnet/feed/" />
-                        <StackPanel Classes="sheetBody">
-                            <TextBox Classes="panel-field" Text=".NET Blog" />
-                            <WrapPanel ItemSpacing="6" LineSpacing="6">
-                                <Button Classes="chip on" Content=".NET" />
-                                <Button Classes="chip" Content="AI" />
-                                <Button Classes="chip" Content="Apple" />
-                                <Button Classes="chip" Content="Lokalt" />
-                            </WrapPanel>
-                            <c:PanelGroup>
-                                <c:PanelRow Title="The Verge" Subtitle="https://www.theverge.com/rss/index.xml"
-                                            Accessory="Check" IsOn="True" FontWeight="Medium" />
-                                <c:PanelRow Title="Folder: Apple" Accessory="Chevron" />
-                            </c:PanelGroup>
+                <!-- The Settings question in its narrow frame (D30), and the folder chips (D9). -->
+                <StackPanel Width="{StaticResource Size.Panel.NarrowWidth}" Spacing="16" VerticalAlignment="Top">
+                    <Border Background="{DynamicResource Brush.Bg.Panel}" CornerRadius="{StaticResource CornerRadius.Panel}"
+                            BoxShadow="{DynamicResource BoxShadows.Panel}">
+                        <StackPanel Margin="16,22,16,16">
+                            <TextBlock Classes="settingsDialogTitle" Text="Remove “Night Sky Journal”?" />
+                            <TextBlock Classes="settingsFootnote" FontSize="13" TextAlignment="Center" Margin="12,6,12,18"
+                                       Text="The feed and all its articles, starred ones included, are deleted for good." />
+                            <Border Classes="settingsCard" Background="{DynamicResource Brush.Bg.Pill}">
+                                <Button Classes="settingsRow danger" Content="Remove Feed" />
+                            </Border>
+                            <Border Classes="settingsCard" Background="{DynamicResource Brush.Bg.Pill}" Margin="0,8,0,0">
+                                <Button Classes="settingsRow" HorizontalContentAlignment="Center" FontWeight="SemiBold" Content="Cancel" />
+                            </Border>
                         </StackPanel>
-                        <DockPanel Classes="sheetFooter">
-                            <Button DockPanel.Dock="Left" Classes="danger" Content="Delete Folder…" />
-                            <StackPanel>
-                                <Button Classes="secondary" Content="Cancel" />
-                                <Button Classes="primary" Content="Save" />
-                            </StackPanel>
-                        </DockPanel>
-                    </StackPanel>
-                </Border>
+                    </Border>
+                    <Border Classes="settingsCard">
+                        <WrapPanel ItemSpacing="8" LineSpacing="8" Margin="14,12">
+                            <Button Classes="chip" Content="None" />
+                            <Button Classes="chip on" Content="Science" />
+                            <Button Classes="chip" Content="Technology" />
+                            <Button Classes="chip add" Content="New" />
+                        </WrapPanel>
+                    </Border>
+                </StackPanel>
 
             </StackPanel>
 

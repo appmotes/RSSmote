@@ -14,8 +14,6 @@
     <x:Double x:Key="TextTheme.Meta.Size">11.5</x:Double>
     <x:Double x:Key="TextTheme.Caps.Size">11</x:Double>
     <x:Double x:Key="TextTheme.Caps.Tracking">0.66</x:Double>
-    <x:Double x:Key="TextTheme.PanelRow.Size">13.5</x:Double>
-    <x:Double x:Key="TextTheme.PanelRowSubtitle.Size">11.5</x:Double>
     <x:Double x:Key="TextTheme.Count.Size">11</x:Double>
     <x:Double x:Key="TextTheme.Body.Size">13</x:Double>
     <x:Double x:Key="TextTheme.EmptyTitle.Size">15</x:Double>
@@ -50,8 +48,6 @@
     <x:Double x:Key="Size.SidebarRow.Height">28</x:Double>
     <x:Double x:Key="Size.SidebarSection.Height">38</x:Double>
     <x:Double x:Key="Size.DateHeader.Height">28</x:Double>
-    <x:Double x:Key="Size.PanelRow.Height">36</x:Double>
-    <x:Double x:Key="Size.PanelRowTall.Height">48</x:Double>
     <x:Double x:Key="Double.ItemLineHeight">18</x:Double>
     <x:Double x:Key="Double.SummaryLineHeight">17</x:Double>
 
@@ -68,8 +64,6 @@
     <x:Double x:Key="Size.Panel.Width">400</x:Double>
     <x:Double x:Key="Size.Panel.NarrowWidth">360</x:Double>
     <x:Double x:Key="Size.Panel.MaxHeight">600</x:Double>
-    <x:Double x:Key="Size.FormLabel.Width">64</x:Double>
-    <Thickness x:Key="Thickness.Panel.Inset">20,0</Thickness>
 
     <!-- Spacing (D7) -->
     <x:Double x:Key="Double.Gutter">16</x:Double>
@@ -105,7 +99,6 @@
     <CornerRadius x:Key="CornerRadius.Thumb">7</CornerRadius>
     <CornerRadius x:Key="CornerRadius.Favicon">3</CornerRadius>
     <CornerRadius x:Key="CornerRadius.Panel">16</CornerRadius>
-    <CornerRadius x:Key="CornerRadius.Group">10</CornerRadius>
     <CornerRadius x:Key="CornerRadius.Field">7</CornerRadius>
     <CornerRadius x:Key="CornerRadius.IconButton">7</CornerRadius>
     <CornerRadius x:Key="CornerRadius.Pill">7</CornerRadius>

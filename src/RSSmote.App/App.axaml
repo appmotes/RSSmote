@@ -14,8 +14,6 @@
                 <ResourceInclude Source="avares://RSSmote.App/Controls/Templates/FilterBar.axaml" />
                 <ResourceInclude Source="avares://RSSmote.App/Controls/Templates/EmptyState.axaml" />
                 <ResourceInclude Source="avares://RSSmote.App/Controls/Templates/PanelFrame.axaml" />
-                <ResourceInclude Source="avares://RSSmote.App/Controls/Templates/PanelGroup.axaml" />
-                <ResourceInclude Source="avares://RSSmote.App/Controls/Templates/PanelRow.axaml" />
                 <ResourceInclude Source="avares://RSSmote.App/Controls/Templates/SidebarRow.axaml" />
                 <ResourceInclude Source="avares://RSSmote.App/Controls/Templates/ArticleRow.axaml" />
             </ResourceDictionary.MergedDictionaries>
@@ -41,7 +39,6 @@
         <StyleInclude Source="avares://RSSmote.App/Styles/Buttons.axaml" />
         <StyleInclude Source="avares://RSSmote.App/Styles/Lists.axaml" />
         <StyleInclude Source="avares://RSSmote.App/Styles/Inputs.axaml" />
-        <StyleInclude Source="avares://RSSmote.App/Styles/Panels.axaml" />
         <StyleInclude Source="avares://RSSmote.App/Styles/Menus.axaml" />
         <StyleInclude Source="avares://RSSmote.App/Styles/Chrome.axaml" />
         <StyleInclude Source="avares://RSSmote.App/Styles/Phone.axaml" />

@@ -7,7 +7,7 @@
     <Color x:Key="Color.Bg.List">#FF0E0E0D</Color> <!-- Article list card -->
     <Color x:Key="Color.Bg.Article">#FF0E0E0D</Color> <!-- Article card and the article page -->
     <Color x:Key="Color.Bg.Panel">#FF1A1918</Color> <!-- Overlay panels, sidebar badges, active filter segment -->
-    <Color x:Key="Color.Bg.PanelRow">#FF1D1C1A</Color> <!-- Fields, row groups and chips in panels -->
+    <Color x:Key="Color.Bg.PanelRow">#FF1D1C1A</Color> <!-- Folder chips -->
     <Color x:Key="Color.Bg.Pill">#FF1D1C1A</Color> <!-- Filter box, segment track, list badge, kbd, secondary buttons -->
     <Color x:Key="Color.Bg.Hover">#0FFFFFFF</Color> <!-- Pointer-over wash on icon buttons, rows and chips -->
     <Color x:Key="Color.Bg.FaviconTile">#FF4A453F</Color> <!-- Letter tile when a feed has no favicon -->

@@ -1,4 +1,4 @@
-<!-- Text fields: the list's filter box and the borderless field rows inside panel groups. -->
+<!-- Text fields: selection colours everywhere, and the list's filter box. -->
 <Styles xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <!-- Selected text is a tint with ordinary ink, never the accent as a fill (D2). -->
@@ -28,29 +28,6 @@
             <Setter Property="Background" Value="{DynamicResource Brush.Bg.Pill}" />
             <Setter Property="BorderBrush" Value="{DynamicResource Brush.Accent}" />
             <Setter Property="BorderThickness" Value="2" />
-        </Style>
-    </Style>
-    <!-- A field in a panel: a 36 tall well with a hairline edge; the edge turns accent while it has focus. -->
-    <Style Selector="TextBox.panel-field">
-        <Setter Property="Background" Value="{DynamicResource Brush.Bg.PanelRow}" />
-        <Setter Property="Foreground" Value="{DynamicResource Brush.Ink.Primary}" />
-        <Setter Property="BorderThickness" Value="1" />
-        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Line.Separator}" />
-        <Setter Property="CornerRadius" Value="{StaticResource CornerRadius.Field}" />
-        <Setter Property="MinHeight" Value="{StaticResource Size.PanelRow.Height}" />
-        <Setter Property="Height" Value="{StaticResource Size.PanelRow.Height}" />
-        <Setter Property="Padding" Value="10,0" />
-        <Setter Property="VerticalContentAlignment" Value="Center" />
-        <Setter Property="FontSize" Value="{StaticResource TextTheme.PanelRow.Size}" />
-        <Setter Property="CaretBrush" Value="{DynamicResource Brush.Accent}" />
-        <Style Selector="^:pointerover /template/ Border#PART_BorderElement">
-            <Setter Property="Background" Value="{DynamicResource Brush.Bg.PanelRow}" />
-            <Setter Property="BorderBrush" Value="{DynamicResource Brush.Line.Separator}" />
-        </Style>
-        <Style Selector="^:focus /template/ Border#PART_BorderElement">
-            <Setter Property="Background" Value="{DynamicResource Brush.Bg.PanelRow}" />
-            <Setter Property="BorderBrush" Value="{DynamicResource Brush.Accent}" />
-            <Setter Property="BorderThickness" Value="1" />
         </Style>
     </Style>
 </Styles>

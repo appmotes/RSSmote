@@ -56,68 +56,6 @@
         <Setter Property="BoxShadow" Value="{DynamicResource BoxShadows.Raised}" />
     </Style>
 
-    <!-- Panel buttons (D9, D21): 30 tall; primary on the accent, secondary on the pill, danger as ink. -->
-    <Style Selector="Button.primary, Button.secondary, Button.danger, Button.dangerSecondary">
-        <Setter Property="Height" Value="30" />
-        <Setter Property="Padding" Value="12,0" />
-        <Setter Property="CornerRadius" Value="{StaticResource CornerRadius.Field}" />
-        <Setter Property="BorderThickness" Value="0" />
-        <Setter Property="FontSize" Value="13" />
-        <Setter Property="FontWeight" Value="Medium" />
-        <Setter Property="VerticalContentAlignment" Value="Center" />
-        <Setter Property="FocusAdorner" Value="{x:Null}" />
-        <Style Selector="^:pressed">
-            <Setter Property="RenderTransform" Value="none" />
-            <Setter Property="Opacity" Value="0.8" />
-        </Style>
-        <Style Selector="^:disabled">
-            <Setter Property="Opacity" Value="0.4" />
-        </Style>
-        <Style Selector="^:focus-visible /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="BorderBrush" Value="{DynamicResource Brush.Accent}" />
-            <Setter Property="BorderThickness" Value="2" />
-        </Style>
-    </Style>
-    <Style Selector="Button.primary">
-        <Setter Property="Background" Value="{DynamicResource Brush.Accent}" />
-        <Setter Property="Foreground" Value="{DynamicResource Brush.Ink.OnAccent}" />
-        <Setter Property="FontWeight" Value="SemiBold" />
-        <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter, ^:pressed /template/ ContentPresenter#PART_ContentPresenter, ^:disabled /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="{DynamicResource Brush.Accent}" />
-            <Setter Property="Foreground" Value="{DynamicResource Brush.Ink.OnAccent}" />
-        </Style>
-    </Style>
-    <Style Selector="Button.secondary, Button.dangerSecondary">
-        <Setter Property="Background" Value="{DynamicResource Brush.Bg.Pill}" />
-        <Setter Property="Foreground" Value="{DynamicResource Brush.Ink.Primary}" />
-        <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter, ^:pressed /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="{DynamicResource Brush.Bg.PanelRow}" />
-            <Setter Property="Foreground" Value="{DynamicResource Brush.Ink.Primary}" />
-        </Style>
-    </Style>
-    <Style Selector="Button.danger">
-        <Setter Property="Background" Value="Transparent" />
-        <Setter Property="Padding" Value="4,0" />
-        <Setter Property="Foreground" Value="{DynamicResource Brush.Ink.Danger}" />
-        <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter, ^:pressed /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Background" Value="{DynamicResource Brush.Bg.Hover}" />
-            <Setter Property="Foreground" Value="{DynamicResource Brush.Ink.Danger}" />
-        </Style>
-    </Style>
-    <Style Selector="Button.dangerSecondary">
-        <Setter Property="FontWeight" Value="SemiBold" />
-        <Setter Property="Foreground" Value="{DynamicResource Brush.Ink.Danger}" />
-        <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter, ^:pressed /template/ ContentPresenter#PART_ContentPresenter">
-            <Setter Property="Foreground" Value="{DynamicResource Brush.Ink.Danger}" />
-        </Style>
-    </Style>
-    <!-- The key a button answers to, after its label: "esc", "↵". -->
-    <Style Selector="Button TextBlock.keyHint">
-        <Setter Property="FontSize" Value="{StaticResource TextTheme.Kbd.Size}" />
-        <Setter Property="Opacity" Value="0.7" />
-        <Setter Property="VerticalAlignment" Value="Center" />
-    </Style>
-
     <!-- A folder chip (D9): one choice of several; the chosen one takes the accent. -->
     <Style Selector="Button.chip">
         <Setter Property="Height" Value="28" />

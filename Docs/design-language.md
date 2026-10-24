@@ -35,7 +35,7 @@ inherits from one of them.
 | `Bg.List` | `#FBF9F5` | `#1D1C1A` | `#0E0E0D` | Article list card |
 | `Bg.Article` | `#FFFEFB` | `#211F1D` | `#0E0E0D` | Article card and the article page |
 | `Bg.Panel` | `#FFFEFB` | `#2A2826` | `#1A1918` | Overlay panels, sidebar badges, active filter segment |
-| `Bg.PanelRow` | `#F4F0E8` | `#2E2B28` | `#1D1C1A` | Fields, row groups and chips in panels |
+| `Bg.PanelRow` | `#F4F0E8` | `#2E2B28` | `#1D1C1A` | Folder chips (D9) |
 | `Bg.Pill` | `#EFE9DF` | `#2E2B28` | `#1D1C1A` | Filter box, segment track, list badge, kbd, secondary buttons |
 | `Bg.Hover` | `#3A2A10` @ 6 % | `#FFFFFF` @ 6 % | = Ember | Pointer-over wash on icon buttons, rows and chips |
 | `Bg.FaviconTile` | `#8C8276` | `#5F5850` | `#4A453F` | Letter tile when a feed has no favicon |
@@ -79,7 +79,6 @@ field is styled once, in `Styles/Inputs.axaml` (D2).
 | `itemSummary` | 12.5 Regular, `Ink.Secondary`, two lines | "Feed — summary" under the title |
 | `meta` | 11.5 Regular, `Ink.Secondary`, +tnum | Row time, status bars |
 | `caps` | 11 SemiBold, +0.66 tracking, upper-case in the string | "TODAY", panel sections |
-| `panelRow` | 13.5 Regular | Fields and rows in overlay panels |
 | `count` | 11 Medium, `Ink.Secondary`, +tnum, in a badge | Sidebar and list counts |
 | `kbd` | 10.5 Medium | Shortcut chips |
 | `emptyTitle` / `emptySubtitle` | 15 SemiBold / 12.5 Regular | Empty states |
@@ -101,8 +100,6 @@ Article body typography is CSS in the HTML template (D14), not a type role.
 | `Size.Favicon` | 14 | Rounded 3 |
 | `Size.Badge.Height` | 18 | `CornerRadius.Badge` 5 |
 | `Size.Panel.Width` | 400 (narrow 360) × content, max 600 | Overlay panels, centred in the window |
-| `Size.PanelRow.Height` | 36 (48 with subtitle) | |
-| `Size.FormLabel.Width` | 64 | Label column in edit panels |
 | `Thickness.Card.Margin` | 0,8,8,8 | `CornerRadius.Card` 12 |
 | `Thickness.Row.Inset` | 6 | Tile inset in the list; 8 in the sidebar |
 | `Double.Gutter` | 16 | |
@@ -110,7 +107,7 @@ Article body typography is CSS in the HTML template (D14), not a type role.
 | `Double.ItemLineHeight` / `Double.SummaryLineHeight` | 18 / 17 | Title line / summary lines |
 | `Double.IconStroke` | 1.5 | Icons 15 in 28 px targets |
 | `CornerRadius.Row.Sidebar` / `.List` | 7 / 8 | |
-| `CornerRadius.Panel` / `.Group` / `.Field` / `.Chip` | 16 / 10 / 7 / 7 | |
+| `CornerRadius.Panel` / `.Field` / `.Chip` | 16 / 7 / 7 | |
 | `CornerRadius.IconButton` / `.Pill` | 7 / 7 | |
 
 ## Components
@@ -136,8 +133,8 @@ Article body typography is CSS in the HTML template (D14), not a type role.
 | Article | `ArticleHost`: `NativeWebView` with HTML template; falls back to `HtmlPanel` (A9) | WebView / HtmlRenderer |
 | Empty states | `EmptyState` (templated): a soft box with title, subtitle and shortcut chips in the article card; `.compact` an icon tile, title and subtitle in an empty list | `Panel` + `StackPanel` |
 | Overlays | `PanelFrame` (templated): scrim that catches clicks + a sheet as tall as its content (`.narrow` for the Settings question, D30) | `ContentControl` over the window (A6) |
-| Grouped rows | `PanelGroup` + `PanelRow` (text / subtitle / chevron or round check); fields are `TextBox.panel-field` on their own, labelled with `TextBlock.formLabel` | `ItemsControl` + `Button` |
-| Buttons | `Button.primary` (accent), `.secondary` (pill), `.danger` (ink), `.dangerSecondary` (danger ink on the pill); a `TextBlock.keyHint` names the key ("esc", "↵") | stock `Button` |
+| Grouped rows | Cards of rows on the canvas: `Border.settingsCard` with `Button.settingsRow` or `Grid.settingsRow`, fields as `TextBox.settingsField` inside a row (D30); `phone*` on the phone (D27) | `Border` + `Button` |
+| Buttons | One accent fill per page (`Button.settingsPrimary`, `.phonePrimary`, `.settingsBack`); danger as ink in a row (`.settingsRow.danger`, D21); text in the accent for bar actions (`.settingsLink`) | stock `Button` |
 | Folder choice | Chips: `Button.chip` in a `WrapPanel`, the chosen one `.on` in the accent; clicking it again chooses no folder | `ItemsControl` + `Button` |
 | Shortcut chip | `Border.kbd` + `TextBlock.kbd` | `Border` |
 | Context menus | Stock `ContextMenu` / `MenuFlyout` | — |

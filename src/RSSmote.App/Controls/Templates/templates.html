@@ -18,12 +18,12 @@
   --Shadow-Panel: 0 24px 64px -16px rgba(42,31,16,.25), 0 0 0 1px rgba(58,42,16,.09);
   --Size-TitleBar: 52px; --Size-CardStrip: 44px; --Size-StatusBar: 28px;
   --Size-SidebarRow: 28px; --Size-SidebarSection: 38px; --Size-DateHeader: 28px; --Size-Badge: 18px;
-  --Size-PanelRow: 36px; --Size-PanelRowTall: 48px; --Size-Thumb: 44px; --Size-Favicon: 14px;
+  --Size-Thumb: 44px; --Size-Favicon: 14px;
   --ItemLineHeight: 18px; --SummaryLineHeight: 17px;
   --Size-Phone-Row: 44px; --Size-Phone-RowSubtitle: 56px; --Size-Phone-Target: 44px; --Size-Phone-Icon: 22px;
   --Size-Phone-TopBar: 44px; --Size-Phone-BottomBar: 49px; --Size-Phone-Thumb: 64px;
   --Radius-Card: 12px; --Radius-Row-Sidebar: 7px; --Radius-Row-List: 8px; --Radius-Thumb: 7px; --Radius-Favicon: 3px;
-  --Radius-Panel: 16px; --Radius-Group: 10px; --Radius-Field: 7px; --Radius-Pill: 7px; --Radius-Badge: 5px; --Radius-Chip: 7px;
+  --Radius-Panel: 16px; --Radius-Field: 7px; --Radius-Pill: 7px; --Radius-Badge: 5px; --Radius-Chip: 7px;
 }
 * { box-sizing: border-box; }
 body { margin: 0; font: 14px/1.5 Inter, -apple-system, system-ui, sans-serif; color: #1b1b1b; background: #fafafa; }
@@ -55,19 +55,7 @@ code { font: 12.5px ui-monospace, Menlo, monospace; background: #f3f3f3; padding
 .ecompact { width: 260px; display: flex; flex-direction: column; align-items: center; gap: 3px; text-align: center; }
 .ecompact .circ { width: 52px; height: 52px; border-radius: 50%; background: var(--Bg-Pill); display: grid; place-items: center; color: var(--Ink-Secondary); font-style: normal; margin-bottom: 9px; } .ecompact b { font-size: 15px; font-weight: 600; }
 .scrimmock { padding: 24px; background: var(--Scrim); border-radius: 10px; }
-.panel { width: 400px; background: var(--Bg-Panel); border-radius: var(--Radius-Panel); box-shadow: var(--Shadow-Panel); padding: 14px 16px 16px 20px; display: flex; flex-direction: column; gap: 12px; }
-.phead { display: flex; justify-content: space-between; align-items: center; } .phead b { font-size: 20px; } .psub { font-size: 12.5px; color: var(--Ink-Secondary); margin-top: -10px; }
-.field { height: var(--Size-PanelRow); border-radius: var(--Radius-Field); background: var(--Bg-PanelRow); border: 1px solid var(--Accent); display: flex; align-items: center; padding: 0 10px; font-size: 13.5px; }
-.chips { display: flex; gap: 6px; flex-wrap: wrap; } .chip { height: 28px; padding: 0 11px; border-radius: var(--Radius-Chip); background: var(--Bg-PanelRow); border: 1px solid var(--Line-Separator); font-size: 12.5px; font-weight: 500; display: inline-flex; align-items: center; }
-.chip.on { background: var(--Accent); border-color: var(--Accent); color: var(--Ink-OnAccent); }
-.pfoot { display: flex; gap: 8px; align-items: center; justify-content: flex-end; } .pfoot .danger { margin-right: auto; color: var(--Ink-Danger); font-size: 13px; font-weight: 500; }
-.btn { height: 30px; padding: 0 12px; border-radius: var(--Radius-Field); font-size: 13px; font-weight: 500; display: inline-flex; align-items: center; } .btn.sec { background: var(--Bg-Pill); } .btn.pri { background: var(--Accent); color: var(--Ink-OnAccent); font-weight: 600; }
-.group-mock { background: var(--Bg-PanelRow); border: 1px solid var(--Line-Separator); border-radius: var(--Radius-Group); overflow: hidden; }
-.row { height: var(--Size-PanelRow); display: flex; align-items: center; justify-content: space-between; padding: 0 12px; font-size: 13.5px; }
-.row + .row { border-top: 1px solid var(--Line-Separator); }
-.row.tall { height: var(--Size-PanelRowTall); } .row.on { background: var(--Selection-List); }
-.row small { display: block; font-size: 11.5px; color: var(--Ink-Secondary); }
-.chev { color: var(--Ink-Secondary); } .ck { width: 18px; height: 18px; border-radius: 50%; border: 1.5px solid var(--Ink-Read); display: grid; place-items: center; font-size: 11px; font-style: normal; } .ck.on { background: var(--Accent); border-color: var(--Accent); color: var(--Ink-OnAccent); }
+.chev { color: var(--Ink-Secondary); }
 
 .sidebar { width: 232px; background: var(--Bg-Sidebar); padding: 4px 0; border-radius: 8px; color: var(--Ink-Sidebar); font-size: 13px; }
 .srow { height: var(--Size-SidebarRow); margin: 0 8px; border-radius: var(--Radius-Row-Sidebar); display: flex; align-items: center; gap: 8px; padding: 0 6px 0 30px; }
@@ -99,12 +87,12 @@ code { font: 12.5px ui-monospace, Menlo, monospace; background: #f3f3f3; padding
 </style>
 </head>
 <body>
-<header class="top"><h1>RSSmote controls <span class="badge">9 controls</span></h1>
+<header class="top"><h1>RSSmote controls <span class="badge">7 controls</span></h1>
 <p>What each templated control in <code>Controls/Templates/</code> is and does. Previews are HTML/CSS recreations drawn
 with the Sand token values, not screenshots.</p></header>
 <nav class="index">
   <a href="#titlestrip">TitleStrip</a><a href="#statusbar">StatusBar</a><a href="#filterbar">FilterBar</a><a href="#emptystate">EmptyState</a>
-  <a href="#panelframe">PanelFrame</a><a href="#panelgroup">PanelGroup</a><a href="#panelrow">PanelRow</a>
+  <a href="#panelframe">PanelFrame</a>
   <a href="#sidebarrow">SidebarRow</a><a href="#articlerow">ArticleRow</a><a href="#headless">Headless controls</a>
 </nav>
 
@@ -193,35 +181,6 @@ with the Sand token values, not screenshots.</p></header>
     <small>The feed and all its articles, starred ones included, are deleted for good.</small>
     <span class="danger">Remove Feed</span><span>Cancel</span></div></div></div>
   <div class="note">Hosted over the whole window. Two borders, so the shadow survives the clip (L12).</div>
-</article>
-
-
-<article id="panelgroup">
-  <h3>PanelGroup</h3>
-  <p>A rounded group of rows inside a panel: <code>Bg.PanelRow</code>, radius 10, a hairline edge. Rows after the
-  first get a hairline on top.</p>
-  <table><tr><th>Property</th><th>Type</th><th>Description</th></tr>
-    <tr><td>Items</td><td>controls</td><td>PanelRow children, or rows from <code>ItemsSource</code>.</td></tr>
-  </table>
-  <div class="preview"><div class="panel"><div class="group-mock">
-    <div class="row">Blood in the Machine<span class="chev">›</span></div><div class="row">Pluralistic<span class="chev">›</span></div></div></div></div>
-</article>
-
-
-<article id="panelrow">
-  <h3>PanelRow</h3>
-  <p>A clickable row (a Button): title, optional subtitle, and a chevron or a round check. Hover washes the row; a
-  checked row is tinted with <code>Selection.List</code> and its check filled with the accent.</p>
-  <table><tr><th>Property</th><th>Type</th><th>Description</th></tr>
-    <tr><td>Title</td><td>string? (null)</td><td>Main text, 13.5 pt.</td></tr>
-    <tr><td>Subtitle</td><td>string? (null)</td><td>Second line, 11.5 pt; the row grows to 48.</td></tr>
-    <tr><td>Accessory</td><td>PanelRowAccessory (None)</td><td>None, Chevron or Check.</td></tr>
-    <tr><td>IsOn</td><td>bool (False)</td><td>Fills the check and tints the row.</td></tr>
-    <tr><td>IsCentered</td><td>bool (False)</td><td>Centres the text.</td></tr>
-  </table>
-  <div class="preview"><div class="panel"><div class="group-mock">
-    <div class="row tall on"><span>The Verge<small>https://www.theverge.com/rss/index.xml</small></span><i class="ck on">✓</i></div>
-    <div class="row">Folder: Apple<span class="chev">›</span></div></div></div></div>
 </article>
 
 

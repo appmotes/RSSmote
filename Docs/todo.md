@@ -60,10 +60,3 @@ L13), and the traffic lights clear the Settings title. On Windows: the caption b
 (P3). On all three: the settings sidebar's strip and the band above the bar drag the window, the article's native
 view stays hidden while Settings show (L9), and Import and Export open the system's file dialogs. Done when each is
 seen.
-
-**W5 — Remove the panel pieces no screen uses.** With the overlay panels gone (D30), `PanelGroup`, `PanelRow`, the
-`sheetHeader` / `sheetBody` / `sheetFooter` / `formLabel` / `hint` styles (`Styles/Panels.axaml`), `TextBox.panel-field`,
-`Button.primary` / `.secondary` / `.danger` / `.dangerSecondary` and `keyHint` appear only in the gallery, and the
-tokens `Size.PanelRow.Height`, `Size.PanelRowTall.Height`, `Size.FormLabel.Width`, `Thickness.Panel.Inset`,
-`TextTheme.PanelRow.Size` and `TextTheme.PanelRowSubtitle.Size` only there or nowhere. Done when they are removed from
-the code, the gallery, `templates.html` (two controls fewer) and D6, D7, D9, or kept with a reason in D9.
