@@ -178,6 +178,7 @@ Licence notice in `Assets/Icons/LICENSE-lucide.txt`.
 | Web page | `Icon.AlignLeft` | text-align-start |
 | Share | `Icon.Share` | share |
 | Chevrons | `Icon.Chevron{Left,Right,Down}` | chevron-* |
+| Back in Settings (D30) | `Icon.ArrowLeft` | arrow-left |
 | Folder | `Icon.Folder` | folder |
 | Feed fallback | `Icon.Rss` | rss |
 | Next article | `Icon.ChevronDown` | chevron-down |
@@ -385,15 +386,17 @@ native view (L9).
   Reading (Articles & Refresh), 32 pt items with a 15 pt icon. The chosen item is raised like a selected sidebar row
   (`Selection.Sidebar`, `BoxShadows.Raised`). At the foot sit "‹ Back to Feeds" on the accent (40 pt, `Ink.OnAccent`)
   and the version. No feeds and no streams.
-- The right side has no back links: 8 pt of canvas, then a 44 pt bar with the page's title centred (`listTitle`) and
+- The right side has no back links but the one below: 8 pt of canvas, then a 44 pt bar with the page's title centred (`listTitle`) and
   its action at the right in the accent: New Folder on Manage Feeds, Save on Edit Feed, Edit Folder and New Folder.
   Under it one page in a centred 520 pt column: the phone's cards at desktop density, the same rows as D27. Cards are `Bg.List` with
   `CornerRadius.Card` on the canvas; rows are 40 pt (50 with a subtitle) in 14 pt with hairlines between; group labels
   13 Medium; values and subtitles 13 and 12 in `Ink.Secondary`; a 36 × 22 switch; the primary button 44 pt.
 - Edit Feed, Edit Folder and New Folder open over Manage Feeds, which stays chosen in the menu. Save returns to the
-  page below; Manage Feeds in the menu returns at once and discards. Remove Feed… and Delete Folder… ask in a centred
-  dialog (`PanelFrame.narrow`) over the scrim: the question, what happens, the action in `Ink.Danger` and Cancel as
-  rows on `Bg.Pill` (D21); Escape or a click on the scrim cancels. A dialog rather than D29's sheet, as a desktop has
+  page below; back and Manage Feeds in the menu return at once and discard. Back is an arrow (`Icon.ArrowLeft`) at the
+  left of the bar, 30 pt on the accent like "‹ Back to Feeds", without a label, shown only on a page opened over
+  another. Remove Feed… and Delete Folder… ask in a centred dialog (`PanelFrame.narrow`) over the scrim: the
+  question, what happens, the action in `Ink.Danger` and Cancel as rows on `Bg.Pill` (D21); Escape or a click on the
+  scrim cancels. A dialog rather than D29's sheet, as a desktop has
   no thumb to keep it near.
 - Adding a feed stays in Settings, so feeds go in one after another: Add Feed starts again, empty, in the same folder,
   and its line says what was added. The reading window selects the last feed added for when Settings close. An import

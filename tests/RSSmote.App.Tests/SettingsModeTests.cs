@@ -102,6 +102,27 @@ public sealed class SettingsModeTests : IDisposable
     }
 
     [Fact]
+    public void Back_leaves_an_edit_page_without_saving_for_the_page_below()
+    {
+        var mode = Open(SettingsSection.ManageFeeds);
+        Assert.False(mode.CanGoBack);
+        mode.EditFolderCommand.Execute(_f.Apple);
+        var folder = Page<EditFolderViewModel>();
+        folder.EditFeedCommand.Execute(folder.Feeds[1]);
+        Page<EditFeedViewModel>().Name = "Something else";
+        Assert.True(mode.CanGoBack);
+
+        mode.BackCommand.Execute(null);
+        Assert.Same(folder, mode.Page);
+        Assert.Equal("Daring Fireball", _f.Store.Feed(_f.Daring.Id)!.Title);
+        mode.BackCommand.Execute(null);
+        Assert.IsType<ManageFeedsViewModel>(mode.Page);
+        Assert.False(mode.CanGoBack);
+        mode.BackCommand.Execute(null);
+        Assert.IsType<ManageFeedsViewModel>(mode.Page);
+    }
+
+    [Fact]
     public void Removing_a_feed_asks_first_then_deletes_it_with_every_article_and_returns()
     {
         var starred = _f.Store.Items(new ArticleStream.OfFeed(_f.Wired.Id), StreamFilter.All).Single();

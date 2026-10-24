@@ -13,6 +13,7 @@
     <StreamGeometry x:Key="Icon.AlignLeft">M 21 5 H 3 M 15 12 H 3 M 17 19 H 3</StreamGeometry>
     <StreamGeometry x:Key="Icon.Share">M 12 2 v 13 M 16 6 l -4 -4 -4 4 M 4 12 v 8 a 2 2 0 0 0 2 2 h 12 a 2 2 0 0 0 2 -2 v -8</StreamGeometry>
     <StreamGeometry x:Key="Icon.ChevronLeft">M 15 18 l -6 -6 6 -6</StreamGeometry>
+    <StreamGeometry x:Key="Icon.ArrowLeft">M 12 19 l -7 -7 7 -7 M 19 12 H 5</StreamGeometry>
     <StreamGeometry x:Key="Icon.ChevronRight">M 9 18 l 6 -6 -6 -6</StreamGeometry>
     <StreamGeometry x:Key="Icon.ChevronDown">M 6 9 l 6 6 6 -6</StreamGeometry>
     <StreamGeometry x:Key="Icon.ChevronUp">M 18 15 l -6 -6 -6 6</StreamGeometry>

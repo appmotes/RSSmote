@@ -82,6 +82,9 @@ public sealed partial class SettingsModeViewModel : ObservableObject, IDisposabl
 
     public bool HasAction => ActionTitle is not null;
 
+    /// <summary>A page is open over the section's own; the bar shows back.</summary>
+    public bool CanGoBack => _pages.Count > 1;
+
     /// <summary>Remove Feed… or Delete Folder…, asking over the page.</summary>
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsConfirming))]
@@ -112,6 +115,14 @@ public sealed partial class SettingsModeViewModel : ObservableObject, IDisposabl
             _ => new ReadingPageViewModel(_shell.Settings),
         });
         OnPageChanged();
+    }
+
+    /// <summary>Leaves an edit page without saving, for the page below.</summary>
+    [RelayCommand]
+    private void Back()
+    {
+        if (_pages.Count > 1)
+            PopAbove(_pages.Count - 2);
     }
 
     /// <summary>Back to Feeds.</summary>
@@ -246,5 +257,6 @@ public sealed partial class SettingsModeViewModel : ObservableObject, IDisposabl
         OnPropertyChanged(nameof(ActionTitle));
         OnPropertyChanged(nameof(ActionCommand));
         OnPropertyChanged(nameof(HasAction));
+        OnPropertyChanged(nameof(CanGoBack));
     }
 }

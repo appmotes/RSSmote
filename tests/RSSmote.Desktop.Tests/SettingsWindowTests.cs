@@ -120,6 +120,14 @@ public class SettingsWindowTests
         mode.EditFolderCommand.Execute(f.Apple);
         Settle();
 
+        var arrow = window.GetVisualDescendants().OfType<SettingsView>().Single().BackArrow;
+        Assert.True(arrow.IsEffectivelyVisible);
+        Click(window, arrow);
+        Assert.IsType<ManageFeedsViewModel>(mode.Page);
+        Assert.False(arrow.IsEffectivelyVisible);
+        mode.EditFolderCommand.Execute(f.Apple);
+        Settle();
+
         Click(window, window.GetVisualDescendants().OfType<Button>().Single(b => b.Content as string == "Delete Folder…"));
         Assert.True(mode.IsConfirming);
         Press(window, Key.Escape);

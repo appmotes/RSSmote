@@ -82,12 +82,18 @@
             </DockPanel>
         </Border>
 
-        <!-- No back links: a 44 pt bar under 8 pt of canvas, the title centred, the page's action at the right. -->
+        <!-- A 44 pt bar under 8 pt of canvas: back on pages opened over another, the title centred, the page's action at the right. -->
         <DockPanel Grid.Column="1">
             <Panel DockPanel.Dock="Top">
                 <StackPanel>
                     <Border Height="8" Background="Transparent" WindowDecorationProperties.ElementRole="TitleBar" />
                     <c:TitleStrip Classes="card" Padding="{x:Static v:Chrome.ArticleStripPadding}">
+                        <c:TitleStrip.Leading>
+                            <Button x:Name="BackArrow" Classes="settingsBackArrow" Command="{Binding BackCommand}"
+                                    IsVisible="{Binding CanGoBack}" ToolTip.Tip="Back">
+                                <c:Icon Data="{StaticResource Icon.ArrowLeft}" />
+                            </Button>
+                        </c:TitleStrip.Leading>
                         <c:TitleStrip.Trailing>
                             <Button Classes="settingsLink" Content="{Binding ActionTitle}" Command="{Binding ActionCommand}"
                                     IsVisible="{Binding HasAction}" />
