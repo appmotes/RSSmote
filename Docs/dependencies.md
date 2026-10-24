@@ -21,6 +21,8 @@ Versions checked against nuget.org on 2026-10-19.
 | xunit.v3 | 3.2.2 | Apache-2.0 | tests | Matches Avalonia.Headless.XUnit's xUnit 3.2 dependency |
 | xunit.runner.visualstudio | 3.1.5 | Apache-2.0 | tests | `dotnet test` runner |
 | Microsoft.NET.Test.Sdk | 18.11.0 | MIT | tests | Test host |
+| SkiaSharp | 3.119.4 | MIT | build/AppIcons.cs | Draws the app icon for packaging (A2); the same version Avalonia.Skia brings |
+| SkiaSharp.NativeAssets.Linux | 3.119.4 | MIT | build/AppIcons.cs | SkiaSharp's native library when packaging on Linux |
 | Microsoft.Extensions.TimeProvider.Testing | 10.11.0 | MIT | Data.Tests, App.Tests, Desktop.Tests | `FakeTimeProvider` for retention and the refresh timer |
 
 **Assets**

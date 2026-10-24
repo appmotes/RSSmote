@@ -135,7 +135,33 @@ dotnet test RSSmote.slnx
 ```
 
 The tests start the real app without a screen (Avalonia's headless platform) and draw it with Skia, so they also catch
-mistakes in layout, themes and contrast. There are no finished installers yet; build it yourself as above.
+mistakes in layout, themes and contrast.
+
+### Packages
+
+`build/` makes a package per OS and architecture in `artifacts/packages/`, each with its own .NET runtime:
+
+```bash
+build/package-macos.sh
+```
+
+```bash
+build/package-windows.sh
+```
+
+```bash
+build/package-linux.sh
+```
+
+The macOS script needs a Mac; the other two run on macOS or Linux. None of the packages are signed by a known
+developer, so the first start asks:
+
+- **macOS** (14 or later): unzip, move `RSSmote.app` to Applications, then right-click it and choose Open. Or clear the
+  download mark with `xattr -dr com.apple.quarantine /Applications/RSSmote.app`.
+- **Windows:** unzip and run `RSSmote\RSSmote.exe`; SmartScreen asks once (More info ▸ Run anyway). Articles need the
+  WebView2 runtime, which Windows 11 has.
+- **Linux:** unpack to `/opt` (`sudo tar -xzf RSSmote-…-linux-x64.tar.gz -C /opt`) and copy `/opt/RSSmote/rssmote.desktop`
+  to `~/.local/share/applications/`. Unpacked elsewhere, change the two paths in that file.
 
 **iPhone and Android:** the phone apps live in `RSSmote.Mobile.slnx` and need the `ios` or `android` workload
 (`dotnet workload install ios android`). iOS also needs the Xcode version the workload names; Android needs the API 36

@@ -5,13 +5,17 @@
 **N1 — Check `ArticleHost` by hand on each OS.** The fallback is covered by tests (A9); the native path is not.
 Confirm on macOS, Windows 11 (WebView2) and a Linux VM with WPE or
 WebKitGTK and with neither (fallback): page background before first paint, links to the browser, shortcuts
-forwarded from the page (L9), space scrolling, YouTube embeds. For the `.app` (N5),
-WKWebView may need `NSAllowsArbitraryLoadsInWebContent` for http images.
+forwarded from the page (L9), space scrolling, YouTube embeds, and http images in the packaged `.app`, which allows
+them in web content (A2).
 
 **N2 — Spike: title bar on Windows and Linux.** Measure the caption-button width on Windows (P3) and decide the
 Linux strip layout (P2).
 
-**N5 — Packaging per OS.** macOS `.app` (ad-hoc signed), Windows zip, Linux tarball first; Velopack later.
+**N5 — Try the packages by hand (A2).** `build/package-*.sh` make them. The macOS arm64 app, unpacked from its zip
+without a download mark, opened with its window, its Dock icon and an article with a web image. Still to see: a
+downloaded copy opening after Gatekeeper's prompt, the x64 app on an Intel Mac, and an article with an http image.
+On Windows 11 (x64, arm64): `RSSmote.exe` starts after SmartScreen and shows its icon in the taskbar. On Linux (x64,
+with WebKitGTK 4.1): the tarball in `/opt` starts from the desktop entry. Done when each is seen.
 
 **W1 — Sync services** (Feedbin, Fever, …). Deliberately out of scope for now.
 
@@ -49,3 +53,11 @@ L13), and the traffic lights clear the Settings title. On Windows: the caption b
 (P3). On all three: the settings sidebar's strip and the band above the bar drag the window, the article's native
 view stays hidden while Settings show (L9), and Import and Export open the system's file dialogs. Done when each is
 seen.
+
+**W6 — Installers and updates.** Velopack (MIT) for an installer and updates on all three OSes, a Developer ID
+signature with notarisation on macOS, and Authenticode on Windows, so the first-start warnings go (A2).
+
+**W7 — Conditional GET on refresh.** `Refresher` downloads every feed in full on each pass. Store `ETag` and
+`Last-Modified` per feed (schema version 2, two nullable columns on `feeds`, A8), send `If-None-Match` and
+`If-Modified-Since`, and skip parsing on 304. Done when a test server sees both headers on the second refresh and a
+304 leaves the feed's items and `last_error` untouched.

@@ -135,7 +135,34 @@ dotnet test RSSmote.slnx
 ```
 
 Testene starter den rigtige app uden skærm (Avalonias headless-platform) og tegner den med Skia, så de også fanger
-fejl i layout, temaer og kontrast. Der er endnu ingen færdige installationspakker; byg selv som ovenfor.
+fejl i layout, temaer og kontrast.
+
+### Pakker
+
+`build/` laver en pakke pr. styresystem og arkitektur i `artifacts/packages/`, hver med sin egen .NET-runtime:
+
+```bash
+build/package-macos.sh
+```
+
+```bash
+build/package-windows.sh
+```
+
+```bash
+build/package-linux.sh
+```
+
+macOS-scriptet kræver en Mac; de to andre kører på macOS eller Linux. Ingen af pakkerne er signeret af en kendt
+udvikler, så første start spørger:
+
+- **macOS** (14 eller nyere): pak ud, flyt `RSSmote.app` til Programmer, højreklik den og vælg Åbn. Eller fjern
+  download-mærket med `xattr -dr com.apple.quarantine /Applications/RSSmote.app`.
+- **Windows:** pak ud og kør `RSSmote\RSSmote.exe`; SmartScreen spørger én gang (Flere oplysninger ▸ Kør alligevel).
+  Artiklerne kræver WebView2-runtimen, som Windows 11 har.
+- **Linux:** pak ud i `/opt` (`sudo tar -xzf RSSmote-…-linux-x64.tar.gz -C /opt`) og kopiér
+  `/opt/RSSmote/rssmote.desktop` til `~/.local/share/applications/`. Pakker du ud et andet sted, så ret de to stier i
+  filen.
 
 **iPhone og Android:** mobilapperne ligger i `RSSmote.Mobile.slnx` og kræver workloaden `ios` eller `android`
 (`dotnet workload install ios android`). iOS kræver også den Xcode-version, workloaden nævner; Android kræver API

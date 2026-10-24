@@ -34,8 +34,19 @@ a head; a `ControlTheme` or style lives in `App`. `RSSmote.Desktop.Tests` compil
 `TestAppBuilder` from `RSSmote.App.Tests` as linked files, and so does `RSSmote.Mobile.Tests`.
 
 **A2 — One desktop head for all three OSes.** `RSSmote.Desktop` is plain `net10.0` (no `-macos` workload),
-published per RID: `osx-arm64`, `osx-x64`, `win-x64`, `win-arm64`, `linux-x64`, `linux-arm64`. The macOS
-`.app` bundle (Info.plist, icns, ad-hoc or Developer ID signature) is assembled by `build/package-macos.sh`.
+published per RID: `osx-arm64`, `osx-x64`, `win-x64`, `win-arm64`, `linux-x64`, `linux-arm64`. `build/` packages
+it per OS into `artifacts/packages/` (git ignores `artifacts/`), each script defaulting to both architectures:
+
+| Script | Makes | Runs on |
+|---|---|---|
+| `package-macos.sh` | `RSSmote.app` (Info.plist, `.icns`, ad-hoc signature, macOS 14 or later), zipped with `ditto` | macOS |
+| `package-windows.sh` | a zip with an `RSSmote` folder; the icon sits in `RSSmote.exe` | macOS, Linux |
+| `package-linux.sh` | a tarball with an `RSSmote` folder, `rssmote.png` and `rssmote.desktop` for `/opt/RSSmote` | macOS, Linux |
+
+All three publish self-contained, untrimmed, without symbols (`common.sh`), and render the icons first with
+`AppIcons.cs`, a file-based C# program that draws `AppIcon.svg` with SkiaSharp into PNGs and an `.ico` (D13).
+Nothing is notarised or Authenticode-signed, so Gatekeeper and SmartScreen warn on first open. The Info.plist lets web
+content load http images (`NSAllowsArbitraryLoadsInWebContent`), as feeds often link them.
 
 **A3 — Composition root, no container.** `App` creates `AppServices` once (store, settings, feed finder,
 refresher, image cache, launcher, UI dispatcher, clock), applies the theme — the palette of the slot the settings

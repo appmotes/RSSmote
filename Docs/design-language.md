@@ -196,7 +196,8 @@ Licence notice in `Assets/Icons/LICENSE-lucide.txt`.
 
 **D13 — Other assets.**
 - App icon: the Sand accent as a rounded square with a white Lucide star; master SVG in
-  `Assets/AppIcon/AppIcon.svg`. The `.icns`, `.ico` and Linux PNGs are exported from it when packaging (N5).
+  `Assets/AppIcon/AppIcon.svg`. `build/AppIcons.cs` draws the PNGs, the `.ico` and the `.icns` set from it when
+  packaging (A2).
 - Empty states use Lucide icons and type, not an illustration (D9).
 - Favicons: fetched at runtime, shown greyscale when "Grayscale Favicons" is on (BGRA on desktop, RGBA on the
   phones); a letter tile when missing.
