@@ -1,96 +1,100 @@
 # RSSmote
 
-En RSS-læser til macOS, Windows og Linux. Tre kolonner, tastaturet i centrum og alt gemt lokalt.
+**English** · [Dansk](README.da.md)
 
-**Denne app er skrevet af en maskinintelligens.** Al kode, alle kommentarer, designet, de ti farvetemaer,
-app-ikonet, testene, dokumentationen og denne README er lavet af Claude Opus 5.5 (Anthropic, med *reasoning effort*
-sat til high) efter beskrivelse fra et menneske. Intet menneske har gennemgået koden linje for linje. Læs afsnittet
-[Ansvarsfraskrivelse](#ansvarsfraskrivelse), før du stoler på den med noget, du holder af.
+An RSS reader for macOS, Windows and Linux. Three columns, keyboard first, and everything stored locally.
 
-![RSSmote med en artikel åben, lyst tema](Docs/images/reading-light.png)
+**This app was written by a machine intelligence.** All the code, the comments, the design, the ten colour themes, the
+app icon, the tests, the documentation and this README were made by Claude Opus 5.5 (Anthropic, with *reasoning
+effort* set to high) from a human's description. No human has reviewed the code line by line. Read the
+[Disclaimer](#disclaimer) before you trust it with anything you care about.
 
-Til venstre er dine feeds, samlet i mapper. I midten er artiklerne, grupperet efter dag. Til højre er den artikel,
-du læser. Der er ingen konto, ingen synkronisering og ingen sky: dine feeds og artikler ligger i én SQLite-fil på din
-egen maskine.
+![RSSmote with an article open, light theme](Docs/images/reading-light.png)
 
-Bygget i .NET 10 og [Avalonia](https://avaloniaui.net) 12. Kun gratis komponenter med MIT- eller lignende licenser;
-se [Docs/dependencies.md](Docs/dependencies.md).
+On the left are your feeds, gathered in folders. In the middle are the articles, grouped by day. On the right is the
+article you are reading. There is no account, no sync and no cloud: your feeds and articles live in one SQLite file on
+your own machine.
 
-## Hvad den kan
+Built with .NET 10 and [Avalonia](https://avaloniaui.net) 12. Only free components with MIT or similar licences; see
+[Docs/dependencies.md](Docs/dependencies.md).
 
-- **Tilføj et feed** ud fra en feed-adresse eller blot adressen på et website. RSSmote finder selv sitets feeds og
-  viser dem, før noget gemmes.
-- **RSS 2.0, Atom, RDF og JSON Feed.** Feeds med ugyldig XML (fx `&nbsp;` midt i en titel) læses alligevel.
-- **Mapper**, der kan foldes ind og ud, med antal ulæste på hver mappe og hvert feed.
-- **Filtre**: Starred, Unread og All, plus et filterfelt over listen, der søger i titler, resuméer og feednavne.
-- **Artikler i OS'ets egen web-motor** (WebKit på macOS, WebView2 på Windows, WebKitGTK på Linux) med appens egen
-  typografi. Scripts, formularer og indlejrede styles fjernes, før siden vises. Hvor der ingen web-motor er, viser en
-  indbygget HTML-renderer den samme side.
-- **Import og eksport af OPML**, så du kan flytte dine feeds ind og ud.
-- **Opdatering** hver halve time i baggrunden og med `r`, når du vil. Læste, ikke-stjernemarkerede artikler ryddes
-  efter 30 dage.
-- **Ti farvetemaer**, fem lyse og fem mørke. Se [Temaer](#temaer).
+## What it does
 
-![Samme vindue i det mørke standardtema](Docs/images/reading-dark.png)
+- **Add a feed** from a feed address or just the address of a website. RSSmote finds the site's feeds itself and
+  shows them before anything is saved.
+- **RSS 2.0, Atom, RDF and JSON Feed.** Feeds with invalid XML (such as `&nbsp;` in the middle of a title) are read
+  anyway.
+- **Folders** that fold in and out, with unread counts on every folder and feed.
+- **Filters**: Starred, Unread and All, plus a filter box above the list that searches titles, summaries and feed
+  names.
+- **Articles in the OS's own web engine** (WebKit on macOS, WebView2 on Windows, WebKitGTK on Linux) with the app's
+  own typography. Scripts, forms and inline styles are removed before the page is shown. Where there is no web engine,
+  a built-in HTML renderer shows the same page.
+- **OPML import and export**, so you can move your feeds in and out.
+- **Refresh** every half hour in the background, and with `r` whenever you like. Read, unstarred articles are cleared
+  after 30 days.
+- **Ten colour themes**, five light and five dark. See [Themes](#themes).
 
-## Tastaturet
+![The same window in the default dark theme](Docs/images/reading-dark.png)
 
-Hele appen kan styres uden mus. Tasterne virker ikke, mens du skriver i et felt.
+## The keyboard
 
-| Tast | Gør |
+The whole app can be driven without a mouse. The keys do nothing while you type in a field.
+
+| Key | Does |
 | --- | --- |
-| `j` / `k` | Næste / forrige artikel |
-| `space` | Rul ned i artiklen; ved bunden går den videre til næste (`shift+space` ruller op) |
-| `m` | Markér som læst / ulæst |
-| `s` | Stjernemarkér |
-| `b` | Åbn artiklen i browseren |
-| `n` / `p` | Næste / forrige feed |
-| `r` | Opdatér alle feeds |
-| `a` | Markér alt i listen som læst |
-| `.` eller `esc` | Luk artiklen |
-| `⌘1` `⌘2` `⌘3` | Starred / Unread / All (`Ctrl` på Windows og Linux) |
-| `⌘F` | Gå til filterfeltet; `esc` rydder det |
-| `⌘,` | Indstillinger: tilføj, ret og fjern feeds, import, eksport, udseende; `esc` går tilbage |
-| `⌘N` | Tilføj feed (i Indstillinger) |
-| `⌘+` `⌘−` `⌘0` | Større / mindre / normal tekst i artiklen |
+| `j` / `k` | Next / previous article |
+| `space` | Scroll down the article; at the bottom it moves on to the next (`shift+space` scrolls up) |
+| `m` | Mark as read / unread |
+| `s` | Star |
+| `b` | Open the article in the browser |
+| `n` / `p` | Next / previous feed |
+| `r` | Refresh all feeds |
+| `a` | Mark everything in the list as read |
+| `.` or `esc` | Close the article |
+| `⌘1` `⌘2` `⌘3` | Starred / Unread / All (`Ctrl` on Windows and Linux) |
+| `⌘F` | Go to the filter box; `esc` clears it |
+| `⌘,` | Settings: add, edit and remove feeds, import, export, appearance; `esc` goes back |
+| `⌘N` | Add a feed (in Settings) |
+| `⌘+` `⌘−` `⌘0` | Larger / smaller / normal text in the article |
 
-Uden en artikel valgt viser højre side de vigtigste genveje:
+With no article selected, the right side shows the most important shortcuts:
 
-![Genvejene, når ingen artikel er valgt, i temaet Fjord](Docs/images/no-article.png)
+![The shortcuts when no article is selected, in the Fjord theme](Docs/images/no-article.png)
 
-## Skærmbilleder
+## Screenshots
 
 | | |
 | --- | --- |
-| ![Filterfeltet i brug](Docs/images/filter-box.png) | ![Rediger et feed](Docs/images/edit-feed.png) |
-| Filterfeltet søger i listen, mens du skriver | Omdøb et feed og flyt det mellem mapper |
-| ![Tilføj et feed](Docs/images/add-feed.png) | ![Temaet Phosphor](Docs/images/theme-phosphor.png) |
-| Tilføj et feed ud fra en adresse, i Indstillinger | Phosphor: grønt på et slukket rør |
+| ![The filter box in use](Docs/images/filter-box.png) | ![Editing a feed](Docs/images/edit-feed.png) |
+| The filter box searches the list as you type | Rename a feed and move it between folders |
+| ![Adding a feed](Docs/images/add-feed.png) | ![The Phosphor theme](Docs/images/theme-phosphor.png) |
+| Add a feed from an address, in Settings | Phosphor: green on an unlit tube |
 
-Alle skærmbilleder er taget af appen selv, uden skærm, over et opdigtet demo-bibliotek: feeds, artikler, favicons og
-billeder er lavet til formålet (se `tests/RSSmote.Desktop.Tests/ReadmeCaptureTests.cs`).
+Every screenshot is taken by the app itself, without a screen, over a made-up demo library: the feeds, articles,
+favicons and images are invented for the purpose (see `tests/RSSmote.Desktop.Tests/ReadmeCaptureTests.cs`).
 
-## Temaer
+## Themes
 
-Du vælger ét lyst og ét mørkt tema under **View ▸ Theme**. Vælger du et tema, skifter appen til det med det samme.
-Under **Appearance** kan du sætte den til at følge systemet; så skifter den selv mellem dit lyse og dit mørke tema,
-når macOS, Windows eller Linux går fra lyst til mørkt.
+You choose one light and one dark theme under **View ▸ Theme**. Picking a theme switches the app to it at once. Under
+**Appearance** you can set it to follow the system; it then switches by itself between your light and your dark theme
+when macOS, Windows or Linux goes from light to dark.
 
-| Lyse | Mørke |
+| Light | Dark |
 | --- | --- |
-| ![Sand](Docs/images/theme-sand.png) **Sand** — varm sand og rav. Standard. | ![Ember](Docs/images/theme-ember.png) **Ember** — Sand vendt om. Standard. |
-| ![Newsprint](Docs/images/theme-newsprint.png) **Newsprint** — sepiapapir og blæk-blå links, til lange læsninger. | ![Black](Docs/images/theme-black.png) **Black** — helt sort, til OLED-skærme. |
-| ![Fern](Docs/images/theme-fern.png) **Fern** — grønlige toner under en skovgrøn accent. | ![Fjord](Docs/images/theme-fjord.png) **Fjord** — arktisk blågrå med isblå accent. |
-| ![Harbor](Docs/images/theme-harbor.png) **Harbor** — blå accent og brun advarselsfarve, der også kan skelnes ved farveblindhed. | ![Phosphor](Docs/images/theme-phosphor.png) **Phosphor** — grønt fosfor; kun advarsler er røde. |
-| ![Contrast](Docs/images/theme-contrast.png) **Contrast** — sort på hvidt med tydelige kanter. | ![Contrast Dark](Docs/images/theme-contrast-dark.png) **Contrast Dark** — hvidt på sort med tydelige kanter. |
+| ![Sand](Docs/images/theme-sand.png) **Sand** — warm sand and amber. The default. | ![Ember](Docs/images/theme-ember.png) **Ember** — Sand turned over. The default. |
+| ![Newsprint](Docs/images/theme-newsprint.png) **Newsprint** — sepia paper and ink-blue links, for long reads. | ![Black](Docs/images/theme-black.png) **Black** — pure black, for OLED screens. |
+| ![Fern](Docs/images/theme-fern.png) **Fern** — green-leaning tones under a forest-green accent. | ![Fjord](Docs/images/theme-fjord.png) **Fjord** — arctic blue-grey with an ice-blue accent. |
+| ![Harbor](Docs/images/theme-harbor.png) **Harbor** — a blue accent and a brown warning colour that stay apart under colour blindness. | ![Phosphor](Docs/images/theme-phosphor.png) **Phosphor** — green phosphor; only warnings are red. |
+| ![Contrast](Docs/images/theme-contrast.png) **Contrast** — black on white with clear edges. | ![Contrast Dark](Docs/images/theme-contrast-dark.png) **Contrast Dark** — white on black with clear edges. |
 
-Hvert tema er kun en palet: størrelser, skrift og afstande er de samme overalt. Alle ti skal klare de samme
-kontrastkrav (WCAG 2) for tekst, links og knapper, og en test måler dem direkte i temafilerne. Skriften er
-[Inter](https://rsms.me/inter/) på alle tre styresystemer, og ikonerne er [Lucide](https://lucide.dev).
+Each theme is only a palette: sizes, type and spacing are the same everywhere. All ten must meet the same contrast
+requirements (WCAG 2) for text, links and buttons, and a test measures them directly in the theme files. The typeface
+is [Inter](https://rsms.me/inter/) on all three operating systems, and the icons are [Lucide](https://lucide.dev).
 
-## Byg og kør
+## Build and run
 
-Kræver [.NET 10 SDK](https://dotnet.microsoft.com/download).
+Requires the [.NET 10 SDK](https://dotnet.microsoft.com/download).
 
 ```bash
 dotnet build RSSmote.slnx
@@ -100,76 +104,75 @@ dotnet build RSSmote.slnx
 dotnet run --project src/RSSmote.Desktop
 ```
 
-Kør testene:
+Run the tests:
 
 ```bash
 dotnet test RSSmote.slnx
 ```
 
-Testene starter den rigtige app uden skærm (Avalonias headless-platform) og tegner den med Skia, så de også fanger
-fejl i layout, temaer og kontrast. Der er endnu ingen færdige installationspakker; byg selv som ovenfor.
+The tests start the real app without a screen (Avalonia's headless platform) and draw it with Skia, so they also catch
+mistakes in layout, themes and contrast. There are no finished installers yet; build it yourself as above.
 
-**Linux:** artiklerne vises i WebKitGTK 4.1 med libsoup 3. Mangler de, bruger appen den indbyggede HTML-renderer i
-stedet, som ikke kan vise video.
+**Linux:** articles are shown in WebKitGTK 4.1 with libsoup 3. Without them the app uses the built-in HTML renderer
+instead, which cannot show video.
 
-### Hvor dine data ligger
+### Where your data lives
 
-Biblioteket hedder `rssmote.sqlite` og indstillingerne `settings.json`. De ligger side om side:
+The library is called `rssmote.sqlite` and the preferences `settings.json`. They sit side by side:
 
-| System | Mappe |
+| System | Folder |
 | --- | --- |
 | macOS | `~/Library/Application Support/com.ahrentlov.rssmote/` |
 | Windows | `%LOCALAPPDATA%\RSSmote\` |
-| Linux | `$XDG_DATA_HOME/rssmote/` (ellers `~/.local/share/rssmote/`) |
+| Linux | `$XDG_DATA_HOME/rssmote/` (otherwise `~/.local/share/rssmote/`) |
 
-Sæt miljøvariablen `RSSMOTE_DATA_DIR` for at bruge en anden mappe, fx til et testbibliotek.
+Set the environment variable `RSSMOTE_DATA_DIR` to use another folder, for example for a test library.
 
-## Hvad appen henter fra nettet
+## What the app fetches from the network
 
-- **Dine feeds** fra de adresser, du har tilføjet.
-- **Favicons** gennem Googles favicon-tjeneste (`google.com/s2/favicons`), med sitets domæne som parameter. Google kan
-  altså se, hvilke domæner du følger, men ikke hvad du læser.
-- **Billeder i artiklerne**, når du åbner dem, fra de servere, artiklen peger på.
+- **Your feeds**, from the addresses you have added.
+- **Favicons**, through Google's favicon service (`google.com/s2/favicons`), with the site's domain as a parameter.
+  Google can therefore see which domains you follow, but not what you read.
+- **Images in articles**, when you open them, from the servers the article points to.
 
-Der er ingen analytics, ingen sporing og ingen konto. Links åbnes i din browser, ikke i appen.
+There are no analytics, no tracking and no account. Links open in your browser, not in the app.
 
-## Dokumentation
+## Documentation
 
-Projektet er beskrevet i `Docs/`, med en id på hver regel, så kode og dokumenter kan pege på hinanden:
+The project is described in `Docs/`, with an id on every rule, so code and documents can point to each other:
 
-| Fil | Indhold |
+| File | Contents |
 | --- | --- |
-| [Docs/architecture.md](Docs/architecture.md) | Hvordan appen er bygget op: projekter, shell, lagring, opdatering, artikelvisning |
-| [Docs/design-language.md](Docs/design-language.md) | Designet: tokens, temaer, typografi, komponenter, ikoner |
-| [Docs/pitfalls.md](Docs/pitfalls.md) | Fejl, der ikke siger noget, med rettelse og den måling der beviser den |
-| [Docs/todo.md](Docs/todo.md) | Hvad der mangler, og hvordan det tjekkes |
-| [Docs/dependencies.md](Docs/dependencies.md) | Alle pakker med version og licens |
-| [src/RSSmote.App/Controls/Templates/templates.html](src/RSSmote.App/Controls/Templates/templates.html) | Katalog over appens egne kontroller |
+| [Docs/architecture.md](Docs/architecture.md) | How the app is put together: projects, shell, storage, refresh, article rendering |
+| [Docs/design-language.md](Docs/design-language.md) | The design: tokens, themes, typography, components, icons |
+| [Docs/pitfalls.md](Docs/pitfalls.md) | Failures that say nothing, with the fix and the measurement that proves it |
+| [Docs/todo.md](Docs/todo.md) | What is missing, and how to check it |
+| [Docs/dependencies.md](Docs/dependencies.md) | Every package with its version and licence |
+| [src/RSSmote.App/Controls/Templates/templates.html](src/RSSmote.App/Controls/Templates/templates.html) | A catalogue of the app's own controls |
 
-## Ansvarsfraskrivelse
+## Disclaimer
 
-**Skrevet af en maskine.** Hele projektet er genereret af Claude Opus 5.5, en sprogmodel fra Anthropic, med
-*reasoning effort* sat til high. Koden er afprøvet af omkring 170 automatiske tests, der kører appen uden skærm, men
-den er ikke gennemgået linje for linje af et menneske og ikke revideret af nogen med forstand på sikkerhed. Den native
-artikelvisning er endnu ikke afprøvet af hånd på Windows og Linux (se [Docs/todo.md](Docs/todo.md)).
+**Written by a machine.** The whole project was generated by Claude Opus 5.5, a language model from Anthropic, with
+*reasoning effort* set to high. The code is exercised by about 240 automated tests that run the app without a screen,
+but it has not been reviewed line by line by a human, nor audited by anyone with security expertise. The native article
+view has not yet been tried by hand on Windows and Linux (see [Docs/todo.md](Docs/todo.md)).
 
-**Ingen garanti.** Appen leveres, som den er, uden nogen form for garanti. Brug den på eget ansvar. Hverken
-forfatteren, Anthropic eller nogen anden hæfter for tabte data eller andet, der måtte følge af at bruge den.
+**No warranty.** The app is provided as is, without warranty of any kind. Use it at your own risk. Neither the author,
+Anthropic nor anyone else is liable for lost data or anything else that may follow from using it.
 
-**Fjernede feeds er væk.** Fjerner du et feed, slettes det sammen med alle dets artikler, også de stjernemarkerede.
-Appen spørger først, men tager ingen kopi. Eksportér dine feeds som OPML, hvis du vil have en sikkerhedskopi af
-listen.
+**Removed feeds are gone.** When you remove a feed, it is deleted together with all its articles, starred ones too.
+The app asks first, but keeps no copy. Export your feeds as OPML if you want a backup of the list.
 
-**Indholdet er andres.** Artiklerne tilhører dem, der har skrevet dem. RSSmote henter feeds, som de er offentliggjort,
-og viser dem til dig; den kopierer ikke noget videre.
+**The content belongs to others.** Articles belong to those who wrote them. RSSmote fetches feeds as they are
+published and shows them to you; it passes nothing on.
 
-**Ikke signeret.** Der er ingen signerede eller notariserede pakker. Bygger du selv, kan macOS og Windows advare første
-gang, appen åbnes.
+**Not signed.** There are no signed or notarised packages. If you build it yourself, macOS and Windows may warn the
+first time the app is opened.
 
-Appen er lavet til privat brug og er ikke forbundet med noget firma eller produkt.
+The app is made for private use and is not affiliated with any company or product.
 
-## Licens
+## Licence
 
-[MIT](LICENSE). Du må bruge, ændre og videregive koden, også kommercielt, så længe copyright-linjen og licensteksten
-følger med. Pakkerne, skriften og ikonerne har deres egne licenser (MIT, Apache 2.0, OFL og ISC); se
-[Docs/dependencies.md](Docs/dependencies.md).
+[MIT](LICENSE). You may use, change and pass on the code, commercially too, as long as the copyright line and the
+licence text go with it. The packages, the typeface and the icons have their own licences (MIT, Apache 2.0, OFL and
+ISC); see [Docs/dependencies.md](Docs/dependencies.md).
