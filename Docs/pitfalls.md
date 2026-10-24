@@ -105,6 +105,15 @@ behaviour itself needs a check by hand.
 shadow outside those bounds, and it was cut off: the list and article cards had no left edge in the ring palettes. The
 two card views set `ClipToBounds="False"`. Measured with `The_card_ring_shows_on_every_edge`.
 
+**L15 — A plain `[Fact]` that creates an Avalonia object can take the UI thread from the headless tests.** When a
+test on an xUnit worker thread builds a control (here `MenuItem`s) before the headless session has started, the session
+then fails to start: `AvaloniaHeadlessPlatform.Initialize` throws `InvalidOperationException` ("The calling thread
+cannot access this object because a different thread owns it") from `DefaultRenderLoop.Add`, and whichever
+`[AvaloniaFact]` starts it fails in about 1 ms as a "Test Case Cleanup Failure". Which test the runner starts first
+varies, so it showed mostly in the first full `dotnet test` after `dotnet clean`. Every test that creates an Avalonia
+object is an `[AvaloniaFact]`. Measured with `SidebarMenuTests.Feed_rows_have_a_menu_and_other_rows_none`: as a plain
+`[Fact]`, 2 of 4 first runs after `clean` failed; as an `[AvaloniaFact]`, 10 of 10 passed.
+
 **P12 — A Debug Android APK installed with `adb install` closes at once.** Debug builds use Fast Deployment: the
 assemblies are not in the APK but pushed separately by `dotnet build -t:Install`. Installed on its own, the APK
 aborts on launch (`monodroid: No assemblies found … Assuming this is part of Fast Deployment`), visible only in

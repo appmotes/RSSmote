@@ -17,7 +17,8 @@ public sealed class SidebarMenuTests : IDisposable
     public void Dispose() => _f.Dispose();
 
     /// <summary>Feeds and folders are edited in Settings (D30); a feed's menu keeps what reaches outside the app.</summary>
-    [Fact]
+    /// <remarks>Builds menu items, so it runs on the headless UI thread (L15).</remarks>
+    [AvaloniaFact]
     public void Feed_rows_have_a_menu_and_other_rows_none()
     {
         Assert.Equal(["Open wired.example", "Reload Icon"],

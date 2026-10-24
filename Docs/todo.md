@@ -43,12 +43,6 @@ not waiting on the store's lock. Find which refresh work runs on the UI thread (
 reloads, A16) and whether Debug runs interpreted. Done when a Debug start on a fresh emulator skips under 120 frames
 during the first refresh.
 
-**N19 — A Desktop test fails once after a clean build.** In the first full-solution `dotnet test` after
-`dotnet clean`, whichever `RSSmote.Desktop.Tests` test runs first can fail as a "Test Case Cleanup Failure"
-(`InvalidOperationException`, the calling thread cannot access this object, from `AvaloniaHeadlessPlatform.Initialize`
-→ `DefaultRenderLoop.Add`) in about 1 ms; reruns pass. Seen with `ElevationTests` (phosphor), `DesignCaptureTests` and
-`SidebarMenuRenderTests`. Done when ten first runs after `clean` pass.
-
 **W4 — Check refresh on resume on a device.** `ShellViewModel.RefreshIfStale` runs when the app comes back from the
 background and the last pass is older than the interval; it is tested headless only. The list keeping its top row
 across a refresh (P25) was seen on the iPhone 17 Pro simulator, not yet on the API 35 emulator. Done when a resume
