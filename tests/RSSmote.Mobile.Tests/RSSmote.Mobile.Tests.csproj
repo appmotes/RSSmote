@@ -19,5 +19,6 @@
     <!-- The same headless app and seeded library as RSSmote.App.Tests. -->
     <Compile Include="..\RSSmote.App.Tests\TestAppBuilder.cs" Link="TestAppBuilder.cs" />
     <Compile Include="..\RSSmote.App.Tests\ShellFixture.cs" Link="ShellFixture.cs" />
+    <Compile Include="..\RSSmote.App.Tests\DemoLibrary.cs" Link="DemoLibrary.cs" />
   </ItemGroup>
 </Project>

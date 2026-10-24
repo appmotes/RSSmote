@@ -156,8 +156,9 @@ Avalonia's headless platform with Skia drawing, so a test can render any view to
 This is how visuals are checked before the user runs the app. `DesignCaptureTests` renders every screen at 1280 × 800
 over a copy of a real library (with real favicons and thumbnails) when `RSSMOTE_CAPTURE_DIR` and
 `RSSMOTE_CAPTURE_DB` are set; otherwise it does nothing. `ReadmeCaptureTests` renders the README's screenshots
-over an invented library (made-up feeds and articles, favicons and thumbnails drawn in the test) into
-`RSSMOTE_README_DIR`, which is `Docs/images/`.
+over an invented library (`DemoLibrary` in `RSSmote.App.Tests`: made-up feeds and articles, favicons and thumbnails
+drawn in the test) into `RSSMOTE_README_DIR`, which is `Docs/images/`: the desktop in `RSSmote.Desktop.Tests` at
+1280 × 800, the phone (`phone-*.png`) in `RSSmote.Mobile.Tests` at 402 × 874.
 
 **A13 — Domain names.** The sidebar's selectable source is `ArticleStream` (`All`, `InFolder`, `OfFeed`), not
 `Stream`, which would clash with `System.IO.Stream` under implicit usings. `StreamFilter` is Starred / Unread / All.

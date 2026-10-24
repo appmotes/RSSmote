@@ -2,7 +2,8 @@
 
 **English** · [Dansk](README.da.md)
 
-An RSS reader for macOS, Windows and Linux. Three columns, keyboard first, and everything stored locally.
+An RSS reader for macOS, Windows and Linux, and for iPhone and Android. Three columns on the desktop, keyboard first,
+and everything stored locally.
 
 **This app was written by a machine intelligence.** All the code, the comments, the design, the ten colour themes, the
 app icon, the tests, the documentation and this README were made by Claude Opus 5.5 (Anthropic, with *reasoning
@@ -72,7 +73,30 @@ With no article selected, the right side shows the most important shortcuts:
 | Add a feed from an address, in Settings | Phosphor: green on an unlit tube |
 
 Every screenshot is taken by the app itself, without a screen, over a made-up demo library: the feeds, articles,
-favicons and images are invented for the purpose (see `tests/RSSmote.Desktop.Tests/ReadmeCaptureTests.cs`).
+favicons and images are invented for the purpose (see `ReadmeCaptureTests.cs` in `tests/RSSmote.Desktop.Tests` and
+`tests/RSSmote.Mobile.Tests`).
+
+## On the phone
+
+RSSmote also runs on iPhone and Android, built from the same code as the desktop app: the same library, the same
+settings and the same ten themes. The screens below show the iPhone.
+
+| | | | |
+| --- | --- | --- | --- |
+| ![Feeds](Docs/images/phone-feeds.png) | ![The unread list](Docs/images/phone-list.png) | ![An article](Docs/images/phone-article.png) | ![Settings](Docs/images/phone-settings.png) |
+| Feeds: streams, folders and feeds with unread counts | The list: titles over three lines, thumbnails, the filter in the bottom bar | The article: the bars step aside while you scroll down | Settings: feeds, appearance, reading and refresh |
+
+- **One stack:** Feeds → list → article. Swipe from the edge or tap back to return. Settings is the second tab.
+- **Reading:** previous and next are buttons in the bottom bar, not swipes. **Aa** sets the text size, the typeface
+  and light or dark.
+- **Feeds** are added, edited, removed, imported and exported under Settings, as on the desktop. Removing asks in a
+  sheet from the bottom.
+- **Refresh:** pull down on Feeds, or come back to the app after the refresh interval has passed.
+- **No sync.** The phone keeps its own library. Move your feeds between devices with OPML export and import.
+
+On iOS the articles are shown by the built-in HTML renderer for now, which shows no images from the web
+([Docs/todo.md](Docs/todo.md), N16). The screenshots are drawn without a screen at iPhone 17 Pro size (402 × 874 pt),
+so they have no status bar.
 
 ## Themes
 
@@ -113,6 +137,18 @@ dotnet test RSSmote.slnx
 The tests start the real app without a screen (Avalonia's headless platform) and draw it with Skia, so they also catch
 mistakes in layout, themes and contrast. There are no finished installers yet; build it yourself as above.
 
+**iPhone and Android:** the phone apps live in `RSSmote.Mobile.slnx` and need the `ios` or `android` workload
+(`dotnet workload install ios android`). iOS also needs the Xcode version the workload names; Android needs the API 36
+platform and JDK 17 or later. `RSSmote.slnx` builds without any of that.
+
+```bash
+dotnet build src/RSSmote.iOS/RSSmote.iOS.csproj -r iossimulator-arm64
+```
+
+```bash
+dotnet build src/RSSmote.Android/RSSmote.Android.csproj
+```
+
 **Linux:** articles are shown in WebKitGTK 4.1 with libsoup 3. Without them the app uses the built-in HTML renderer
 instead, which cannot show video.
 
@@ -125,6 +161,8 @@ The library is called `rssmote.sqlite` and the preferences `settings.json`. They
 | macOS | `~/Library/Application Support/com.ahrentlov.rssmote/` |
 | Windows | `%LOCALAPPDATA%\RSSmote\` |
 | Linux | `$XDG_DATA_HOME/rssmote/` (otherwise `~/.local/share/rssmote/`) |
+| iOS | `<app container>/Library/Application Support/` |
+| Android | The app's private files folder (`/data/user/0/com.ahrentlov.rssmote/files/`) |
 
 Set the environment variable `RSSMOTE_DATA_DIR` to use another folder, for example for a test library.
 

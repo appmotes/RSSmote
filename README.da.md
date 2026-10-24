@@ -2,7 +2,8 @@
 
 [English](README.md) · **Dansk**
 
-En RSS-læser til macOS, Windows og Linux. Tre kolonner, tastaturet i centrum og alt gemt lokalt.
+En RSS-læser til macOS, Windows og Linux og til iPhone og Android. Tre kolonner på skrivebordet, tastaturet i centrum
+og alt gemt lokalt.
 
 **Denne app er skrevet af en maskinintelligens.** Al kode, alle kommentarer, designet, de ti farvetemaer,
 app-ikonet, testene, dokumentationen og denne README er lavet af Claude Opus 5.5 (Anthropic, med *reasoning effort*
@@ -70,7 +71,32 @@ Uden en artikel valgt viser højre side de vigtigste genveje:
 | Tilføj et feed ud fra en adresse, i Indstillinger | Phosphor: grønt på et slukket rør |
 
 Alle skærmbilleder er taget af appen selv, uden skærm, over et opdigtet demo-bibliotek: feeds, artikler, favicons og
-billeder er lavet til formålet (se `tests/RSSmote.Desktop.Tests/ReadmeCaptureTests.cs`).
+billeder er lavet til formålet (se `ReadmeCaptureTests.cs` i `tests/RSSmote.Desktop.Tests` og
+`tests/RSSmote.Mobile.Tests`).
+
+## På mobilen
+
+RSSmote kører også på iPhone og Android, bygget af den samme kode som skrivebordsappen: samme bibliotek, samme
+indstillinger og samme ti temaer. Billederne herunder viser iPhone.
+
+| | | | |
+| --- | --- | --- | --- |
+| ![Feeds](Docs/images/phone-feeds.png) | ![Listen med ulæste](Docs/images/phone-list.png) | ![En artikel](Docs/images/phone-article.png) | ![Indstillinger](Docs/images/phone-settings.png) |
+| Feeds: strømme, mapper og feeds med antal ulæste | Listen: titler over tre linjer, miniaturer, filteret i bundbjælken | Artiklen: bjælkerne træder til side, mens du ruller ned | Indstillinger: feeds, udseende, læsning og opdatering |
+
+- **Én stak:** Feeds → liste → artikel. Swipe fra kanten eller tryk tilbage for at gå tilbage. Indstillinger er den
+  anden fane.
+- **Læsning:** forrige og næste er knapper i bundbjælken, ikke swipes. **Aa** sætter tekststørrelse, skrift og lyst
+  eller mørkt.
+- **Feeds** tilføjes, rettes, fjernes, importeres og eksporteres under Indstillinger, som på skrivebordet. Fjern
+  spørger i et ark nedefra.
+- **Opdatering:** træk ned på Feeds, eller kom tilbage til appen, når opdateringsintervallet er gået.
+- **Ingen synkronisering.** Telefonen har sit eget bibliotek. Flyt dine feeds mellem enheder med OPML-eksport og
+  -import.
+
+På iOS vises artiklerne indtil videre af den indbyggede HTML-renderer, som ikke viser billeder fra nettet
+([Docs/todo.md](Docs/todo.md), N16). Skærmbillederne er tegnet uden skærm i iPhone 17 Pro-størrelse (402 × 874 pt), så
+de har ingen statuslinje.
 
 ## Temaer
 
@@ -111,6 +137,18 @@ dotnet test RSSmote.slnx
 Testene starter den rigtige app uden skærm (Avalonias headless-platform) og tegner den med Skia, så de også fanger
 fejl i layout, temaer og kontrast. Der er endnu ingen færdige installationspakker; byg selv som ovenfor.
 
+**iPhone og Android:** mobilapperne ligger i `RSSmote.Mobile.slnx` og kræver workloaden `ios` eller `android`
+(`dotnet workload install ios android`). iOS kræver også den Xcode-version, workloaden nævner; Android kræver API
+36-platformen og JDK 17 eller nyere. `RSSmote.slnx` bygger uden noget af det.
+
+```bash
+dotnet build src/RSSmote.iOS/RSSmote.iOS.csproj -r iossimulator-arm64
+```
+
+```bash
+dotnet build src/RSSmote.Android/RSSmote.Android.csproj
+```
+
 **Linux:** artiklerne vises i WebKitGTK 4.1 med libsoup 3. Mangler de, bruger appen den indbyggede HTML-renderer i
 stedet, som ikke kan vise video.
 
@@ -123,6 +161,8 @@ Biblioteket hedder `rssmote.sqlite` og indstillingerne `settings.json`. De ligge
 | macOS | `~/Library/Application Support/com.ahrentlov.rssmote/` |
 | Windows | `%LOCALAPPDATA%\RSSmote\` |
 | Linux | `$XDG_DATA_HOME/rssmote/` (ellers `~/.local/share/rssmote/`) |
+| iOS | `<app-container>/Library/Application Support/` |
+| Android | Appens private filmappe (`/data/user/0/com.ahrentlov.rssmote/files/`) |
 
 Sæt miljøvariablen `RSSMOTE_DATA_DIR` for at bruge en anden mappe, fx til et testbibliotek.
 
