@@ -46,6 +46,19 @@ public class SettingsFlowTests
         Settle();
     }
 
+    /// <summary>The app icon sits beside the version line at the end of the Settings root (D13).</summary>
+    [AvaloniaFact]
+    public void The_version_line_carries_the_app_icon()
+    {
+        var (f, shell, window) = Open("Sand");
+        var version = Find<TextBlock>(shell, t => t.Text == f.Shell.Settings.VersionText);
+        var icon = Assert.IsType<Image>(((Panel)version.Parent!).Children[0]);
+        Assert.NotNull(icon.Source);
+        Assert.True(icon.Bounds.Width > 0);
+        window.Close();
+        f.Dispose();
+    }
+
     [AvaloniaTheory]
     [InlineData("Sand")]
     [InlineData("Ember")]

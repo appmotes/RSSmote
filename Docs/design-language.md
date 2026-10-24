@@ -197,9 +197,15 @@ Licence notice in `Assets/Icons/LICENSE-lucide.txt`.
 | Import file | `Icon.FileText` | file-text |
 
 **D13 — Other assets.**
-- App icon: the Sand accent as a rounded square with a white Lucide star; master SVG in
-  `Assets/AppIcon/AppIcon.svg`. `build/AppIcons.cs` draws the PNGs, the `.ico` and the `.icns` set from it when
-  packaging (A2).
+- App icon: a spark, the mote, sending out two feed arcs, white on the Sand accent as a rounded square; the outer
+  arc at 55 %. The feed symbol is read at once, the spark makes it RSSmote's own, and it holds at 16 px. Master SVG
+  in `Assets/AppIcon/AppIcon.svg`, drawn on a 120-unit grid. `build/AppIcons.cs` draws the PNGs, the `.ico` and the
+  `.icns` set from it when packaging (A2). `build/icons.sh` writes the rest into the repository, to be committed: the
+  desktop window's icon and the one beside the version line in Settings on both platforms (`AppIcon.png` beside the
+  SVG, at `Size.Favicon` on desktop and `Size.Phone.Icon` on the phone), the `.exe`'s (`RSSmote.Desktop/Assets`), the
+  README's (`Docs/images/app-icon.png`), iOS an opaque 1024 square in `Assets.xcassets` (the system rounds it),
+  Android an adaptive icon, the accent behind the marks with the tile's 120 units on the 72 dp that show, and the
+  rounded tile below API 26.
 - Empty states use Lucide icons and type, not an illustration (D9).
 - Favicons: fetched at runtime, shown greyscale when "Grayscale Favicons" is on (BGRA on desktop, RGBA on the
   phones); a letter tile when missing.
@@ -327,7 +333,7 @@ so it has no grabber; the native article hides while it is open (P29).
 **D27 — Settings are plain pushed pages.** The Settings root lists Feeds (Add Feed, Manage Feeds, Import Feeds,
 Export Feeds), Display (Appearance), Articles (Read when opened, Newest first, Group by date, Hide empty feeds as
 switches) and Refresh (interval, after how many days unread articles are marked read, and how long read articles are
-kept, as pickers), then the version. Every row that opens a page has a
+kept, as pickers), then the version with the app icon (D13). Every row that opens a page has a
 chevron; pages have a back button and a centred title, no large title.
 - Appearance: Mode (Automatic, Light, Dark), then the light and the dark palettes as rows with a swatch (`Bg.Article`
   with an `Accent` dot) and a check, then the favicon switches. Choosing a palette follows D22.
@@ -385,7 +391,7 @@ native view (L9).
   "Settings" (`largeTitle`), then Feeds (Add Feed, Manage Feeds, Import Feeds, Export Feeds), Display (Appearance) and
   Reading (Articles & Refresh), 32 pt items with a 15 pt icon. The chosen item is raised like a selected sidebar row
   (`Selection.Sidebar`, `BoxShadows.Raised`). At the foot sit "‹ Back to Feeds" on the accent (40 pt, `Ink.OnAccent`)
-  and the version. No feeds and no streams.
+  and the version with the app icon (D13). No feeds and no streams.
 - The right side has no back links but the one below: 8 pt of canvas, then a 44 pt bar with the page's title centred (`listTitle`) and
   its action at the right in the accent: New Folder on Manage Feeds, Save on Edit Feed, Edit Folder and New Folder.
   Under it one page in a centred 520 pt column: the phone's cards at desktop density, the same rows as D27. Cards are `Bg.List` with

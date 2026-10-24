@@ -149,7 +149,11 @@
                     </Border>
                 </StackPanel>
             </Border>
-            <TextBlock Classes="phoneMeta" Text="{Binding Settings.VersionText}" Margin="28,14,28,0" />
+            <StackPanel Orientation="Horizontal" Spacing="8" Margin="28,14,28,0">
+                <Image Source="avares://RSSmote.App/Assets/AppIcon/AppIcon.png" Width="{StaticResource Size.Phone.Icon}"
+                       Height="{StaticResource Size.Phone.Icon}" RenderOptions.BitmapInterpolationMode="HighQuality" />
+                <TextBlock Classes="phoneMeta" Text="{Binding Settings.VersionText}" VerticalAlignment="Center" />
+            </StackPanel>
         </StackPanel>
     </ScrollViewer>
 </UserControl>

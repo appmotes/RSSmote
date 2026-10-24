@@ -4,6 +4,8 @@
     <AssemblyName>RSSmote</AssemblyName>
     <RootNamespace>RSSmote.Desktop</RootNamespace>
     <ApplicationManifest>app.manifest</ApplicationManifest>
+    <!-- The .exe's icon, written by build/icons.sh (D13). -->
+    <ApplicationIcon>Assets\AppIcon.ico</ApplicationIcon>
     <RuntimeIdentifiers>osx-arm64;osx-x64;win-x64;win-arm64;linux-x64;linux-arm64</RuntimeIdentifiers>
     <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
   </PropertyGroup>

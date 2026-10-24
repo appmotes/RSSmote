@@ -56,6 +56,22 @@ public class SettingsWindowTests
         Settle();
     }
 
+    /// <summary>The app icon sits beside the version line at the foot of the menu (D13).</summary>
+    [AvaloniaFact]
+    public void The_version_line_carries_the_app_icon()
+    {
+        using var f = new ShellFixture();
+        var window = Show(f);
+        f.Shell.OpenSettingsCommand.Execute(null);
+        Settle();
+
+        var version = window.GetVisualDescendants().OfType<TextBlock>().Single(t => t.Text == f.Shell.Settings.VersionText);
+        var icon = Assert.IsType<Image>(((Panel)version.Parent!).Children[0]);
+        Assert.NotNull(icon.Source);
+        Assert.True(icon.Bounds.Width > 0);
+        window.Close();
+    }
+
     [AvaloniaFact]
     public void The_status_bar_button_opens_settings_in_place_of_the_columns_and_back_returns()
     {

@@ -9,6 +9,8 @@
     <ApplicationVersion>1</ApplicationVersion>
     <ApplicationDisplayVersion>$(Version)</ApplicationDisplayVersion>
     <ProvisioningType>manual</ProvisioningType>
+    <!-- The app icon set in Assets.xcassets, written by build/icons.sh (D13). -->
+    <AppIcon>AppIcon</AppIcon>
     <!-- Partial trimming keeps every assembly not marked trimmable whole; as on Android, its analysis warnings are
          off (P13). -->
     <SuppressTrimAnalysisWarnings>true</SuppressTrimAnalysisWarnings>
@@ -18,5 +20,8 @@
   <ItemGroup>
     <ProjectReference Include="..\RSSmote.Mobile\RSSmote.Mobile.csproj" />
     <PackageReference Include="Avalonia.iOS" />
+  </ItemGroup>
+  <ItemGroup>
+    <ImageAsset Include="Assets.xcassets\**\*" />
   </ItemGroup>
 </Project>

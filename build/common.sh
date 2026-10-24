@@ -11,15 +11,14 @@ mkdir -p "$OUT" "$WORK"
 
 # Renders the app icon from its SVG master (D13) into $ICONS: PNGs from 16 to 1024 and RSSmote.ico.
 icons() {
-  [[ -f "$ICONS/RSSmote.ico" ]] && return
   dotnet run "$ROOT/build/AppIcons.cs" -- "$ROOT/src/RSSmote.App/Assets/AppIcon/AppIcon.svg" "$ICONS"
 }
 
-# publish <rid> <folder>: the desktop app with its own .NET runtime, no symbols, the icon in the Windows .exe.
+# publish <rid> <folder>: the desktop app with its own .NET runtime and no symbols.
 publish() {
   rm -rf "$2"
   dotnet publish "$ROOT/src/RSSmote.Desktop/RSSmote.Desktop.csproj" -c Release -r "$1" --self-contained \
-    -p:DebugType=None -p:ApplicationIcon="$ICONS/RSSmote.ico" -o "$2" -v q -clp:ErrorsOnly
+    -p:DebugType=None -o "$2" -v q -clp:ErrorsOnly
   # Native packages bring their own symbols, which DebugType does not cover.
   find "$2" -name '*.pdb' -delete
 }

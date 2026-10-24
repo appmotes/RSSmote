@@ -32,6 +32,15 @@ public class ShellRenderTests
         window.Close();
     }
 
+    /// <summary>The window carries the app icon (D13), which Windows and Linux show in the title bar and taskbar.</summary>
+    [AvaloniaFact]
+    public void The_window_has_the_app_icon()
+    {
+        using var f = new ShellFixture();
+        var window = new RSSmote.Desktop.Shell.MainWindow(f.Shell);
+        Assert.NotNull(window.Icon);
+    }
+
     /// <summary>Renders the window into bin/…/snapshots/<paramref name="name"/>.png.</summary>
     internal static void Save(Window window, string name)
     {

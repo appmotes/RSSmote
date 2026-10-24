@@ -1,3 +1,5 @@
+<img src="Docs/images/app-icon.png" alt="The RSSmote icon: a spark sending out two feed arcs" width="96">
+
 # RSSmote
 
 **English** · [Dansk](README.da.md)

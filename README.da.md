@@ -1,3 +1,5 @@
+<img src="Docs/images/app-icon.png" alt="RSSmote-ikonet: en gnist, der sender to feed-buer ud" width="96">
+
 # RSSmote
 
 [English](README.md) · **Dansk**

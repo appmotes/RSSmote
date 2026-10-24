@@ -24,7 +24,11 @@
                             <TextBlock Text="Back to Feeds" VerticalAlignment="Center" />
                         </StackPanel>
                     </Button>
-                    <TextBlock Classes="meta" Text="{Binding Settings.VersionText}" Margin="10,10,10,12" />
+                    <StackPanel Orientation="Horizontal" Spacing="6" Margin="10,10,10,12">
+                        <Image Source="avares://RSSmote.App/Assets/AppIcon/AppIcon.png" Width="{StaticResource Size.Favicon}"
+                               Height="{StaticResource Size.Favicon}" RenderOptions.BitmapInterpolationMode="HighQuality" />
+                        <TextBlock Classes="meta" Text="{Binding Settings.VersionText}" VerticalAlignment="Center" />
+                    </StackPanel>
                 </StackPanel>
                 <ScrollViewer HorizontalScrollBarVisibility="Disabled">
                     <StackPanel Margin="10,0,10,12">

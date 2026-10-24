@@ -42,6 +42,7 @@ it per OS into `artifacts/packages/` (git ignores `artifacts/`), each script def
 | `package-macos.sh` | `RSSmote.app` (Info.plist, `.icns`, ad-hoc signature, macOS 14 or later), zipped with `ditto` | macOS |
 | `package-windows.sh` | a zip with an `RSSmote` folder; the icon sits in `RSSmote.exe` | macOS, Linux |
 | `package-linux.sh` | a tarball with an `RSSmote` folder, `rssmote.png` and `rssmote.desktop` for `/opt/RSSmote` | macOS, Linux |
+| `icons.sh` | the app icon for the desktop window and `.exe`, the iOS and Android heads and the README, written into the repository and committed (D13) | macOS, Linux |
 
 All three publish self-contained, untrimmed, without symbols (`common.sh`), and render the icons first with
 `AppIcons.cs`, a file-based C# program that draws `AppIcon.svg` with SkiaSharp into PNGs and an `.ico` (D13).

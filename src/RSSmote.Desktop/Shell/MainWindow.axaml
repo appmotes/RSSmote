@@ -6,6 +6,7 @@
         x:Class="RSSmote.Desktop.Shell.MainWindow"
         x:DataType="vm:ShellViewModel"
         Title="RSSmote"
+        Icon="avares://RSSmote.App/Assets/AppIcon/AppIcon.png"
         Width="1045" Height="660" MinWidth="900" MinHeight="500"
         WindowStartupLocation="CenterScreen"
         Background="{DynamicResource Brush.Bg.Sidebar}">
