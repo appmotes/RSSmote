@@ -216,7 +216,9 @@ the canvas 18 wide, the travel.
 `PushModalAsync`; pops behave the same. Removing a feed popped Edit Feed from the sheet's confirm handler, and the
 sheet's own pop, a moment later, was dropped: the sheet stayed over Manage Feeds (iOS simulator, Release).
 `MobileShell.ConfirmAsync` awaits the sheet's pop before it runs the follow-up. `SettingsFlowTests` holds the
-transitions open to show it.
+transitions open to show it. The same dropped an article picked while its list still slid in: the row was selected
+and read, the article never came (iOS simulator, Debug, where the slide is slow). `MobileShell` awaits the list's push
+before it pushes the article; `ReadingFlowTests` holds the slide open to show it.
 
 **P25 — Rebuilding the article list moves its scroll position.** `ArticleListViewModel.Reload` replaces every row;
 with the title and list in one `ScrollViewer` (D25) the offset stays as a number while the rows under it change, so

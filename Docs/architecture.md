@@ -195,8 +195,8 @@ Its root page, `RootPage` (a `ContentPage` with no navigation bar), holds the ta
 `FeedsView` or `SettingsView` as its content; `RootPage.Show(RootTab)` switches them, and both views are created once.
 The bar belongs to the root page, so a pushed page has none. `MobileShell` sets the shared `SidebarViewModel` to
 `SidebarLayout.Phone` (D24) and drives the stack from the view-models: `Sidebar.StreamSelected` on the root pushes
-`ArticleListPage`, `List.ArticleSelected` on the list pushes `ArticlePage`, and popping the article clears the list's
-selection. A phone pick never stays selected, so the same row opens again; Previous and Next stay inside the list.
+`ArticleListPage`, `List.ArticleSelected` on the list pushes `ArticlePage` (once the list has finished sliding in,
+P24), and popping the article clears the list's selection. A phone pick never stays selected, so the same row opens again; Previous and Next stay inside the list.
 The shell's background and its top bar follow the top page, because the strips under the safe-area insets show the
 shell (P14), the shell takes the insets and the system back itself (P15, P18), and it slides pages with
 `LaidOutPageSlide`, which lays the incoming page out in place first (P20). Pushed pages live in

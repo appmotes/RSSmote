@@ -17,6 +17,7 @@ public partial class MobileShell : NavigationPage
     private readonly ShellViewModel? _shell;
     private readonly Dictionary<Page, PanelViewModel> _panels = [];
     private TopLevel? _topLevel;
+    private Task _listPush = Task.CompletedTask;
 
     public MobileShell() => InitializeComponent();
 
@@ -161,15 +162,20 @@ public partial class MobileShell : NavigationPage
     private async void OnStreamSelected(object? sender, ArticleStream stream)
     {
         if (_shell is not null && Top is RootPage)
-            await PushAsync(new ArticleListPage(_shell));
+            await (_listPush = PushAsync(new ArticleListPage(_shell)));
     }
 
     private async void OnArticleSelected(object? sender, ArticleRowViewModel? row)
     {
+        if (_shell is null || row is null)
+            return;
+        // A pick while the list still slides in would be ignored (P24); it opens once the slide ends.
+        await _listPush;
+        if (!ReferenceEquals(_shell.List.SelectedRow, row) || Top is not ArticleListPage)
+            return;
         // A native web view takes the page's place when it attaches, partway through a slide, and stays there (P16, P29):
         // an article shown in one appears in place.
-        if (_shell is not null && row is not null && Top is ArticleListPage)
-            await PushAsync(new ArticlePage(_shell), ArticleHost.UsesNative(ArticleHost.DefaultRenderer) ? null : PageTransition);
+        await PushAsync(new ArticlePage(_shell), ArticleHost.UsesNative(ArticleHost.DefaultRenderer) ? null : PageTransition);
     }
 
     private void OnPopped(object? sender, NavigationEventArgs e)

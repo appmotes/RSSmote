@@ -49,8 +49,3 @@ L13), and the traffic lights clear the Settings title. On Windows: the caption b
 (P3). On all three: the settings sidebar's strip and the band above the bar drag the window, the article's native
 view stays hidden while Settings show (L9), and Import and Export open the system's file dialogs. Done when each is
 seen.
-
-**N21 — An article picked while the list slides in does not open (phone).** Tapping an article before the list's slide
-has finished selects and marks it read, but the article page never comes: `NavigationPage` ignores a push while a
-transition runs (P24), and the row stays selected, so tapping it again does nothing. Seen on the iPhone 17 Pro
-simulator (Debug, where the slide is slow). Done when a pick during the slide opens the article once the slide ends.

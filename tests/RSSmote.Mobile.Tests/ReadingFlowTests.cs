@@ -65,6 +65,31 @@ public class ReadingFlowTests
         f.Dispose();
     }
 
+    /// <summary>The stack ignores a push while the list still slides in (P24); the article follows once it ends.</summary>
+    [AvaloniaFact]
+    public void An_article_picked_while_the_list_slides_in_opens_once_the_slide_ends()
+    {
+        var (f, shell, window) = Open("Sand");
+        var held = new HeldTransition();
+        shell.PageTransition = held;
+
+        f.Shell.Sidebar.SelectedRow = f.Row("Unread");
+        Settle();
+        f.Shell.List.SelectedRow = f.Shell.List.Articles.First();
+        Settle();
+        Assert.IsNotType<ArticlePage>(shell.NavigationStack[^1]);
+
+        for (var i = 0; i < 3; i++)
+        {
+            held.Finish();
+            Settle();
+        }
+        Assert.IsType<ArticlePage>(shell.NavigationStack[^1]);
+        Assert.Equal(["RootPage", "ArticleListPage", "ArticlePage"], shell.NavigationStack.Select(p => p.GetType().Name));
+        window.Close();
+        f.Dispose();
+    }
+
     [AvaloniaFact]
     public void Going_back_clears_the_picks_so_the_same_rows_open_again()
     {

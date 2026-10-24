@@ -124,21 +124,6 @@ public class SettingsFlowTests
         f.Dispose();
     }
 
-    /// <summary>A transition that runs until the test lets it finish, as a slide does on a device.</summary>
-    private sealed class HeldTransition : Avalonia.Animation.IPageTransition
-    {
-        private TaskCompletionSource _done = new();
-
-        public void Finish()
-        {
-            var done = _done;
-            _done = new TaskCompletionSource();
-            done.TrySetResult();
-        }
-
-        public Task Start(Visual? from, Visual? to, bool forward, CancellationToken cancellationToken) => _done.Task;
-    }
-
     [AvaloniaFact]
     public void A_confirmed_sheet_closes_before_the_page_under_it()
     {
