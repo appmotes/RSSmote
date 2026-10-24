@@ -97,7 +97,10 @@ article's native web view would draw over Settings, so `ArticleHost.IsObscured` 
 While Settings show the window's single-key shortcuts are off; Escape cancels the question or leaves, ⌘/Ctrl+N moves
 to Add Feed. The macOS application menu gets "Settings…" from `MainWindow.AddSettingsItem`, as it belongs to the
 application, not the window. Right-clicking a sidebar row opens its menu without selecting it: feeds get Open site
-and Reload Icon; folders and the smart rows have none. There is no separate window.
+and Reload Icon; folders and the smart rows have none. Right-clicking an article row opens its menu the same way:
+Mark as Read (or Unread), Mark Above as Read and Mark Below as Read (the unread rows as listed, under the filter, the
+search and the order; off when there are none), Star (or Unstar) and Open in Browser. They act on that row, never on
+the article being read, and marked rows stay listed until the next rebuild. There is no separate window.
 
 **A7 — MVVM.** CommunityToolkit.Mvvm source generators (`[ObservableProperty]` on partial properties,
 `[RelayCommand]`). Compiled bindings everywhere (`x:DataType` on every view and template). Views are created

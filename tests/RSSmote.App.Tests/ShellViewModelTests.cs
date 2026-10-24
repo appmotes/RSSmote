@@ -80,6 +80,39 @@ public sealed class ShellViewModelTests : IDisposable
     }
 
     [Fact]
+    public void The_list_menu_marks_the_unread_above_or_below_a_row_read_and_keeps_them_listed()
+    {
+        var rows = _f.Shell.List.Articles.ToList();
+        Assert.Equal(4, rows.Count);
+        var third = rows[2];
+        Assert.Equal(2, _f.Shell.List.UnreadBeside(third, below: false).Count);
+
+        _f.Shell.MarkAboveReadCommand.Execute(third);
+        Assert.Equal([false, false, true, true], rows.Select(r => r.IsUnread));
+        Assert.Empty(_f.Shell.List.UnreadBeside(third, below: false));
+        Assert.Equal(rows, _f.Shell.List.Articles);
+
+        _f.Shell.MarkBelowReadCommand.Execute(rows[0]);
+        Assert.All(rows, r => Assert.False(r.IsUnread));
+        Assert.Null(_f.Shell.List.SelectedRow);
+    }
+
+    [Fact]
+    public void The_list_menu_reads_stars_and_opens_a_row_without_selecting_it()
+    {
+        var row = _f.Shell.List.Articles.ElementAt(1);
+        _f.Shell.ToggleRowStarredCommand.Execute(row);
+        _f.Shell.ToggleRowReadCommand.Execute(row);
+        Assert.Equal((true, false), (row.IsStarred, row.IsUnread));
+        _f.Shell.ToggleRowReadCommand.Execute(row);
+        Assert.True(row.IsUnread);
+
+        _f.Shell.OpenRowInBrowserCommand.Execute(row);
+        Assert.Equal(row.Item.Url, Assert.Single(_f.Launcher.Opened).Url.AbsoluteUri);
+        Assert.Null(_f.Shell.Article.Item);
+    }
+
+    [Fact]
     public void A_collapsed_section_hides_its_rows_and_selecting_it_does_not_change_the_stream()
     {
         var section = _f.Row("Feeds");

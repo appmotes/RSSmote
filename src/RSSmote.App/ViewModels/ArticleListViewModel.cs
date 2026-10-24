@@ -259,6 +259,17 @@ public sealed partial class ArticleListViewModel : ObservableObject
         ? $"{ItemFormatting.ArticleCountText(listed)} · {(newestFirst ? "newest first" : "oldest first")}"
         : $"{(listed == 1 ? "1 match" : $"{listed} matches")} for “{SearchText.Trim()}”";
 
+    /// <summary>Unread articles listed above <paramref name="row"/> (<paramref name="below"/> false) or below it, as shown.</summary>
+    public IReadOnlyList<long> UnreadBeside(ArticleRowViewModel row, bool below)
+    {
+        var articles = Articles.ToList();
+        var index = articles.IndexOf(row);
+        if (index < 0)
+            return [];
+        var side = below ? articles.Skip(index + 1) : articles.Take(index);
+        return [.. side.Where(r => r.IsUnread).Select(r => r.Id)];
+    }
+
     /// <summary>Selects the next or previous article; false when there is none in that direction.</summary>
     public bool SelectAdjacent(int delta)
     {

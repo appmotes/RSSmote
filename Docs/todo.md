@@ -15,9 +15,6 @@ Linux strip layout (P2).
 
 **W1 — Sync services** (Feedbin, Fever, …). Deliberately out of scope for now.
 
-**N9 — Article-list context menu.** Mark above / below as read, star, open in browser. Settings (D30) and the
-sidebar menus (A6) are done. Done when a right click on an article row offers these without selecting the row.
-
 **N12 — Check Automatic theme switching on each OS.** Switch the OS between light and dark while RSSmote runs, with
 Automatic and with non-default palettes in both slots: the window repaints, and the macOS menu and the Windows/Linux
 menu button show the checked items.

@@ -256,6 +256,27 @@ public sealed partial class ShellViewModel : ObservableObject, IDisposable
             _launcher.Open(link, _settings.Current.OpenLinksInBackground);
     }
 
+    // MARK: The article list's context menu (A6); a row there is not the article being read.
+
+    [RelayCommand]
+    private void ToggleRowRead(ArticleRowViewModel row) => _store.SetUnread([row.Id], !row.IsUnread);
+
+    [RelayCommand]
+    private void ToggleRowStarred(ArticleRowViewModel row) => _store.SetStarred([row.Id], !row.IsStarred);
+
+    [RelayCommand]
+    private void MarkAboveRead(ArticleRowViewModel row) => _store.SetUnread(List.UnreadBeside(row, below: false), false);
+
+    [RelayCommand]
+    private void MarkBelowRead(ArticleRowViewModel row) => _store.SetUnread(List.UnreadBeside(row, below: true), false);
+
+    [RelayCommand]
+    private void OpenRowInBrowser(ArticleRowViewModel row)
+    {
+        if (ArticleSanitizer.Resolve(row.Item.Url, null) is { } link)
+            _launcher.Open(link, _settings.Current.OpenLinksInBackground);
+    }
+
     /// <summary>A link clicked inside the article.</summary>
     [RelayCommand]
     private void OpenLink(Uri url) => _launcher.Open(url, _settings.Current.OpenLinksInBackground);
