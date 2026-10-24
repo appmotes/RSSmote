@@ -62,8 +62,10 @@ public sealed class ShellFixture : IDisposable
     public sealed class FakeFiles : IFilePicker
     {
         public string? NextOpen { get; set; }
+        public string NextName { get; set; } = "feeds.opml";
         public string? Saved { get; private set; }
-        public Task<string?> OpenTextAsync(string title, string fileTypeName, IReadOnlyList<string> patterns) => Task.FromResult(NextOpen);
+        public Task<PickedText?> OpenTextAsync(string title, string fileTypeName, IReadOnlyList<string> patterns) =>
+            Task.FromResult(NextOpen is { } text ? new PickedText(NextName, text) : null);
 
         public Task<bool> SaveTextAsync(string title, string suggestedName, string text)
         {

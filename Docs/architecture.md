@@ -70,6 +70,8 @@ remaining seam; each head supplies one through its `IShellHost` (A3): Desktop `P
 `OperatingSystem.IsMacOS()` is false on iOS and `IsLinux()` is false on Android, so each mobile OS needs its own
 branch; without one it lands in the Linux fallback.
 
+`IFilePicker.OpenTextAsync` returns the chosen file's name with its text (`PickedText`), which Import Feeds shows.
+
 **A5 — Desktop shell.** Everything here lives in `RSSmote.Desktop`. `MainWindow` hosts `ShellView`: a `Grid` with three columns (sidebar · list · article) and two
 invisible 5 pt `GridSplitter`s, the first on the list card's left edge, the second in the 8 pt gap between the cards.
 The window background is the canvas (`Bg.Sidebar`); the sidebar sits on it and the list and article views are
@@ -122,6 +124,10 @@ script posts link clicks and shortcut keys through `invokeCSharpAction` (L9), an
 the initial load is cancelled, and both arrive as routed events (`LinkClickedEvent`, `ShortcutEvent`). Space
 scrolls through `rssmote.scrollPage`, which answers false at the end so the shell moves to the next article.
 
+`ArticleHost` reports the reader's scroll position (`Scrolled`, offset and 0–1 progress) and taps off links
+(`PageTapped`): the fallback from its `ScrollViewer`, the native view through `scroll` and `tap` messages from
+`article.js`, sent at most once a frame.
+
 **A10 — Feed pipeline.** `FeedFinder` (HTTP + `<link rel="alternate">` discovery, then common feed paths; takes an
 `HttpClient` so tests fake the network) → `FeedParser` (own `XDocument` parser for RSS 2.0 / Atom / RDF matched by
 local name, `JsonDocument` for JSON Feed; HTML entities such as `&nbsp;` are rewritten as numeric references and
@@ -160,8 +166,7 @@ are thin heads over `RSSmote.Mobile`, the same way `RSSmote.Desktop` is over `Ap
 and `AppDelegate` (`AvaloniaAppDelegate<App>`) start `App` with `Host = new MobileShellHost()` from
 `CreateAppBuilder` (`AppBuilder.Configure(() => new App { Host = … }).UseAndroid()` / `.UseiOS(this)`) and add
 `WithInterFont()` in `CustomizeAppBuilder`. Android starts `App` under `IActivityApplicationLifetime`, iOS under
-`ISingleViewApplicationLifetime` (A3). `RSSmote.Mobile/Spike/` (the platform check) is no longer started by
-either head. The heads need the `android` and `ios` workloads and live only in
+`ISingleViewApplicationLifetime` (A3). The heads need the `android` and `ios` workloads and live only in
 `RSSmote.Mobile.slnx`; `RSSmote.slnx` builds `RSSmote.Mobile` but not the heads, so the desktop build needs no
 mobile tooling. Building a head:
 
@@ -199,3 +204,9 @@ lives and is disposed when the page leaves. The phone reuses the desktop's panel
 for a panel, the panel closing (Save, Add Feed) pops it and a page that goes any other way disposes its panel;
 `MobileShell.ConfirmAsync` shows a `ConfirmViewModel` as a modal bottom sheet (D29) and runs what follows a
 confirmation only after the sheet is gone (P24). The system back closes a sheet before it pops a page.
+Import and Export Feeds are panels too (`ImportFeedsViewModel` previews a file before anything is saved, W2), and Aa
+on the article opens `TextSheet` over `SettingsViewModel`'s text size, font and appearance. The article page hides
+both bars on a scroll down and shows them on a scroll up, a tap or a new article, from `ArticleHost.Scrolled` and
+`PageTapped` (D26). An article whose host is native is pushed without a slide (P29). Back from the background
+(`IActivatableLifetime.Activated`), `MobileShell` calls `ShellViewModel.RefreshIfStale`, which refreshes when
+automatic refresh is on and the last pass is older than its interval.

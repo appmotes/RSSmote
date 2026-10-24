@@ -1,5 +1,6 @@
 using Avalonia.Controls;
 using Avalonia.VisualTree;
+using RSSmote.App.Controls.Headless;
 using RSSmote.App.ViewModels;
 using RSSmote.Core.Models;
 using RSSmote.Mobile.Pages;
@@ -31,6 +32,13 @@ public partial class MobileShell : NavigationPage
         Popped += OnPopped;
         PageRemoved += (_, e) => ReleasePanel(e.Page);
         MatchBackground();
+        // Back from the background the timer may not have run: refresh if the last pass is too old.
+        if (Avalonia.Application.Current?.TryGetFeature(typeof(Avalonia.Controls.ApplicationLifetimes.IActivatableLifetime)) is Avalonia.Controls.ApplicationLifetimes.IActivatableLifetime lifetime)
+            lifetime.Activated += (_, e) =>
+            {
+                if (e.Kind == Avalonia.Controls.ApplicationLifetimes.ActivationKind.Background)
+                    shell.RefreshIfStale();
+            };
     }
 
     public RootPage Root => (RootPage)Content!;
@@ -81,6 +89,11 @@ public partial class MobileShell : NavigationPage
         };
         return PushModalAsync(sheet);
     }
+
+    /// <summary>Shows a sheet over the stack, as <see cref="ConfirmAsync"/> does; a tap on its scrim or back closes it.</summary>
+    public Task ShowSheetAsync(ContentPage sheet) => PushModalAsync(sheet);
+
+    public Task CloseSheetAsync() => ModalStack.Count > 0 ? PopModalAsync() : Task.CompletedTask;
 
     private void ReleasePanel(Page page)
     {
@@ -153,8 +166,10 @@ public partial class MobileShell : NavigationPage
 
     private async void OnArticleSelected(object? sender, ArticleRowViewModel? row)
     {
+        // A native web view takes the page's place when it attaches, partway through a slide, and stays there (P29):
+        // an article shown in one appears in place.
         if (_shell is not null && row is not null && Top is ArticleListPage)
-            await PushAsync(new ArticlePage(_shell));
+            await PushAsync(new ArticlePage(_shell), ArticleHost.UsesNative(ArticleHost.DefaultRenderer) ? null : PageTransition);
     }
 
     private void OnPopped(object? sender, NavigationEventArgs e)

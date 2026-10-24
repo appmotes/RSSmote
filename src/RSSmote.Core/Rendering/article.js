@@ -31,11 +31,26 @@
     var first = document.querySelector('.content img');
     if (hero && first && hero.src === first.src) { hero.parentNode.remove(); }
 
-    // Links open in the system browser; the page itself never navigates.
+    // Links open in the system browser; the page itself never navigates. Any other tap is reported (D26).
     document.addEventListener('click', function (e) {
         var a = e.target.closest ? e.target.closest('a[href]') : null;
-        if (a && post({ type: 'link', href: a.href })) { e.preventDefault(); }
+        if (a) {
+            if (post({ type: 'link', href: a.href })) { e.preventDefault(); }
+        } else {
+            post({ type: 'tap' });
+        }
     });
+
+    // The scroll position, at most once a frame, so the phone's bars can step aside (D26).
+    var scrollQueued = false;
+    window.addEventListener('scroll', function () {
+        if (scrollQueued) { return; }
+        scrollQueued = true;
+        window.requestAnimationFrame(function () {
+            scrollQueued = false;
+            post({ type: 'scroll', y: window.scrollY, max: document.documentElement.scrollHeight - window.innerHeight });
+        });
+    }, { passive: true });
 
     // The web view keeps keyboard focus once clicked, so single-key shortcuts are forwarded to the app (D15).
     var plain = 'jkmsbvranp. ';

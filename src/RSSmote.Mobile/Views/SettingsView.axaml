@@ -32,9 +32,8 @@
                             </Grid>
                         </Button>
                     </Border>
-                    <!-- Import and Export open their pages in phase 4 (M10, M11). -->
                     <Border Classes="phoneRowLine">
-                        <Button Classes="phoneRow" IsEnabled="False">
+                        <Button Classes="phoneRow" Click="OnImportClick">
                             <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
                                 <c:Icon Classes="lead" Data="{StaticResource Icon.Download}" />
                                 <TextBlock Grid.Column="1" Text="Import Feeds" VerticalAlignment="Center" />
@@ -43,7 +42,7 @@
                         </Button>
                     </Border>
                     <Border Classes="phoneRowLine last">
-                        <Button Classes="phoneRow" IsEnabled="False">
+                        <Button Classes="phoneRow" Click="OnExportClick">
                             <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
                                 <c:Icon Classes="lead" Data="{StaticResource Icon.Upload}" />
                                 <TextBlock Grid.Column="1" Text="Export Feeds" VerticalAlignment="Center" />

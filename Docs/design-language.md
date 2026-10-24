@@ -53,6 +53,7 @@ inherits from one of them.
 | `Ink.OnAccent` | `#FFFFFF` | `#2A1A05` | = Ember | Text and icons on an accent fill (D21) |
 | `Ink.Danger` | `#B3261E` | `#FF8A80` | = Ember | Remove Feed, Delete Folder (D21) |
 | `Bg.Knob` | `#FFFFFF` | `#FFFFFF` | = Ember | A phone switch's knob, on the accent and off (D27); white in every palette |
+| `Bg.Segment` | = `Bg.Panel` | `#3A3734` | `#2A2826` | The selected segment on a `Bg.Pill` track (D26's Aa sheet); light palettes reuse `Bg.Panel`, dark ones lift above the track |
 | `BoxShadows.Card` | soft, 2 layers | soft, 2 layers | 1 px ring | List and article cards (D20) |
 | `BoxShadows.Raised` | soft + hairline | soft + hairline | 1 px ring | Selected sidebar row, active filter segment |
 | `BoxShadows.Panel` | deep + hairline | deep + hairline | 1 px ring | Overlay panels |
@@ -191,6 +192,7 @@ Licence notice in `Assets/Icons/LICENSE-lucide.txt`.
 | Group by date (phone) | `Icon.Calendar` | calendar |
 | Refresh interval, Keep read (phone) | `Icon.Clock`, `Icon.Archive` | clock, archive |
 | Picker (phone) | `Icon.ChevronsUpDown` | chevrons-up-down |
+| Import file (phone) | `Icon.FileText` | file-text |
 
 **D13 — Other assets.**
 - App icon: the Sand accent as a rounded square with a white Lucide star; master SVG in
@@ -280,7 +282,7 @@ Every palette clears these floors (WCAG 2, translucent ink composited first; `Co
 | `Ink.Primary` on `Bg.List`, `Bg.Article`, `Bg.Panel`, `Selection.List`; `Ink.Sidebar` on `Bg.Sidebar` | 7:1 |
 | `Ink.Secondary` on `Bg.List`, `Selection.List`, `Bg.Sidebar`, `Bg.Panel`, `Bg.Pill` | 4.5:1 |
 | `Ink.Read` on `Bg.List` | 4:1 |
-| `Accent` on `Bg.Article`; `Ink.OnAccent` on `Accent`; `Ink.Danger` on `Bg.Panel` and `Bg.Pill`; `Ink.Icon` on `Bg.List` | 4.5:1 |
+| `Accent` on `Bg.Article` and `Bg.Segment`; `Ink.OnAccent` on `Accent`; `Ink.Danger` on `Bg.Panel` and `Bg.Pill`; `Ink.Icon` on `Bg.List` | 4.5:1 |
 | `Ink.OnTile` on `Bg.FaviconTile` | 3:1 |
 
 ## Mobile (phone)
@@ -310,11 +312,14 @@ as Read · the filter (Starred, Unread, All Items; the active one a labelled pil
 search, which opens the filter box.
 
 **D26 — Article: bars that step aside.** A top bar with back, the position ("1 of 3") and Aa; a bottom bar with Read,
-Star, Open in Browser, Previous and Next, icons only. Both bars slide away while the reader scrolls down and come
-back on a scroll up or a tap, leaving a 3 pt reading-progress line under the status bar. Previous and next are
+Star, Open in Browser, Previous and Next, icons only. Both bars step aside once the reader has scrolled 24 pt down
+and come back on 24 pt up, a tap, near the top or on a new article, leaving a 3 pt reading-progress line
+(`Bg.Pill` track, `Accent` fill) under the status bar. They go without a slide: the article takes their room. Previous and next are
 buttons, never a horizontal swipe: a swipe from the edge is back (`NavigationPage`), and the two would fight. Aa opens
-a sheet with text size (11–32, `AppSettings`), font (System, Serif, Rounded, Mono) and Automatic / Light / Dark as a
-shortcut to the same setting as Appearance.
+a sheet with text size (11–32, `AppSettings`; a slider between a small and a large A, each a point), font (System,
+Serif, Rounded, Mono) and Automatic / Light / Dark as a shortcut to the same setting as Appearance. The two choices
+are segments on a `Bg.Pill` track, the chosen one raised on `Bg.Segment` in the `Accent`. The sheet closes like D29's,
+so it has no grabber; on Android the native article hides while it is open (P29).
 
 **D27 — Settings are plain pushed pages.** The Settings root lists Feeds (Add Feed, Manage Feeds, Import Feeds,
 Export Feeds), Display (Appearance), Articles (Read when opened, Newest first, Group by date as switches) and Refresh
@@ -332,8 +337,9 @@ chevron; pages have a back button and a centred title, no large title.
 - The two Refresh pickers open a menu of radio items over the row (`MenuFlyout`, rows at 44 pt on `Bg.Panel`), as
   M5's up-down chevron says; every other row that opens something pushes a page.
 - Import Feeds shows what a file will add before anything is saved: the file, its folders with their feed counts,
-  how many feeds already exist and are skipped, then "Import N Feeds". Export Feeds shows what the file holds and hands
-  it to the system's save or share sheet.
+  how many feeds already exist and are skipped, then "Import N Feeds" ("Nothing to Import" when all are). It opens
+  on its intro and "Choose File…", which brings up the system's file picker; Change picks another. Export Feeds
+  shows what the file holds and hands it to the system's save sheet, then says "Saved.".
 
 **D28 — Touch metrics.** Rows are at least 44 pt (56 with a subtitle, 60 for radio rows with one); icon buttons
 are 44 pt targets around 22 pt icons; bars are 44 pt at the top and 49 pt plus the home-indicator inset at the

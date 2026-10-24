@@ -20,7 +20,7 @@ public class ContrastTests
         ("Ink.Secondary", "Bg.List", 4.5), ("Ink.Secondary", "Selection.List", 4.5), ("Ink.Secondary", "Bg.Sidebar", 4.5),
         ("Ink.Secondary", "Bg.Panel", 4.5), ("Ink.Secondary", "Bg.Pill", 4.5),
         ("Ink.Read", "Bg.List", 4),
-        ("Accent", "Bg.Article", 4.5), ("Ink.OnAccent", "Accent", 4.5),
+        ("Accent", "Bg.Article", 4.5), ("Accent", "Bg.Segment", 4.5), ("Ink.OnAccent", "Accent", 4.5),
         ("Ink.Danger", "Bg.Panel", 4.5), ("Ink.Danger", "Bg.Pill", 4.5),
         ("Ink.Icon", "Bg.List", 4.5), ("Ink.OnTile", "Bg.FaviconTile", 3),
     ];

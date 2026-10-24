@@ -29,6 +29,7 @@ public sealed partial class SettingsViewModel : ObservableObject
         DarkThemes = [.. ThemeCatalogue.Dark.Select(t => new ChoiceViewModel(DisplayName(t), t.Id, SetDarkThemeCommand, t.Variant))];
         RefreshIntervals = [.. AppSettings.RefreshIntervals.Select(m => new ChoiceViewModel(IntervalText(m), m, SetRefreshIntervalCommand))];
         KeepReadDays = [.. AppSettings.RetentionDays.Select(d => new ChoiceViewModel(KeepText(d), d, SetKeepReadDaysCommand))];
+        Fonts = [.. Enum.GetValues<ArticleFont>().Select(f => new ChoiceViewModel(f.ToString(), f, SetArticleFontCommand))];
         Apply(settings.Current);
     }
 
@@ -46,6 +47,29 @@ public sealed partial class SettingsViewModel : ObservableObject
 
     /// <summary>Days read articles are kept.</summary>
     public IReadOnlyList<ChoiceViewModel> KeepReadDays { get; }
+
+    /// <summary>System, Serif, Rounded, Mono: the article's typeface (D26).</summary>
+    public IReadOnlyList<ChoiceViewModel> Fonts { get; }
+
+    public int MinFontSize => AppSettings.MinFontSize;
+
+    public int MaxFontSize => AppSettings.MaxFontSize;
+
+    /// <summary>The article's text size in points; the Aa sheet's slider writes it.</summary>
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(FontSizeText))]
+    public partial double ArticleFontSize { get; set; }
+
+    partial void OnArticleFontSizeChanged(double value)
+    {
+        var size = Math.Clamp((int)Math.Round(value), AppSettings.MinFontSize, AppSettings.MaxFontSize);
+        // A slider moves in small steps; the file is written only when the whole point changes.
+        if (size != _settings.Current.ArticleFontSize)
+            Write(s => s.ArticleFontSize = size);
+    }
+
+    /// <summary>"17 pt".</summary>
+    public string FontSizeText => $"{(int)Math.Round(ArticleFontSize)} pt";
 
     /// <summary>"RSSmote 0.1.0".</summary>
     public string VersionText { get; } =
@@ -103,6 +127,7 @@ public sealed partial class SettingsViewModel : ObservableObject
             GroupByDate = settings.GroupByDate;
             DisplayFavicons = settings.DisplayFavicons;
             GrayscaleFavicons = settings.GrayscaleFavicons;
+            ArticleFontSize = settings.ArticleFontSize;
         }
         finally
         {
@@ -116,6 +141,7 @@ public sealed partial class SettingsViewModel : ObservableObject
         Check(DarkThemes, dark);
         Check(RefreshIntervals, settings.RefreshIntervalMinutes);
         Check(KeepReadDays, settings.KeepArchivedDays);
+        Check(Fonts, settings.ArticleFont);
         AppearanceText = Appearances.FirstOrDefault(c => c.IsChecked)?.Header ?? "";
         RefreshIntervalText = IntervalText(settings.RefreshIntervalMinutes);
         KeepReadText = KeepText(settings.KeepArchivedDays);
@@ -169,6 +195,14 @@ public sealed partial class SettingsViewModel : ObservableObject
 
     [RelayCommand]
     private void SetKeepReadDays(int days) => _settings.Update(s => s.KeepArchivedDays = days);
+
+    [RelayCommand]
+    private void SetArticleFont(ArticleFont font) => _settings.Update(s => s.ArticleFont = font);
+
+    /// <summary>One point smaller or larger, within 11–32.</summary>
+    [RelayCommand]
+    private void StepFontSize(int delta) => _settings.Update(s =>
+        s.ArticleFontSize = Math.Clamp(s.ArticleFontSize + delta, AppSettings.MinFontSize, AppSettings.MaxFontSize));
 
     [RelayCommand]
     private void ToggleGrayscaleFavicons() => _settings.Update(s => s.GrayscaleFavicons = !s.GrayscaleFavicons);

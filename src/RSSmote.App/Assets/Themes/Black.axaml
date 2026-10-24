@@ -25,6 +25,7 @@
     <Color x:Key="Color.Ink.OnAccent">#FF2A1A05</Color> <!-- Text and icons on an accent fill -->
     <Color x:Key="Color.Ink.Danger">#FFFF8A80</Color> <!-- Remove Feed, Delete Folder -->
     <Color x:Key="Color.Bg.Knob">#FFFFFFFF</Color> <!-- Switch knob, on the accent and off -->
+    <Color x:Key="Color.Bg.Segment">#FF2A2826</Color> <!-- Selected segment on the pill track: the phone's Aa sheet -->
 
     <SolidColorBrush x:Key="Brush.Bg.Sidebar" Color="{StaticResource Color.Bg.Sidebar}" />
     <SolidColorBrush x:Key="Brush.Bg.List" Color="{StaticResource Color.Bg.List}" />
@@ -48,6 +49,7 @@
     <SolidColorBrush x:Key="Brush.Ink.OnAccent" Color="{StaticResource Color.Ink.OnAccent}" />
     <SolidColorBrush x:Key="Brush.Ink.Danger" Color="{StaticResource Color.Ink.Danger}" />
     <SolidColorBrush x:Key="Brush.Bg.Knob" Color="{StaticResource Color.Bg.Knob}" />
+    <SolidColorBrush x:Key="Brush.Bg.Segment" Color="{StaticResource Color.Bg.Segment}" />
 
     <!-- Elevation: shadows in the light and dark palettes, a hairline ring in Black (D20) -->
     <BoxShadows x:Key="BoxShadows.Card">0 0 0 1 #1AFFFFFF</BoxShadows> <!-- Article list and article cards -->

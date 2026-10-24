@@ -31,12 +31,10 @@ palettes switch from the menus.
 
 
 **W2 — Preview an OPML import on desktop, as the mobile Import Feeds page does (D27).** Today "Import Feeds…"
-imports the chosen file at once and only reports the count afterwards (`ShellViewModel.ImportOpmlAsync`). Instead,
-show the file name and "N feeds in M folders", the folders with the feeds each one adds, how many feeds are already
-added and will be skipped (`Store.FeedWithUrl`), and import only on "Import N Feeds"; "Change" picks another file.
-Mobile and desktop share the view-model, so build it once in `RSSmote.App` and give each head its own view (a panel
-on desktop, A6). Done when importing a file that partly overlaps the library shows the right counts before anything is
-saved, and cancelling leaves the library untouched (a test in `RSSmote.App.Tests`).
+imports the chosen file at once and only reports the count afterwards (`ShellViewModel.ImportOpmlAsync`). The shared
+view-model exists (`ImportFeedsViewModel`, tested in `ImportExportTests`); what is left is its desktop panel (A6) in
+place of the direct import, and the same for Export (`ExportFeedsViewModel`). Done when "Import Feeds…" on desktop
+shows the preview and imports only on "Import N Feeds".
 
 **W3 — Tablet layout.** The mobile design covers the phone only (D23–D28). A tablet in landscape needs its own
 answer (list and article side by side, or three columns as on desktop). Done when it is drawn and recorded as a
@@ -55,3 +53,16 @@ in 2.0 s and skips at most 42 frames. Stack samples show the main thread in Mono
 not waiting on the store's lock. Find which refresh work runs on the UI thread (the store-change handlers and their
 reloads, A16) and whether Debug runs interpreted. Done when a Debug start on a fresh emulator skips under 120 frames
 during the first refresh.
+
+**N19 — A Desktop test fails once after a clean build.** In the first full-solution `dotnet test` after
+`dotnet clean`, whichever `RSSmote.Desktop.Tests` test runs first can fail as a "Test Case Cleanup Failure"
+(`InvalidOperationException`, the calling thread cannot access this object, from `AvaloniaHeadlessPlatform.Initialize`
+→ `DefaultRenderLoop.Add`) in about 1 ms; reruns pass. Seen with `ElevationTests` (phosphor), `DesignCaptureTests` and
+`SidebarMenuRenderTests`. Done when ten first runs after `clean` pass.
+
+**W4 — Check the phone's remaining behaviour on a device.** Headless only so far: the article list keeping its top
+row across a refresh (P25), and refresh on coming back from the background (`ShellViewModel.RefreshIfStale`). Also
+decide the Delete Folder sheet's text, which says the feeds "move to Feeds" (the desktop's section) while the phone
+calls that group "No folder" (`ShellViewModel.ConfirmDeleteFolder`). Done when both are seen on the iOS simulator and
+the API 35 emulator and the text reads right on both heads.
+

@@ -26,7 +26,7 @@ public class ReadingFlowTests
     private static (ShellFixture Fixture, MobileShell Shell, Avalonia.Controls.Window Window) Open(string palette)
     {
         var f = new ShellFixture(s => s.ExpandedFolders = [1]);
-        var shell = new MobileShell(f.Shell) { PageTransition = null };
+        var shell = new MobileShell(f.Shell) { PageTransition = null, ModalTransition = null };
         var window = PhoneRender.Show(shell, palette);
         Settle();
         return (f, shell, window);
@@ -197,6 +197,59 @@ public class ReadingFlowTests
         var after = TopRow(page);
         Assert.Equal(before.Id, after.Id);
         Assert.InRange(after.Y, before.Y - 1, before.Y + 1);
+        window.Close();
+        f.Dispose();
+    }
+
+    [AvaloniaTheory]
+    [InlineData("Sand")]
+    [InlineData("Ember")]
+    public void Aa_opens_the_text_sheet_over_the_article(string palette)
+    {
+        var (f, shell, window) = Open(palette);
+        f.Shell.Sidebar.SelectedRow = f.Row("Unread");
+        Settle();
+        f.Shell.List.SelectedRow = f.Shell.List.Articles.First();
+        Settle();
+        var aa = shell.GetVisualDescendants().OfType<Button>().First(b => b.Content as string == "Aa");
+        aa.RaiseEvent(new Avalonia.Interactivity.RoutedEventArgs(Button.ClickEvent));
+        Settle();
+        var sheet = Assert.IsType<TextSheet>(shell.ModalStack[^1]);
+        PhoneRender.Save(window, $"phone-m4-{palette}");
+
+        var larger = sheet.GetVisualDescendants().OfType<Button>().Last(b => b.Content as string == "A");
+        larger.Command!.Execute(larger.CommandParameter);
+        Assert.Equal(17, f.Settings.Current.ArticleFontSize);
+        window.Close();
+        f.Dispose();
+    }
+
+    [AvaloniaFact]
+    public void The_bars_step_aside_on_a_scroll_down_and_come_back_on_a_scroll_up()
+    {
+        var (f, shell, window) = Open("Sand");
+        f.Store.Upsert(f.Wired.Id, [new ParsedItem("long", "Long read", "https://example.com/long", null,
+            string.Concat(Enumerable.Repeat("<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>", 300)),
+            "x", null, ShellFixture.Now)]);
+        f.Shell.FlushPendingReload();
+        f.Shell.Sidebar.SelectedRow = f.Row("WIRED");
+        Settle();
+        f.Shell.List.SelectedRow = f.Shell.List.Articles.First(a => a.Item.Guid == "long");
+        Settle();
+        var page = Assert.IsType<ArticlePage>(shell.NavigationStack[^1]);
+        var scroller = page.GetVisualDescendants().OfType<ScrollViewer>().First();
+        Assert.True(page.BarsShown);
+
+        scroller.Offset = new Vector(0, 600);
+        Settle();
+        Assert.False(page.BarsShown);
+        PhoneRender.Save(window, "phone-m3-reading");
+
+        // The page ignores scrolling while it resizes after the bars change.
+        Thread.Sleep(350);
+        scroller.Offset = new Vector(0, 500);
+        Settle();
+        Assert.True(page.BarsShown);
         window.Close();
         f.Dispose();
     }

@@ -172,6 +172,14 @@
         <Setter Property="Foreground" Value="{DynamicResource Brush.Ink.Secondary}" />
         <Setter Property="Margin" Value="28,16,28,6" />
     </Style>
+    <!-- The line that says what a page is for, under its bar. -->
+    <Style Selector="TextBlock.phoneIntro">
+        <Setter Property="FontSize" Value="{StaticResource TextTheme.Phone.Secondary.Size}" />
+        <Setter Property="LineHeight" Value="21" />
+        <Setter Property="TextWrapping" Value="Wrap" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Ink.Secondary}" />
+        <Setter Property="Margin" Value="28,10,28,4" />
+    </Style>
     <Style Selector="TextBlock.phoneFootnote">
         <Setter Property="FontSize" Value="13" />
         <Setter Property="LineHeight" Value="18" />
@@ -440,6 +448,65 @@
     </Style>
     <Style Selector="Border.phoneAddress:focus-within">
         <Setter Property="BorderBrush" Value="{DynamicResource Brush.Accent}" />
+    </Style>
+
+    <!-- A segmented choice (D26's Aa sheet): a pill track, the chosen segment raised on Bg.Segment in the accent. -->
+    <Style Selector="Border.phoneSegments">
+        <Setter Property="Background" Value="{DynamicResource Brush.Bg.Pill}" />
+        <Setter Property="CornerRadius" Value="10" />
+        <Setter Property="Padding" Value="3" />
+        <Setter Property="Margin" Value="0,12,0,0" />
+    </Style>
+    <Style Selector="Button.phoneSegment">
+        <Setter Property="Height" Value="34" />
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+        <Setter Property="HorizontalContentAlignment" Value="Center" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="CornerRadius" Value="8" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Ink.Secondary}" />
+        <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter, ^:pressed /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Ink.Secondary}" />
+        </Style>
+        <Style Selector="^:pressed">
+            <Setter Property="RenderTransform" Value="none" />
+        </Style>
+    </Style>
+    <Style Selector="Button.phoneSegment.on">
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Style Selector="^ /template/ ContentPresenter#PART_ContentPresenter, ^:pointerover /template/ ContentPresenter#PART_ContentPresenter, ^:pressed /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource Brush.Bg.Segment}" />
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Accent}" />
+            <Setter Property="BoxShadow" Value="{DynamicResource BoxShadows.Raised}" />
+        </Style>
+    </Style>
+
+    <!-- The Aa sheet's size slider: the accent up to the thumb, the pill after it, a knob for the thumb. On a phone the
+         Fluent slider takes the platform's accent, so the parts are set here, as style triggers (P22, P27). -->
+    <Style Selector="Slider.phone /template/ RepeatButton#PART_DecreaseButton:not(:disabled)">
+        <Setter Property="Background" Value="{DynamicResource Brush.Accent}" />
+    </Style>
+    <Style Selector="Slider.phone /template/ RepeatButton#PART_IncreaseButton:not(:disabled)">
+        <Setter Property="Background" Value="{DynamicResource Brush.Bg.Pill}" />
+    </Style>
+    <Style Selector="Slider.phone /template/ Thumb:not(:disabled)">
+        <Setter Property="Background" Value="{DynamicResource Brush.Bg.Knob}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Line.Separator}" />
+        <Setter Property="BorderThickness" Value="1" />
+    </Style>
+
+    <!-- The 3 pt reading-progress line that stays when the article's bars step aside (D26). -->
+    <Style Selector="ProgressBar.phoneProgress">
+        <Setter Property="Height" Value="3" />
+        <Setter Property="MinHeight" Value="3" />
+        <Setter Property="CornerRadius" Value="0" />
+        <Setter Property="Background" Value="{DynamicResource Brush.Bg.Pill}" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Accent}" />
+        <Setter Property="Minimum" Value="0" />
+        <Setter Property="Maximum" Value="1" />
     </Style>
 
     <!-- The bottom sheet that asks before Remove Feed or Delete Folder (D29). -->

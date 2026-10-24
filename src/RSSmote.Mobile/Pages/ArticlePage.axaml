@@ -8,12 +8,17 @@
              AutomaticallyApplySafeAreaPadding="False"
              Header="{Binding Article.PositionText}"
              Background="{DynamicResource Brush.Bg.Article}">
-    <!-- The article (D26): the page fills the screen; Read, Star, Browser, Previous and Next sit in the bottom bar. -->
+    <!-- The article (D26): the page fills the screen; Read, Star, Browser, Previous and Next sit in the bottom bar.
+         Both bars step aside while the reader scrolls down, leaving the progress line. -->
     <NavigationPage.BackButtonContent>
         <c:Icon Data="{StaticResource Icon.ChevronLeft}" Size="24" Foreground="{DynamicResource Brush.Ink.Icon}" />
     </NavigationPage.BackButtonContent>
+    <NavigationPage.TopCommandBar>
+        <Button x:Name="TextButton" Classes="phoneBarText" Content="Aa" FontWeight="SemiBold" Margin="0,0,6,0"
+                Foreground="{DynamicResource Brush.Ink.Icon}" Click="OnTextClick" ToolTip.Tip="Text" />
+    </NavigationPage.TopCommandBar>
     <ContentPage.BottomCommandBar>
-        <Border Padding="{Binding $parent[ContentPage].SafeAreaPadding, Converter={x:Static v:PhoneConverters.BottomInset}}" Background="{DynamicResource Brush.Bg.Article}"
+        <Border x:Name="BottomBar" Padding="{Binding $parent[ContentPage].SafeAreaPadding, Converter={x:Static v:PhoneConverters.BottomInset}}" Background="{DynamicResource Brush.Bg.Article}"
                 BorderBrush="{DynamicResource Brush.Line.Separator}" BorderThickness="0,1,0,0">
             <UniformGrid Rows="1" Columns="5" Margin="12,0" Height="{StaticResource Size.Phone.BottomBar}">
                 <Button Classes="phoneIcon" Command="{Binding ToggleReadCommand}"
@@ -38,9 +43,12 @@
         </Border>
     </ContentPage.BottomCommandBar>
 
-    <c:ArticleHost x:Name="Host" IsVisible="{Binding Article.HasArticle}"
-                   Document="{Binding Article.Document}"
-                   ArticleFont="{Binding Article.Font}"
-                   ArticleFontSize="{Binding Article.FontSize}"
-                   LinkClicked="OnLinkClicked" />
+    <DockPanel>
+        <ProgressBar x:Name="Progress" DockPanel.Dock="Top" Classes="phoneProgress" IsVisible="False" />
+        <c:ArticleHost x:Name="Host" IsVisible="{Binding Article.HasArticle}"
+                       Document="{Binding Article.Document}"
+                       ArticleFont="{Binding Article.Font}"
+                       ArticleFontSize="{Binding Article.FontSize}"
+                       LinkClicked="OnLinkClicked" />
+    </DockPanel>
 </ContentPage>

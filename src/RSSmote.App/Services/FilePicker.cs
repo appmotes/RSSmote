@@ -3,11 +3,14 @@ using Avalonia.Platform.Storage;
 
 namespace RSSmote.App.Services;
 
+/// <summary>A text file the user chose: its name, for display, and its contents.</summary>
+public sealed record PickedText(string Name, string Text);
+
 /// <summary>Open and save dialogs for text files (A4); view-models see only this interface.</summary>
 public interface IFilePicker
 {
-    /// <summary>The chosen file's text, or null when the user cancels.</summary>
-    Task<string?> OpenTextAsync(string title, string fileTypeName, IReadOnlyList<string> patterns);
+    /// <summary>The chosen file, or null when the user cancels.</summary>
+    Task<PickedText?> OpenTextAsync(string title, string fileTypeName, IReadOnlyList<string> patterns);
 
     /// <summary>Writes <paramref name="text"/> to the chosen file; false when the user cancels.</summary>
     Task<bool> SaveTextAsync(string title, string suggestedName, string text);
@@ -16,7 +19,7 @@ public interface IFilePicker
 /// <summary>The platform dialogs of the window that <paramref name="topLevel"/> returns when a dialog opens.</summary>
 public sealed class StorageFilePicker(Func<TopLevel?> topLevel) : IFilePicker
 {
-    public async Task<string?> OpenTextAsync(string title, string fileTypeName, IReadOnlyList<string> patterns)
+    public async Task<PickedText?> OpenTextAsync(string title, string fileTypeName, IReadOnlyList<string> patterns)
     {
         if (topLevel()?.StorageProvider is not { CanOpen: true } storage)
             return null;
@@ -30,7 +33,7 @@ public sealed class StorageFilePicker(Func<TopLevel?> topLevel) : IFilePicker
             return null;
         await using var stream = await files[0].OpenReadAsync();
         using var reader = new StreamReader(stream);
-        return await reader.ReadToEndAsync();
+        return new PickedText(files[0].Name, await reader.ReadToEndAsync());
     }
 
     public async Task<bool> SaveTextAsync(string title, string suggestedName, string text)

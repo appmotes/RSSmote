@@ -200,6 +200,20 @@ public sealed partial class ShellViewModel : ObservableObject, IDisposable
     /// <summary>Refreshes every feed; completes when the pass ends, or at once without a refresher.</summary>
     public Task RefreshAsync() => _refresher?.RefreshAllAsync() ?? Task.CompletedTask;
 
+    /// <summary>
+    /// Back from the background (the phones): refreshes when automatic refresh is on and the last pass is older than
+    /// its interval, as the timer may not have run meanwhile. True when it started one.
+    /// </summary>
+    public bool RefreshIfStale()
+    {
+        var settings = _settings.Current;
+        if (IsRefreshing || settings.RefreshIntervalMinutes <= 0
+            || settings.LastRefresh is { } last && _clock.GetUtcNow() - last < TimeSpan.FromMinutes(settings.RefreshIntervalMinutes))
+            return false;
+        _ = RefreshAsync();
+        return true;
+    }
+
     [RelayCommand]
     private void MarkAllRead() => _store.MarkAllRead(List.Stream);
 
@@ -285,6 +299,11 @@ public sealed partial class ShellViewModel : ObservableObject, IDisposable
 
     public ManageFeedsViewModel CreateManageFeeds() => new(_store, _settings, _images, _ui);
 
+    /// <summary>Import Feeds with a preview (D27, W2); an import that adds feeds starts a refresh.</summary>
+    public ImportFeedsViewModel CreateImportFeeds() => new(_store, _files, () => _ = RefreshAsync());
+
+    public ExportFeedsViewModel CreateExportFeeds() => new(_store, _files);
+
     public ConfirmViewModel ConfirmDeleteFolder(Folder folder) => new(
         $"Delete “{folder.Title}”?",
         "The folder is deleted. Its feeds stay and move to Feeds.",
@@ -368,7 +387,7 @@ public sealed partial class ShellViewModel : ObservableObject, IDisposable
         string? text;
         try
         {
-            text = await _files.OpenTextAsync("Import Feeds", "OPML", ["*.opml", "*.xml"]);
+            text = (await _files.OpenTextAsync("Import Feeds", "OPML", ["*.opml", "*.xml"]))?.Text;
         }
         catch (Exception e) when (e is IOException or UnauthorizedAccessException)
         {

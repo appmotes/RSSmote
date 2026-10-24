@@ -28,6 +28,13 @@ public sealed class ArticleShortcutEventArgs(Key key, KeyModifiers modifiers) : 
     public KeyModifiers KeyModifiers { get; } = modifiers;
 }
 
+/// <summary>How far down the article the reader is: <see cref="Offset"/> in pixels, <see cref="Progress"/> from 0 to 1.</summary>
+public sealed class ArticleScrollEventArgs(double offset, double progress) : EventArgs
+{
+    public double Offset { get; } = offset;
+    public double Progress { get; } = progress;
+}
+
 public sealed class ArticleLinkEventArgs(Uri url) : RoutedEventArgs(ArticleHost.LinkClickedEvent)
 {
     public Uri Url { get; } = url;
@@ -107,6 +114,12 @@ public sealed class ArticleHost : Decorator
                 HorizontalScrollBarVisibility = Avalonia.Controls.Primitives.ScrollBarVisibility.Disabled,
                 Content = _label,
             };
+            _scroller.ScrollChanged += (_, _) =>
+            {
+                var max = _scroller.Extent.Height - _scroller.Viewport.Height;
+                Scrolled?.Invoke(this, new ArticleScrollEventArgs(_scroller.Offset.Y, max > 0 ? _scroller.Offset.Y / max : 1));
+            };
+            _scroller.Tapped += (_, _) => PageTapped?.Invoke(this, EventArgs.Empty);
             Child = _scroller;
         }
     }
@@ -146,6 +159,12 @@ public sealed class ArticleHost : Decorator
         add => AddHandler(ShortcutEvent, value);
         remove => RemoveHandler(ShortcutEvent, value);
     }
+
+    /// <summary>The reader scrolled the article, in either renderer.</summary>
+    public event EventHandler<ArticleScrollEventArgs>? Scrolled;
+
+    /// <summary>The reader tapped the article anywhere but on a link.</summary>
+    public event EventHandler? PageTapped;
 
     public bool IsNative => _web is not null;
 
@@ -300,6 +319,14 @@ public sealed class ArticleHost : Decorator
             {
                 case "link" when Uri.TryCreate(root.GetProperty("href").GetString(), UriKind.Absolute, out var url):
                     RaiseLink(url);
+                    break;
+                case "scroll":
+                    var y = root.GetProperty("y").GetDouble();
+                    var max = root.GetProperty("max").GetDouble();
+                    Scrolled?.Invoke(this, new ArticleScrollEventArgs(y, max > 0 ? Math.Clamp(y / max, 0, 1) : 1));
+                    break;
+                case "tap":
+                    PageTapped?.Invoke(this, EventArgs.Empty);
                     break;
                 case "key" when ToKey(root.GetProperty("key").GetString()) is { } key:
                     var modifiers = KeyModifiers.None;

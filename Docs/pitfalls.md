@@ -108,7 +108,7 @@ two card views set `ClipToBounds="False"`. Measured with `The_card_ring_shows_on
 assemblies are not in the APK but pushed separately by `dotnet build -t:Install`. Installed on its own, the APK
 aborts on launch (`monodroid: No assemblies found … Assuming this is part of Fast Deployment`), visible only in
 logcat. Install Debug with `-t:Install`; a Release APK carries its assemblies and installs with `adb`. Seen with the
-platform spike on an API 35 emulator.
+platform check, a temporary headless app since removed, on an API 35 emulator.
 
 **P13 — The iOS SDK reports trim analysis warnings that the Android SDK hides.** Both heads trim with
 `TrimMode=partial`: only assemblies marked `IsTrimmable` are trimmed, every other one is copied whole. Android sets
@@ -117,8 +117,9 @@ IL2104 for AngleSharp, AngleSharp.Css, Microsoft.Data.Sqlite and Avalonia.Design
 each one in `obj/…/linked/` is byte for byte the size of its package copy, while `Avalonia.Base` shrinks from 2.36 MB
 to 1.66 MB. ILLink also reports IL2037 for interface members `Avalonia.iOS` names (`AvaloniaAppDelegate`,
 `TextInputResponder`), which is not our code. The iOS head sets `SuppressTrimAnalysisWarnings` and `NoWarn` IL2037.
-Measured with the platform spike, which passes every step in a Release simulator build. A new dependency that is
-marked trimmable and uses reflection would be trimmed silently: run the spike after adding one.
+Measured with a temporary platform check (since removed), which passed every step in a Release simulator build. A
+new dependency that is marked trimmable and uses reflection would be trimmed silently: exercise what it does in a
+Release simulator build after adding one.
 
 **P14 — A phone page's `Background` stops at the safe-area insets.** Under a `NavigationPage`, a `ContentPage` is laid
 out inside the status-bar and home-indicator insets, and its background goes with it: the strips above and below show
@@ -164,7 +165,9 @@ complete startup" before any managed code runs (`App` never starts). `adb instal
 `status=verify` and a first launch of 1.9 s (`am start -W`, Release). A starved emulator (2 GB with swap, host load
 near 20) shows the same ANR on later launches too, and an emulator that has run for most of an hour with many
 installs took 17 s for a launch that took 1.8 s after a restart (same APK, main thread inside Mono's type loader).
-Measure startup on a freshly booted, idle emulator started with `-memory 4096`.
+Measure startup on a freshly booted, idle emulator started with `-memory 4096`. After about 45 minutes and four
+installs a Release start stalled its UI thread for 8–14 s and ran into an ANR; the same APK on a fresh boot skipped
+at most 42 frames.
 
 **P20 — A list on a page that slides in realises no rows.** `PageSlide` starts the incoming page exactly one width
 to the right, and the page's first layout happens there. The effective viewport follows the render transform, so it
@@ -214,3 +217,23 @@ rows and 30 new ones (`ReadingFlowTests`): the top row moved from id 35 to 4 whi
 **P26 — The phones decode bitmaps as RGBA.** `Favicon.Grayscale` handled BGRA only and returned anything else
 unchanged, so "Grayscale Favicons" did nothing on iOS and Android while the desktop showed grey. It now converts
 both orders. Seen on the iPhone 17 Pro simulator and the API 35 emulator (Release); `FaviconTests` checks both.
+
+**P27 — On the phones, Fluent controls take the platform's accent, not the palette's.** The palette sets
+`SystemAccentColor`, and the headless renders show it, but on the iPhone 17 Pro simulator the Aa sheet's `Slider`
+was system blue. Every Fluent control a phone page uses is styled from the palette's brushes instead: the slider's
+`PART_DecreaseButton`, `PART_IncreaseButton` and `Thumb` as style triggers (P22), the switch and the menu by their
+own templates and styles.
+
+**P28 — A page that hides its navigation bar still gets no top inset.** The shell takes the top inset for its bar
+(P15) and keeps it when a page sets `NavigationPage.HasNavigationBar` to false at run time, so the article lay under
+the status bar with its bars hidden (iOS simulator). `ArticlePage` pads itself by `MobileShell.SafeAreaPadding.Top`
+while its bars are hidden. Hiding the bars also resizes the article, which moves the offset near the end of a short
+one; read as a scroll up, that brought the bars straight back, so the page ignores scrolling for 300 ms after a change.
+
+**P29 — A native view takes its page's place when it attaches, and does not follow a slide.** The Android article
+pushed with the page slide left the system web view where the page was when its adapter attached, partway through
+or at the start of the slide (`dumpsys activity top`: `WebView … 1080,252-2160,2205`, off screen); a layout pass after
+the slide did not move it. `MobileShell` pushes an article without a transition when `ArticleHost` uses the native
+view; then the web view sits at `0,252-1080,2205`. Measured on the API 35 emulator (Release). Like an overlay panel
+on desktop (L9), a sheet over the article sets `IsObscured`, or the web view would cover it.
+

@@ -1,0 +1,49 @@
+<p:PhonePage xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:c="urn:RSSmote.App.Controls"
+             xmlns:vm="using:RSSmote.App.ViewModels"
+             xmlns:p="using:RSSmote.Mobile.Pages"
+             x:Class="RSSmote.Mobile.Pages.ExportFeedsPage"
+             x:DataType="vm:ExportFeedsViewModel"
+             Title="Export Feeds" BackTitle="Settings">
+    <!-- Export Feeds (M11, D27): what the file holds, then the system's save or share sheet. -->
+    <ScrollViewer>
+        <StackPanel Margin="0,0,0,24">
+            <TextBlock Classes="phoneIntro" Text="Saves all your feeds and folders in one OPML file. Any feed reader can import it." />
+            <TextBlock Classes="phoneGroup" Text="Contents" Margin="28,18,28,6" />
+            <Border Classes="phoneCard">
+                <StackPanel>
+                    <Border Classes="phoneRowLine">
+                        <Grid Classes="phoneSwitchRow" ColumnDefinitions="*,Auto">
+                            <TextBlock Classes="phoneRow" Text="Feeds" VerticalAlignment="Center" />
+                            <TextBlock Grid.Column="1" Classes="phoneValue" Text="{Binding FeedCount}" />
+                        </Grid>
+                    </Border>
+                    <Border Classes="phoneRowLine">
+                        <Grid Classes="phoneSwitchRow" ColumnDefinitions="*,Auto">
+                            <TextBlock Classes="phoneRow" Text="Folders" VerticalAlignment="Center" />
+                            <TextBlock Grid.Column="1" Classes="phoneValue" Text="{Binding FolderCount}" />
+                        </Grid>
+                    </Border>
+                    <Border Classes="phoneRowLine last">
+                        <Grid Classes="phoneSwitchRow" ColumnDefinitions="Auto,*" ColumnSpacing="12">
+                            <TextBlock Classes="phoneRow" Text="File name" VerticalAlignment="Center" />
+                            <TextBlock Grid.Column="1" Classes="phoneValue" HorizontalAlignment="Right"
+                                       Text="{x:Static vm:ExportFeedsViewModel.FileName}" TextTrimming="CharacterEllipsis" />
+                        </Grid>
+                    </Border>
+                </StackPanel>
+            </Border>
+            <TextBlock Classes="phoneFootnote" Text="Articles, read state and stars are not part of the file." />
+            <Button Classes="phonePrimary" Command="{Binding ExportCommand}">
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <c:Icon Data="{StaticResource Icon.Upload}" Size="20" StrokeThickness="2" VerticalAlignment="Center" />
+                    <TextBlock Text="Export…" VerticalAlignment="Center" />
+                </StackPanel>
+            </Button>
+            <TextBlock Classes="phoneFootnote" TextAlignment="Center" Margin="28,10,28,0"
+                       Text="Opens the system sheet to save or share the file." />
+            <TextBlock Classes="phoneFootnote" TextAlignment="Center" Text="{Binding ResultText}" />
+        </StackPanel>
+    </ScrollViewer>
+</p:PhonePage>
