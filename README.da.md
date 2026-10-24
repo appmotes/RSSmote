@@ -94,9 +94,9 @@ indstillinger og samme ti temaer. Billederne herunder viser iPhone.
 - **Ingen synkronisering.** Telefonen har sit eget bibliotek. Flyt dine feeds mellem enheder med OPML-eksport og
   -import.
 
-På iOS vises artiklerne indtil videre af den indbyggede HTML-renderer, som ikke viser billeder fra nettet
-([Docs/todo.md](Docs/todo.md), N16). Skærmbillederne er tegnet uden skærm i iPhone 17 Pro-størrelse (402 × 874 pt), så
-de har ingen statuslinje.
+Artiklerne vises i telefonens egen web-motor (WebKit på iOS, systemets WebView på Android) med billeder og video.
+Skærmbillederne er tegnet uden skærm i iPhone 17 Pro-størrelse (402 × 874 pt) med den indbyggede HTML-renderer, så de
+har ingen statuslinje.
 
 ## Temaer
 

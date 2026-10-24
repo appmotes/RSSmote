@@ -94,9 +94,9 @@ settings and the same ten themes. The screens below show the iPhone.
 - **Refresh:** pull down on Feeds, or come back to the app after the refresh interval has passed.
 - **No sync.** The phone keeps its own library. Move your feeds between devices with OPML export and import.
 
-On iOS the articles are shown by the built-in HTML renderer for now, which shows no images from the web
-([Docs/todo.md](Docs/todo.md), N16). The screenshots are drawn without a screen at iPhone 17 Pro size (402 × 874 pt),
-so they have no status bar.
+Articles are shown in the phone's own web engine (WebKit on iOS, the system WebView on Android), with images and
+video. The screenshots are drawn without a screen at iPhone 17 Pro size (402 × 874 pt), with the built-in HTML
+renderer, so they have no status bar.
 
 ## Themes
 

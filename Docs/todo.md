@@ -29,11 +29,6 @@ scrim; and the ten palettes switch from the menus.
 answer (list and article side by side, or three columns as on desktop). Done when it is drawn and recorded as a
 D entry.
 
-**N16 — Native article view on iOS (P16).** Find why `NativeWebView` stays blank inside `MobileShell` (a page pushed
-during a transition, a native view attached under a `NavigationPage`, or the WebView package's iOS support; the page's first layout happens a whole width off screen, P20) and switch
-the iOS head back from the fallback renderer. The fallback also shows no remote images on iOS. Done when an article
-with images and a YouTube embed shows in the simulator with the native view.
-
 **N18 — An Android Debug build stalls its UI thread during the first refresh.** On a freshly booted API 35 emulator
 (`-memory 4096`, host load ~10) a Debug build (`-t:Install`) takes 17.6 s to start and then blocks the main thread
 for 22 s and 6 s while the startup refresh runs (`Choreographer: Skipped 1307 frames`); input in that window ends in
@@ -54,3 +49,8 @@ L13), and the traffic lights clear the Settings title. On Windows: the caption b
 (P3). On all three: the settings sidebar's strip and the band above the bar drag the window, the article's native
 view stays hidden while Settings show (L9), and Import and Export open the system's file dialogs. Done when each is
 seen.
+
+**N21 — An article picked while the list slides in does not open (phone).** Tapping an article before the list's slide
+has finished selects and marks it read, but the article page never comes: `NavigationPage` ignores a push while a
+transition runs (P24), and the row stays selected, so tapping it again does nothing. Seen on the iPhone 17 Pro
+simulator (Debug, where the slide is slow). Done when a pick during the slide opens the article once the slide ends.

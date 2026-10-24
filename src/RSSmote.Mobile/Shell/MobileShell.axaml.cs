@@ -166,7 +166,7 @@ public partial class MobileShell : NavigationPage
 
     private async void OnArticleSelected(object? sender, ArticleRowViewModel? row)
     {
-        // A native web view takes the page's place when it attaches, partway through a slide, and stays there (P29):
+        // A native web view takes the page's place when it attaches, partway through a slide, and stays there (P16, P29):
         // an article shown in one appears in place.
         if (_shell is not null && row is not null && Top is ArticleListPage)
             await PushAsync(new ArticlePage(_shell), ArticleHost.UsesNative(ArticleHost.DefaultRenderer) ? null : PageTransition);

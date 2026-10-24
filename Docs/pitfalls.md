@@ -148,10 +148,13 @@ without a second event, so the shell reads it once the dispatcher is idle. A `Co
 never its `BottomCommandBar`, so the phone pages turn the automatic padding off, put the top inset on their content
 and the bottom inset under their bar (`PhoneConverters.TopInset`, `BottomInset`). Measured on the API 35 emulator.
 
-**P16 — `NativeWebView` shows nothing inside the phone shell on iOS.** The article page pushed onto `MobileShell` stays
-blank although WebKit loads (its process logs to the system log); the same document renders with the fallback
-renderer. Seen on the iPhone 17 Pro simulator, iOS 26.5, Avalonia 12.1.4 and Avalonia.Controls.WebView 12.1.1; the
-cause is not found yet (N16). The iOS head sets `ArticleHost.DefaultRenderer` to the fallback meanwhile.
+**P16 — `NativeWebView` shows nothing on iOS when the article slides in.** The cause is P29's: the WKWebView takes its
+place when its adapter attaches, partway through the page slide, and stays off screen, although WebKit loads the page
+(its processes log to the system log). Pushed without the slide, as `MobileShell` does for a native article, it
+shows. Measured on the iPhone 17 Pro simulator, iOS 26.4, Debug and Release, Avalonia 12.1.4 and Avalonia.Controls.WebView 12.1.1,
+with an article holding a web image and a YouTube embed: with the slide the page stayed blank for over 20 s; without
+it the article, the image and the embed showed within about a second. The package's `net10.0` build drives WKWebView
+on iOS too (`MaciosWebViewAdapter`); it has no iOS-specific build.
 
 **P17 — Asking `WebViewAdapterInfo` about another OS's adapter can crash.** On Android,
 `WebViewAdapterInfo.GetAdapterInfo(WebViewAdapterType.WkWebView)` throws a `TypeInitializationException` from
@@ -244,6 +247,7 @@ one; read as a scroll up, that brought the bars straight back, so the page ignor
 pushed with the page slide left the system web view where the page was when its adapter attached, partway through
 or at the start of the slide (`dumpsys activity top`: `WebView … 1080,252-2160,2205`, off screen); a layout pass after
 the slide did not move it. `MobileShell` pushes an article without a transition when `ArticleHost` uses the native
-view; then the web view sits at `0,252-1080,2205`. Measured on the API 35 emulator (Release). Like an overlay panel
+view; then the web view sits at `0,252-1080,2205`. Measured on the API 35 emulator (Release); iOS does the same
+(P16). Like an overlay panel
 on desktop (L9), a sheet over the article sets `IsObscured`, or the web view would cover it.
 

@@ -319,7 +319,7 @@ buttons, never a horizontal swipe: a swipe from the edge is back (`NavigationPag
 a sheet with text size (11–32, `AppSettings`; a slider between a small and a large A, each a point), font (System,
 Serif, Rounded, Mono) and Automatic / Light / Dark as a shortcut to the same setting as Appearance. The two choices
 are segments on a `Bg.Pill` track, the chosen one raised on `Bg.Segment` in the `Accent`. The sheet closes like D29's,
-so it has no grabber; on Android the native article hides while it is open (P29).
+so it has no grabber; the native article hides while it is open (P29).
 
 **D27 — Settings are plain pushed pages.** The Settings root lists Feeds (Add Feed, Manage Feeds, Import Feeds,
 Export Feeds), Display (Appearance), Articles (Read when opened, Newest first, Group by date, Hide empty feeds as
