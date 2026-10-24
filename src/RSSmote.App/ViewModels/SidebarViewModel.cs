@@ -157,7 +157,12 @@ public sealed partial class SidebarViewModel : ObservableObject
             Select(stream);
     }
 
-    public void Reload()
+    /// <summary>
+    /// Rebuilds the rows. The selected feed or folder stays listed while empty ones are hidden, so the one being read
+    /// does not vanish under the reader; <paramref name="keepSelected"/> false lets it go, and the selection moves to
+    /// what is still shown.
+    /// </summary>
+    public void Reload(bool keepSelected = true)
     {
         var settings = _settings.Current;
         var phone = IsPhone;
@@ -170,7 +175,7 @@ public sealed partial class SidebarViewModel : ObservableObject
         var collapsedSections = settings.CollapsedSections.ToHashSet();
 
         int CountOf(Feed f) => counts.GetValueOrDefault(f.Id);
-        bool IsSelected(ArticleStream s) => s == SelectedStream;
+        bool IsSelected(ArticleStream s) => keepSelected && s == SelectedStream;
         bool Visible(Feed f) => showable is null || showable.GetValueOrDefault(f.Id) > 0 || (!phone && IsSelected(new ArticleStream.OfFeed(f.Id)));
 
         var rows = phone

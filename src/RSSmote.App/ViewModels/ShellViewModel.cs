@@ -52,7 +52,7 @@ public sealed partial class ShellViewModel : ObservableObject, IDisposable
         Article.ApplySettings(settings.Current);
         Settings = new SettingsViewModel(settings);
         _reload = new Debouncer(clock, ReloadDelay, ui, ReloadAll);
-        _recount = new Debouncer(clock, ReloadDelay, ui, Sidebar.Reload);
+        _recount = new Debouncer(clock, ReloadDelay, ui, () => Sidebar.Reload());
 
         Sidebar.StreamSelected += (_, stream) => ShowStream(stream);
         List.ArticleSelected += (_, row) => OnArticleSelected(row);
@@ -213,8 +213,13 @@ public sealed partial class ShellViewModel : ObservableObject, IDisposable
         return true;
     }
 
+    /// <summary>A feed or folder marked read leaves the sidebar at once when empty ones are hidden (D10).</summary>
     [RelayCommand]
-    private void MarkAllRead() => _store.MarkAllRead(List.Stream);
+    private void MarkAllRead()
+    {
+        _store.MarkAllRead(List.Stream);
+        Sidebar.Reload(keepSelected: false);
+    }
 
     [RelayCommand]
     private void ShowFilter(StreamFilter filter) => _settings.Update(s => s.Filter = filter);

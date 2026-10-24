@@ -113,6 +113,45 @@ public sealed class ShellViewModelTests : IDisposable
     }
 
     [Fact]
+    public void A_feed_marked_read_leaves_the_sidebar_at_once_and_the_selection_moves_up()
+    {
+        _f.Shell.Sidebar.SelectedRow = _f.Row("WIRED");
+        _f.Shell.MarkAllReadCommand.Execute(null);
+
+        Assert.DoesNotContain("WIRED", _f.Shell.Sidebar.Rows.Select(r => r.Title));
+        Assert.Equal(new ArticleStream.All(), _f.Shell.Sidebar.SelectedStream);
+        Assert.Equal(new ArticleStream.All(), _f.Shell.List.Stream);
+    }
+
+    [Fact]
+    public void A_folder_marked_read_leaves_the_sidebar_and_a_feed_in_a_folder_hands_over_to_the_folder()
+    {
+        _f.Settings.Update(s => s.ExpandedFolders = [_f.Apple.Id]);
+        _f.Shell.FlushPendingReload();
+        _f.Shell.Sidebar.SelectedRow = _f.Row("Daring Fireball");
+        _f.Shell.MarkAllReadCommand.Execute(null);
+        Assert.DoesNotContain("Daring Fireball", _f.Shell.Sidebar.Rows.Select(r => r.Title));
+        Assert.Equal(new ArticleStream.InFolder(_f.Apple.Id), _f.Shell.Sidebar.SelectedStream);
+
+        _f.Shell.MarkAllReadCommand.Execute(null);
+        Assert.DoesNotContain("Apple", _f.Shell.Sidebar.Rows.Select(r => r.Title));
+        Assert.Equal(new ArticleStream.All(), _f.Shell.Sidebar.SelectedStream);
+    }
+
+    [Fact]
+    public void Reading_the_last_article_keeps_the_feed_and_with_empty_feeds_shown_marking_read_keeps_it_too()
+    {
+        _f.Shell.Sidebar.SelectedRow = _f.Row("WIRED");
+        _f.Shell.List.SelectedRow = _f.Shell.List.Articles.Single();
+        _f.Shell.FlushPendingReload();
+        Assert.Contains("WIRED", _f.Shell.Sidebar.Rows.Select(r => r.Title));
+
+        _f.Shell.Settings.HideEmptyFeeds = false;
+        _f.Shell.MarkAllReadCommand.Execute(null);
+        Assert.Equal(new ArticleStream.OfFeed(_f.Wired.Id), _f.Shell.Sidebar.SelectedStream);
+    }
+
+    [Fact]
     public void A_collapsed_section_hides_its_rows_and_selecting_it_does_not_change_the_stream()
     {
         var section = _f.Row("Feeds");

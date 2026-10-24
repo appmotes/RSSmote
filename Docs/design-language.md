@@ -148,7 +148,9 @@ row view-models with `Level` and `IsExpanded` gives that with one template per r
 styling in one place. Collapsing a folder or section that hides the selected feed moves the selection to the
 folder, or to the top stream when the folder is hidden too. "Hide empty feeds" (on by default) lists only feeds with
 articles under the filter (any article under All Items), plus the selected one, and only folders with such a feed;
-off, every folder and feed is listed under every filter.
+off, every folder and feed is listed under every filter. The selected one stays while its last article is read, so
+it does not vanish under the reader, but Mark All as Read lets it go at once, and the selection moves to its folder
+or to the top stream.
 
 **D11 — One line of title, two of source and summary.** The title is one `TextBlock` with `MaxLines=1` and an
 ellipsis (the full title is its tooltip), so every title starts at the same place and the eye can run down the
