@@ -1,0 +1,58 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:c="urn:RSSmote.App.Controls"
+             xmlns:vm="using:RSSmote.App.ViewModels"
+             xmlns:s="using:RSSmote.Desktop.Views.Settings"
+             x:Class="RSSmote.Desktop.Views.Settings.ManageFeedsView"
+             x:DataType="vm:ManageFeedsViewModel">
+    <!-- Manage Feeds (D27, D30): a group per folder with Edit, then the feeds in no folder; a feed opens Edit Feed.
+         New Folder sits in the bar. -->
+    <StackPanel>
+        <Border Classes="settingsSearch">
+            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="8">
+                <c:Icon Data="{StaticResource Icon.Search}" Size="15" Foreground="{DynamicResource Brush.Ink.Read}"
+                        VerticalAlignment="Center" />
+                <TextBox Grid.Column="1" Classes="settingsField" PlaceholderText="Filter feeds" Text="{Binding FilterText}" />
+            </Grid>
+        </Border>
+        <ItemsControl ItemsSource="{Binding Groups}">
+            <ItemsControl.ItemTemplate>
+                <DataTemplate x:DataType="vm:ManagedGroup">
+                    <StackPanel>
+                        <Grid ColumnDefinitions="*,Auto" Margin="0,0,20,0">
+                            <TextBlock Classes="settingsGroup" Text="{Binding Title}" TextTrimming="CharacterEllipsis" />
+                            <Button Grid.Column="1" Classes="settingsLink small" Content="Edit" Margin="0,8,0,0"
+                                    IsVisible="{Binding IsFolder}" CommandParameter="{Binding Folder}"
+                                    Command="{Binding $parent[s:SettingsView].((vm:SettingsModeViewModel)DataContext).EditFolderCommand}" />
+                        </Grid>
+                        <Border Classes="settingsCard" IsVisible="{Binding HasFeeds}">
+                            <ItemsControl Classes="settingsRows" ItemsSource="{Binding Feeds}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate x:DataType="vm:ManagedFeedViewModel">
+                                        <Border Classes="settingsRowLine">
+                                            <Button Classes="settingsRow tall" CommandParameter="{Binding}"
+                                                    Command="{Binding $parent[s:SettingsView].((vm:SettingsModeViewModel)DataContext).EditFeedCommand}">
+                                                <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+                                                    <c:Favicon Size="18" Radius="4" Source="{Binding Favicon}" Title="{Binding Title}"
+                                                               IsGrayscale="{Binding IsFaviconGrayscale}"
+                                                               TileBrush="{DynamicResource Brush.Bg.FaviconTile}"
+                                                               LetterBrush="{DynamicResource Brush.Ink.OnTile}" />
+                                                    <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                                        <TextBlock Text="{Binding Title}" TextTrimming="CharacterEllipsis" />
+                                                        <TextBlock Classes="settingsSubtitle" Classes.error="{Binding HasError}"
+                                                                   Text="{Binding Subtitle}" />
+                                                    </StackPanel>
+                                                    <c:Icon Grid.Column="2" Classes="settingsChevron" />
+                                                </Grid>
+                                            </Button>
+                                        </Border>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </Border>
+                    </StackPanel>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+    </StackPanel>
+</UserControl>

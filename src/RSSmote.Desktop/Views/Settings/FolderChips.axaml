@@ -1,0 +1,22 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:RSSmote.App.ViewModels"
+             x:Class="RSSmote.Desktop.Views.Settings.FolderChips"
+             x:DataType="vm:FolderPickerViewModel">
+    <!-- A feed's folder as chips (D9): None, each folder, and New, which names a folder and picks it. -->
+    <Border Classes="settingsCard">
+        <StackPanel>
+            <WrapPanel x:Name="Chips" ItemSpacing="8" LineSpacing="8" Margin="14,12" />
+            <Border x:Name="NewRow" Classes="settingsRowLine" BorderThickness="0,1,0,0" IsVisible="False">
+                <Grid Classes="settingsRow" ColumnDefinitions="*,Auto">
+                    <TextBox x:Name="NewName" Classes="settingsField" PlaceholderText="Folder name" Text="{Binding NewFolderName}">
+                        <TextBox.KeyBindings>
+                            <KeyBinding Gesture="Enter" Command="{Binding AddFolderCommand}" />
+                        </TextBox.KeyBindings>
+                    </TextBox>
+                    <Button Grid.Column="1" Classes="settingsLink small" Content="Add" Command="{Binding AddFolderCommand}" />
+                </Grid>
+            </Border>
+        </StackPanel>
+    </Border>
+</UserControl>

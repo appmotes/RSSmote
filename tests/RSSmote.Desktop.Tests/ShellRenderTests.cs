@@ -32,43 +32,8 @@ public class ShellRenderTests
         window.Close();
     }
 
-    [AvaloniaFact]
-    public async Task Add_feed_panel_renders_its_pages()
-    {
-        Application.Current!.RequestedThemeVariant = ThemeVariant.Light;
-        using var f = new ShellFixture();
-        f.Http.Pages["https://blog.example/feed.xml"] =
-            "<rss version=\"2.0\"><channel><title>Example Blog</title><item><title>a</title><guid>a</guid></item></channel></rss>";
-        f.Shell.ShowAddFeedCommand.Execute(null);
-        var window = new Window { Width = 1045, Height = 660, Content = new ShellView(), DataContext = f.Shell };
-        window.Show();
-        Save(window, "add-feed-search");
-
-        var panel = Assert.IsType<RSSmote.App.ViewModels.AddFeedViewModel>(f.Shell.Panel);
-        panel.Address = "https://blog.example/feed.xml";
-        await panel.SearchCommand.ExecuteAsync(null);
-        Save(window, "add-feed-results");
-        window.Close();
-    }
-
-    [AvaloniaFact]
-    public void Edit_and_confirm_panels_render()
-    {
-        Application.Current!.RequestedThemeVariant = ThemeVariant.Dark;
-        using var f = new ShellFixture(s => s.ExpandedFolders = [1]);
-        var window = new Window { Width = 1045, Height = 660, Content = new ShellView(), DataContext = f.Shell };
-        window.Show();
-
-        f.Shell.EditFeedCommand.Execute(f.Daring);
-        Save(window, "edit-feed");
-        f.Shell.EditFolderCommand.Execute(f.Apple.Id);
-        Save(window, "edit-folder");
-        f.Shell.RemoveFeedCommand.Execute(f.Daring);
-        Save(window, "confirm-remove");
-        window.Close();
-    }
-
-    private static void Save(Window window, string name)
+    /// <summary>Renders the window into bin/…/snapshots/<paramref name="name"/>.png.</summary>
+    internal static void Save(Window window, string name)
     {
         AvaloniaHeadlessPlatform.ForceRenderTimerTick();
         var frame = window.CaptureRenderedFrame();

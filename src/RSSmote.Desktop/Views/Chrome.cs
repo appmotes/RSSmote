@@ -20,6 +20,9 @@ public static class Chrome
     /// <summary>The filter box's shortcut hint.</summary>
     public static string FindShortcut => OperatingSystem.IsMacOS() ? "⌘F" : "Ctrl+F";
 
+    /// <summary>The Settings button's tooltip, with its shortcut.</summary>
+    public static string SettingsTip => OperatingSystem.IsMacOS() ? "Settings (⌘,)" : "Settings (Ctrl+,)";
+
     /// <summary>The Add Feed shortcut as the empty state shows it.</summary>
     public static string AddFeedShortcut => OperatingSystem.IsMacOS() ? "⌘N" : "Ctrl+N";
 }

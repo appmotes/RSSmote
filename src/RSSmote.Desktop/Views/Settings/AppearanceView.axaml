@@ -1,0 +1,59 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:c="urn:RSSmote.App.Controls"
+             xmlns:vm="using:RSSmote.App.ViewModels"
+             xmlns:s="using:RSSmote.Desktop.Views.Settings"
+             x:Class="RSSmote.Desktop.Views.Settings.AppearanceView"
+             x:DataType="vm:AppearancePageViewModel">
+    <!-- Appearance (D27, D30): the mode, a palette per slot with its swatch, the favicon switches. Picking a palette
+         follows D22. -->
+    <UserControl.Resources>
+        <DataTemplate x:Key="Choice" x:DataType="vm:ChoiceViewModel">
+            <Border Classes="settingsRowLine">
+                <Button Classes="settingsRow" Command="{Binding Command}" CommandParameter="{Binding Key}">
+                    <DockPanel>
+                        <ThemeVariantScope DockPanel.Dock="Left" Margin="0,0,12,0" RequestedThemeVariant="{Binding Variant}"
+                                           IsVisible="{Binding Variant, Converter={x:Static ObjectConverters.IsNotNull}}">
+                            <Border Classes="settingsSwatch">
+                                <Border />
+                            </Border>
+                        </ThemeVariantScope>
+                        <c:Icon DockPanel.Dock="Right" Classes="settingsCheck" IsVisible="{Binding IsChecked}" />
+                        <TextBlock Text="{Binding Header}" VerticalAlignment="Center" />
+                    </DockPanel>
+                </Button>
+            </Border>
+        </DataTemplate>
+    </UserControl.Resources>
+    <StackPanel>
+        <TextBlock Classes="settingsGroup" Text="Mode" />
+        <Border Classes="settingsCard">
+            <ItemsControl Classes="settingsRows" ItemsSource="{Binding Settings.Appearances}" ItemTemplate="{StaticResource Choice}" />
+        </Border>
+        <TextBlock Classes="settingsGroup" Text="Light theme" />
+        <Border Classes="settingsCard">
+            <ItemsControl Classes="settingsRows" ItemsSource="{Binding Settings.LightThemes}" ItemTemplate="{StaticResource Choice}" />
+        </Border>
+        <TextBlock Classes="settingsGroup" Text="Dark theme" />
+        <Border Classes="settingsCard">
+            <ItemsControl Classes="settingsRows" ItemsSource="{Binding Settings.DarkThemes}" ItemTemplate="{StaticResource Choice}" />
+        </Border>
+        <TextBlock Classes="settingsGroup" Text="Favicons" />
+        <Border Classes="settingsCard">
+            <StackPanel>
+                <Border Classes="settingsRowLine">
+                    <Grid Classes="settingsRow" ColumnDefinitions="*,Auto">
+                        <TextBlock Text="Show favicons" />
+                        <ToggleSwitch Grid.Column="1" Classes="settings" IsChecked="{Binding Settings.DisplayFavicons}" />
+                    </Grid>
+                </Border>
+                <Border Classes="settingsRowLine last">
+                    <Grid Classes="settingsRow" ColumnDefinitions="*,Auto">
+                        <TextBlock Text="Grey favicons" />
+                        <ToggleSwitch Grid.Column="1" Classes="settings" IsChecked="{Binding Settings.GrayscaleFavicons}" />
+                    </Grid>
+                </Border>
+            </StackPanel>
+        </Border>
+    </StackPanel>
+</UserControl>

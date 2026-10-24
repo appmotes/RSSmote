@@ -1,0 +1,73 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:c="urn:RSSmote.App.Controls"
+             xmlns:vm="using:RSSmote.App.ViewModels"
+             xmlns:s="using:RSSmote.Desktop.Views.Settings"
+             x:Class="RSSmote.Desktop.Views.Settings.ReadingView"
+             x:DataType="vm:ReadingPageViewModel">
+    <!-- Articles & Refresh (D30): the reading switches, then the two refresh pickers as menus over their rows. -->
+    <StackPanel>
+        <TextBlock Classes="settingsGroup" Text="Articles" />
+        <Border Classes="settingsCard">
+            <StackPanel>
+                <Border Classes="settingsRowLine">
+                    <Grid Classes="settingsRow" ColumnDefinitions="Auto,*,Auto">
+                        <c:Icon Classes="settingsLead" Data="{StaticResource Icon.Eye}" />
+                        <TextBlock Grid.Column="1" Text="Read when opened" />
+                        <ToggleSwitch Grid.Column="2" Classes="settings" IsChecked="{Binding Settings.MarkAsReadOnSelect}" />
+                    </Grid>
+                </Border>
+                <Border Classes="settingsRowLine">
+                    <Grid Classes="settingsRow" ColumnDefinitions="Auto,*,Auto">
+                        <c:Icon Classes="settingsLead" Data="{StaticResource Icon.SortDown}" />
+                        <TextBlock Grid.Column="1" Text="Newest first" />
+                        <ToggleSwitch Grid.Column="2" Classes="settings" IsChecked="{Binding Settings.SortNewestFirst}" />
+                    </Grid>
+                </Border>
+                <Border Classes="settingsRowLine last">
+                    <Grid Classes="settingsRow" ColumnDefinitions="Auto,*,Auto">
+                        <c:Icon Classes="settingsLead" Data="{StaticResource Icon.Calendar}" />
+                        <TextBlock Grid.Column="1" Text="Group by date" />
+                        <ToggleSwitch Grid.Column="2" Classes="settings" IsChecked="{Binding Settings.GroupByDate}" />
+                    </Grid>
+                </Border>
+            </StackPanel>
+        </Border>
+
+        <TextBlock Classes="settingsGroup" Text="Refresh" />
+        <Border Classes="settingsCard">
+            <StackPanel>
+                <Border Classes="settingsRowLine">
+                    <Button x:Name="IntervalRow" Classes="settingsRow">
+                        <Button.Flyout>
+                            <MenuFlyout ItemsSource="{Binding Settings.RefreshIntervals}" Placement="BottomEdgeAlignedRight"
+                                        FlyoutPresenterClasses="choices" />
+                        </Button.Flyout>
+                        <Grid ColumnDefinitions="Auto,*,Auto,Auto" ColumnSpacing="12">
+                            <c:Icon Classes="settingsLead" Data="{StaticResource Icon.Clock}" />
+                            <TextBlock Grid.Column="1" Text="Every" VerticalAlignment="Center" />
+                            <TextBlock Grid.Column="2" Classes="settingsValue" Text="{Binding Settings.RefreshIntervalText}" />
+                            <c:Icon Grid.Column="3" Classes="settingsChevron" Data="{StaticResource Icon.ChevronsUpDown}"
+                                    Foreground="{DynamicResource Brush.Ink.Secondary}" Margin="-8,0,0,0" />
+                        </Grid>
+                    </Button>
+                </Border>
+                <Border Classes="settingsRowLine last">
+                    <Button x:Name="KeepRow" Classes="settingsRow">
+                        <Button.Flyout>
+                            <MenuFlyout ItemsSource="{Binding Settings.KeepReadDays}" Placement="BottomEdgeAlignedRight"
+                                        FlyoutPresenterClasses="choices" />
+                        </Button.Flyout>
+                        <Grid ColumnDefinitions="Auto,*,Auto,Auto" ColumnSpacing="12">
+                            <c:Icon Classes="settingsLead" Data="{StaticResource Icon.Archive}" />
+                            <TextBlock Grid.Column="1" Text="Keep read" VerticalAlignment="Center" />
+                            <TextBlock Grid.Column="2" Classes="settingsValue" Text="{Binding Settings.KeepReadText}" />
+                            <c:Icon Grid.Column="3" Classes="settingsChevron" Data="{StaticResource Icon.ChevronsUpDown}"
+                                    Foreground="{DynamicResource Brush.Ink.Secondary}" Margin="-8,0,0,0" />
+                        </Grid>
+                    </Button>
+                </Border>
+            </StackPanel>
+        </Border>
+    </StackPanel>
+</UserControl>

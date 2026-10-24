@@ -84,33 +84,33 @@ public class DesignCaptureTests
             await Shot(window, output, theme, "05-list-filter-box");
             shell.List.EndSearch();
 
-            shell.ShowAddFeedCommand.Execute(null);
+            shell.OpenSettingsCommand.Execute(SettingsSection.AddFeed);
+            var settingsMode = shell.SettingsMode!;
             await Shot(window, output, theme, "06-add-feed");
-            var add = (AddFeedViewModel)shell.Panel!;
+            var add = (AddFeedViewModel)settingsMode.Page!;
             add.Address = "https://www.theverge.com";
             await add.SearchCommand.ExecuteAsync(null);
             await Shot(window, output, theme, "07-add-feed-results");
-            if (add.Page == AddFeedPage.Results)
-            {
-                add.ShowFoldersCommand.Execute(null);
-                await Shot(window, output, theme, "08-add-feed-folder");
-            }
-            add.CloseCommand.Execute(null);
 
-            shell.EditFeedCommand.Execute(feedInFolder);
+            settingsMode.Show(SettingsSection.ManageFeeds);
+            await Shot(window, output, theme, "08-manage-feeds");
+            var managed = ((ManageFeedsViewModel)settingsMode.Page!).Groups.SelectMany(g => g.Feeds).First(r => r.Feed.Id == feedInFolder.Id);
+            settingsMode.EditFeedCommand.Execute(managed);
             await Shot(window, output, theme, "09-edit-feed");
-            shell.EditFolderCommand.Execute(folder.Id);
-            await Shot(window, output, theme, "10-edit-folder");
-            shell.RemoveFeedCommand.Execute(feedInFolder);
+            settingsMode.RemoveFeedCommand.Execute(feedInFolder);
             await Shot(window, output, theme, "11-confirm-remove-feed");
-            shell.Panel?.CloseCommand.Execute(null);
+            settingsMode.Confirm?.CloseCommand.Execute(null);
+            settingsMode.Show(SettingsSection.ManageFeeds);
+            settingsMode.EditFolderCommand.Execute(folder);
+            await Shot(window, output, theme, "10-edit-folder");
+            shell.CloseSettings();
         }
         window.Close();
     }
 
     private static void Reset(ShellViewModel shell, SettingsStore settings, StreamFilter filter)
     {
-        shell.Panel?.CloseCommand.Execute(null);
+        shell.CloseSettings();
         settings.Update(s => s.Filter = filter);
         shell.FlushPendingReload();
         shell.Sidebar.Select(new ArticleStream.All());

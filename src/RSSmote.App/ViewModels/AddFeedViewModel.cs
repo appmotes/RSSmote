@@ -8,21 +8,13 @@ using RSSmote.Data;
 
 namespace RSSmote.App.ViewModels;
 
-public enum AddFeedPage
-{
-    Search,
-    Results,
-    Folders,
-}
-
 /// <summary>A feed found at the searched address; on by default unless it is already stored.</summary>
 public sealed partial class FoundFeedRowViewModel(FoundFeed found, bool saved) : ObservableObject
 {
     public FoundFeed Found { get; } = found;
     public string Title { get; } = found.Feed.Title ?? found.Url.Host;
-    public string Subtitle { get; } = saved ? "Already added · " + found.Url.AbsoluteUri : found.Url.AbsoluteUri;
 
-    /// <summary>"24 articles · nightsky.example/feed.xml": the phone's line under a found feed.</summary>
+    /// <summary>"24 articles · nightsky.example/feed.xml": the line under a found feed.</summary>
     public string Detail { get; } = (saved ? "Already added · " : ItemFormatting.ArticleCountText(found.Feed.Items.Count) + " · ")
                                     + EditFeedViewModel.AddressText(found.Url.AbsoluteUri);
 
@@ -33,84 +25,64 @@ public sealed partial class FoundFeedRowViewModel(FoundFeed found, bool saved) :
 }
 
 /// <summary>
-/// The Add Feed panel (A6): an address is searched for feeds (the page itself or the feeds it links to), the
-/// found feeds are picked, optionally put in a folder, and saved. OPML import starts here too. Only plain
-/// feed and site addresses; no service shortcuts.
+/// Add Feed (D27, D30): an address is searched for feeds (the page itself or the feeds it links to), one found feed
+/// is picked, optionally put in a folder, and saved. Only plain feed and site addresses; no service shortcuts.
 /// </summary>
 public sealed partial class AddFeedViewModel : PanelViewModel
 {
     private readonly Store _store;
     private readonly Func<string, CancellationToken, Task<IReadOnlyList<FoundFeed>>> _find;
     private readonly Func<FoundFeed, long?, Feed> _save;
-    private readonly Func<Task<string?>> _importOpml;
     private CancellationTokenSource? _search;
 
     public AddFeedViewModel(Store store, Func<string, CancellationToken, Task<IReadOnlyList<FoundFeed>>> find,
-                              Func<FoundFeed, long?, Feed> save, Func<Task<string?>> importOpml)
+                              Func<FoundFeed, long?, Feed> save)
     {
         _store = store;
         _find = find;
         _save = save;
-        _importOpml = importOpml;
         Picker = new FolderPickerViewModel(store, null);
-        Picker.PropertyChanged += (_, e) =>
-        {
-            if (e.PropertyName == nameof(FolderPickerViewModel.Selected))
-                OnPropertyChanged(nameof(FolderTitle));
-        };
     }
 
     /// <summary>Raised with the last saved feed, just before <see cref="Closed"/>.</summary>
     public event EventHandler<(Feed Feed, long? FolderId)>? Saved;
 
     [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(IsSearchPage), nameof(IsResultsPage), nameof(IsFoldersPage))]
-    public partial AddFeedPage Page { get; private set; }
-
-    public bool IsSearchPage => Page == AddFeedPage.Search;
-    public bool IsResultsPage => Page == AddFeedPage.Results;
-    public bool IsFoldersPage => Page == AddFeedPage.Folders;
-
-    [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(SearchCommand))]
     public partial string Address { get; set; } = "";
 
     [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(SearchTitle), nameof(SearchButtonTitle))]
+    [NotifyPropertyChangedFor(nameof(Hint))]
     [NotifyCanExecuteChangedFor(nameof(SearchCommand))]
     public partial bool IsSearching { get; private set; }
 
     [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(SearchTitle), nameof(HasError))]
+    [NotifyPropertyChangedFor(nameof(HasError), nameof(Hint))]
     public partial string? Error { get; private set; }
 
-    public string SearchTitle => IsSearching ? "Searching…" : Error ?? "Search";
+    /// <summary>The title of the feed saved just before this page, which the hint names.</summary>
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(Hint))]
+    public partial string? Added { get; set; }
 
-    /// <summary>The search button's label; an error shows as a hint under the field instead.</summary>
-    public string SearchButtonTitle => IsSearching ? "Searching…" : "Search";
+    /// <summary>The line under the address: what to paste or what was just added, that a search runs, or why it failed.</summary>
+    public string Hint => IsSearching ? "Searching…"
+        : Error ?? (Added is { } title ? $"Added “{title}”. Paste the next address to add another." : Prompt);
 
-    /// <summary>"1 FEED FOUND" over the results (upper-case in the string, D6).</summary>
-    public string FoundTitle => Results.Count == 1 ? "1 FEED FOUND" : $"{Results.Count} FEEDS FOUND";
+    public const string Prompt =
+        "Paste the address of a feed or a website. RSSmote checks it and shows what it finds before anything is saved.";
 
-    /// <summary>"Found 2 feeds": the phone's group header over the results.</summary>
+    /// <summary>"Found 2 feeds": the group header over the results.</summary>
     public string FoundText => Results.Count == 1 ? "Found 1 feed" : $"Found {Results.Count} feeds";
 
     public bool HasResults => Results.Count > 0;
 
     public bool HasError => Error is not null;
 
-    [ObservableProperty]
-    public partial string ImportTitle { get; private set; } = "Import from OPML…";
-
     public ObservableCollection<FoundFeedRowViewModel> Results { get; } = [];
-
-    [ObservableProperty]
-    public partial string ResultsTitle { get; private set; } = "";
 
     /// <summary>The folder new feeds go into.</summary>
     public FolderPickerViewModel Picker { get; }
-
-    public string FolderTitle => Picker.Selected is { } folder ? "Folder: " + folder.Title : "Add to Folder…";
 
     public bool CanSave => Results.Any(r => r.IsOn);
 
@@ -165,11 +137,7 @@ public sealed partial class AddFeedViewModel : PanelViewModel
         // Only the first new feed is picked, as an address often lists comment or category feeds too.
         if (Results.FirstOrDefault(r => !r.IsSaved) is { } first)
             first.IsOn = true;
-        var url = found[0].Url;
-        ResultsTitle = url.Host + (url.AbsolutePath == "/" ? "" : url.AbsolutePath);
-        Page = AddFeedPage.Results;
         OnPropertyChanged(nameof(CanSave));
-        OnPropertyChanged(nameof(FoundTitle));
         OnPropertyChanged(nameof(FoundText));
         OnPropertyChanged(nameof(HasResults));
     }
@@ -180,14 +148,7 @@ public sealed partial class AddFeedViewModel : PanelViewModel
         SaveCommand.NotifyCanExecuteChanged();
     }
 
-    [RelayCommand]
-    private void ToggleResult(FoundFeedRowViewModel row)
-    {
-        if (!row.IsSaved)
-            row.IsOn = !row.IsOn;
-    }
-
-    /// <summary>The phone picks one found feed, as radio rows (D27).</summary>
+    /// <summary>One found feed is picked, as radio rows (D27).</summary>
     [RelayCommand]
     private void PickResult(FoundFeedRowViewModel row)
     {
@@ -195,38 +156,6 @@ public sealed partial class AddFeedViewModel : PanelViewModel
             return;
         foreach (var other in Results)
             other.IsOn = ReferenceEquals(other, row);
-    }
-
-    [RelayCommand]
-    private void Back() => Page = Page switch
-    {
-        AddFeedPage.Folders => AddFeedPage.Results,
-        _ => AddFeedPage.Search,
-    };
-
-    /// <summary>Enter on the page itself: search, save or go back from the folders, whichever the page offers.</summary>
-    [RelayCommand]
-    private async Task Enter()
-    {
-        switch (Page)
-        {
-            case AddFeedPage.Search when SearchCommand.CanExecute(null):
-                await SearchCommand.ExecuteAsync(null);
-                break;
-            case AddFeedPage.Results when CanSave:
-                Save();
-                break;
-            case AddFeedPage.Folders:
-                Back();
-                break;
-        }
-    }
-
-    [RelayCommand]
-    private void ShowFolders()
-    {
-        Picker.Reload();
-        Page = AddFeedPage.Folders;
     }
 
     [RelayCommand(CanExecute = nameof(CanSave))]
@@ -238,12 +167,5 @@ public sealed partial class AddFeedViewModel : PanelViewModel
         if (last is not null)
             Saved?.Invoke(this, (last, Picker.Selected?.Id));
         Close();
-    }
-
-    [RelayCommand]
-    private async Task ImportOpml()
-    {
-        if (await _importOpml() is { } result)
-            ImportTitle = result;
     }
 }

@@ -1,0 +1,369 @@
+<!-- Desktop Settings (D30): the menu sidebar, and the phone's cards of rows (D27) at desktop density. -->
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:c="urn:RSSmote.App.Controls">
+
+    <!-- The menu: section labels, items raised like a selected sidebar row (D20), Back to Feeds on the accent. -->
+    <Style Selector="TextBlock.settingsMenuSection">
+        <Setter Property="FontSize" Value="{StaticResource TextTheme.SidebarSection.Size}" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Ink.Secondary}" />
+        <Setter Property="Margin" Value="10,14,10,4" />
+    </Style>
+    <Style Selector="Button.settingsMenu">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Height" Value="32" />
+        <Setter Property="Padding" Value="10,0" />
+        <Setter Property="CornerRadius" Value="{StaticResource CornerRadius.Row.Sidebar}" />
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+        <Setter Property="HorizontalContentAlignment" Value="Left" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="FontSize" Value="{StaticResource TextTheme.Item.Size}" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Ink.Sidebar}" />
+        <Style Selector="^ c|Icon">
+            <Setter Property="Size" Value="{StaticResource Size.Icon.Toolbar}" />
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Ink.Icon}" />
+        </Style>
+        <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter, ^:pressed /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource Brush.Bg.Hover}" />
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Ink.Sidebar}" />
+        </Style>
+        <Style Selector="^:pressed">
+            <Setter Property="RenderTransform" Value="none" />
+        </Style>
+    </Style>
+    <Style Selector="Button.settingsMenu.selected /template/ ContentPresenter#PART_ContentPresenter,
+                     Button.settingsMenu.selected:pointerover /template/ ContentPresenter#PART_ContentPresenter,
+                     Button.settingsMenu.selected:pressed /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource Brush.Selection.Sidebar}" />
+        <Setter Property="BoxShadow" Value="{DynamicResource BoxShadows.Raised}" />
+    </Style>
+    <Style Selector="Button.settingsBack">
+        <Setter Property="Height" Value="40" />
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+        <Setter Property="HorizontalContentAlignment" Value="Center" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="CornerRadius" Value="10" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Background" Value="{DynamicResource Brush.Accent}" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Ink.OnAccent}" />
+        <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter, ^:pressed /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource Brush.Accent}" />
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Ink.OnAccent}" />
+        </Style>
+        <Style Selector="^:pressed">
+            <Setter Property="RenderTransform" Value="none" />
+            <Setter Property="Opacity" Value="0.8" />
+        </Style>
+    </Style>
+
+    <!-- A page: a label over each card, cards of rows on the canvas. -->
+    <Style Selector="TextBlock.settingsGroup">
+        <Setter Property="FontSize" Value="13" />
+        <Setter Property="FontWeight" Value="Medium" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Ink.Secondary}" />
+        <Setter Property="Margin" Value="24,14,24,6" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+    <Style Selector="Border.settingsCard">
+        <Setter Property="Background" Value="{DynamicResource Brush.Bg.List}" />
+        <Setter Property="CornerRadius" Value="{StaticResource CornerRadius.Card}" />
+        <Setter Property="ClipToBounds" Value="True" />
+    </Style>
+    <Style Selector="TextBlock.settingsIntro">
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="LineHeight" Value="20" />
+        <Setter Property="TextWrapping" Value="Wrap" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Ink.Secondary}" />
+        <Setter Property="Margin" Value="24,0,24,4" />
+    </Style>
+    <Style Selector="TextBlock.settingsFootnote">
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="LineHeight" Value="17" />
+        <Setter Property="TextWrapping" Value="Wrap" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Ink.Secondary}" />
+        <Setter Property="Margin" Value="24,8,24,0" />
+    </Style>
+    <Style Selector="TextBlock.settingsFootnote.error">
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Ink.Danger}" />
+    </Style>
+
+    <!-- A row in a card; the hairline under it is drawn by the row's own border. -->
+    <Style Selector="Button.settingsRow">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="CornerRadius" Value="0" />
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="MinHeight" Value="40" />
+        <Setter Property="Padding" Value="14,0" />
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Ink.Primary}" />
+        <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter, ^:pressed /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource Brush.Bg.Hover}" />
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Ink.Primary}" />
+        </Style>
+        <Style Selector="^:pressed">
+            <Setter Property="RenderTransform" Value="none" />
+        </Style>
+        <Style Selector="^:disabled">
+            <Setter Property="Opacity" Value="0.4" />
+        </Style>
+        <Style Selector="^:disabled /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="Transparent" />
+        </Style>
+    </Style>
+    <Style Selector="Button.settingsRow.tall">
+        <Setter Property="MinHeight" Value="50" />
+    </Style>
+    <Style Selector="Button.settingsRow.danger">
+        <Setter Property="HorizontalContentAlignment" Value="Center" />
+        <Setter Property="FontWeight" Value="Medium" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Ink.Danger}" />
+        <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter, ^:pressed /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Ink.Danger}" />
+        </Style>
+    </Style>
+    <!-- A row that is not a button: a switch, a field, a value. -->
+    <Style Selector="Grid.settingsRow">
+        <Setter Property="MinHeight" Value="40" />
+        <Setter Property="Margin" Value="14,0" />
+        <Setter Property="ColumnSpacing" Value="12" />
+    </Style>
+    <Style Selector="Grid.settingsRow.tall">
+        <Setter Property="MinHeight" Value="50" />
+    </Style>
+    <Style Selector="Grid.settingsRow > TextBlock">
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Ink.Primary}" />
+    </Style>
+    <Style Selector="Border.settingsRowLine">
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Line.Separator}" />
+        <Setter Property="BorderThickness" Value="0,0,0,1" />
+    </Style>
+    <Style Selector="Border.settingsRowLine.last">
+        <Setter Property="BorderThickness" Value="0" />
+    </Style>
+    <!-- Rows generated into a card: the last one draws no hairline either. -->
+    <Style Selector="ItemsControl.settingsRows ContentPresenter:nth-last-child(1) Border.settingsRowLine">
+        <Setter Property="BorderThickness" Value="0" />
+    </Style>
+
+    <!-- Inside a row: a lead icon, a value and a chevron at the right, a subtitle, a label before a field. -->
+    <Style Selector="c|Icon.settingsLead">
+        <Setter Property="Size" Value="16" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Ink.Icon}" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+    <Style Selector="c|Icon.settingsChevron">
+        <Setter Property="Size" Value="14" />
+        <Setter Property="Data" Value="{StaticResource Icon.ChevronRight}" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Ink.Read}" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+    <Style Selector="c|Icon.settingsCheck">
+        <Setter Property="Size" Value="16" />
+        <Setter Property="StrokeThickness" Value="2" />
+        <Setter Property="Data" Value="{StaticResource Icon.Check}" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Accent}" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+    <Style Selector="TextBlock.settingsValue, Grid.settingsRow > TextBlock.settingsValue">
+        <Setter Property="FontSize" Value="13" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Ink.Secondary}" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+    <Style Selector="TextBlock.settingsSubtitle">
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="Margin" Value="0,1,0,0" />
+        <Setter Property="TextTrimming" Value="CharacterEllipsis" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Ink.Secondary}" />
+    </Style>
+    <Style Selector="TextBlock.settingsSubtitle.error">
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Ink.Danger}" />
+    </Style>
+    <Style Selector="TextBlock.settingsLabel, Grid.settingsRow > TextBlock.settingsLabel">
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Ink.Secondary}" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+
+    <!-- A switch: a 36 × 22 track, the accent when on, a white knob. The control moves PART_MovingKnobs along
+         Canvas.Left by PART_SwitchKnob's width, so that width is the knob's travel, 14 (P23). -->
+    <Style Selector="ToggleSwitch.settings">
+        <Setter Property="OnContent" Value="{x:Null}" />
+        <Setter Property="OffContent" Value="{x:Null}" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="Template">
+            <ControlTemplate>
+                <Border x:Name="Track" Width="36" Height="22" CornerRadius="11" Background="{DynamicResource Brush.Bg.Pill}">
+                    <Canvas x:Name="PART_SwitchKnob" Width="14" Height="18" Margin="2" HorizontalAlignment="Left">
+                        <Panel x:Name="PART_MovingKnobs" Width="18" Height="18">
+                            <Border CornerRadius="9" Background="{DynamicResource Brush.Bg.Knob}"
+                                    BoxShadow="{DynamicResource BoxShadows.Raised}" />
+                        </Panel>
+                    </Canvas>
+                </Border>
+            </ControlTemplate>
+        </Setter>
+        <Style Selector="^ /template/ Panel#PART_MovingKnobs">
+            <Setter Property="Canvas.Left" Value="0" />
+        </Style>
+        <Style Selector="^:checked /template/ Border#Track">
+            <Setter Property="Background" Value="{DynamicResource Brush.Accent}" />
+        </Style>
+        <Style Selector="^:checked /template/ Panel#PART_MovingKnobs">
+            <Setter Property="Canvas.Left" Value="14" />
+        </Style>
+    </Style>
+
+    <!-- A radio mark for a found feed: a ring, filled with the accent when on. -->
+    <Style Selector="Border.settingsRadio">
+        <Setter Property="Width" Value="18" />
+        <Setter Property="Height" Value="18" />
+        <Setter Property="CornerRadius" Value="9" />
+        <Setter Property="BorderThickness" Value="2" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Ink.Read}" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+    <Style Selector="Border.settingsRadio.on">
+        <Setter Property="BorderThickness" Value="6" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Accent}" />
+    </Style>
+
+    <!-- A palette's swatch, drawn inside a ThemeVariantScope of that palette: its page and its accent. -->
+    <Style Selector="Border.settingsSwatch">
+        <Setter Property="Width" Value="20" />
+        <Setter Property="Height" Value="20" />
+        <Setter Property="CornerRadius" Value="10" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Line.Separator}" />
+        <Setter Property="Background" Value="{DynamicResource Brush.Bg.Article}" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+    <Style Selector="Border.settingsSwatch > Border">
+        <Setter Property="Width" Value="8" />
+        <Setter Property="Height" Value="8" />
+        <Setter Property="CornerRadius" Value="4" />
+        <Setter Property="Background" Value="{DynamicResource Brush.Accent}" />
+        <Setter Property="HorizontalAlignment" Value="Center" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+
+    <!-- Text in the accent: the bar's action, Edit over a folder's card, Change beside a file. -->
+    <Style Selector="Button.settingsLink">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Padding" Value="6,4" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="FontSize" Value="15" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Accent}" />
+        <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter, ^:pressed /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Accent}" />
+        </Style>
+        <Style Selector="^:pressed">
+            <Setter Property="RenderTransform" Value="none" />
+            <Setter Property="Opacity" Value="0.6" />
+        </Style>
+        <Style Selector="^:disabled">
+            <Setter Property="Opacity" Value="0.4" />
+        </Style>
+        <Style Selector="^:disabled /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Accent}" />
+        </Style>
+    </Style>
+    <Style Selector="Button.settingsLink.small">
+        <Setter Property="Padding" Value="4,2" />
+        <Setter Property="FontSize" Value="13" />
+        <Setter Property="FontWeight" Value="Medium" />
+    </Style>
+
+    <!-- New among the folder chips (D9) takes the accent. -->
+    <Style Selector="Button.chip.add">
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Accent}" />
+    </Style>
+    <Style Selector="Button.chip.add:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Accent}" />
+    </Style>
+
+    <!-- The one primary action at the foot of a page: a 44 tall accent button across the column. -->
+    <Style Selector="Button.settingsPrimary">
+        <Setter Property="Height" Value="44" />
+        <Setter Property="Margin" Value="0,20,0,0" />
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+        <Setter Property="HorizontalContentAlignment" Value="Center" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="CornerRadius" Value="{StaticResource CornerRadius.Card}" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="FontSize" Value="15" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Background" Value="{DynamicResource Brush.Accent}" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Ink.OnAccent}" />
+        <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter, ^:pressed /template/ ContentPresenter#PART_ContentPresenter, ^:disabled /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource Brush.Accent}" />
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Ink.OnAccent}" />
+        </Style>
+        <Style Selector="^:pressed">
+            <Setter Property="RenderTransform" Value="none" />
+            <Setter Property="Opacity" Value="0.8" />
+        </Style>
+        <Style Selector="^:disabled">
+            <Setter Property="Opacity" Value="0.4" />
+        </Style>
+    </Style>
+
+    <!-- A field inside a row or a well: no edge of its own. -->
+    <Style Selector="TextBox.settingsField">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="MinHeight" Value="0" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Ink.Primary}" />
+        <Setter Property="CaretBrush" Value="{DynamicResource Brush.Accent}" />
+        <Style Selector="^:pointerover /template/ Border#PART_BorderElement, ^:focus /template/ Border#PART_BorderElement">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
+        </Style>
+    </Style>
+    <!-- The filter box over Manage Feeds: a 34 tall well on the pill. -->
+    <Style Selector="Border.settingsSearch">
+        <Setter Property="Height" Value="34" />
+        <Setter Property="Margin" Value="0,4,0,6" />
+        <Setter Property="Padding" Value="12,0" />
+        <Setter Property="CornerRadius" Value="9" />
+        <Setter Property="Background" Value="{DynamicResource Brush.Bg.Pill}" />
+    </Style>
+    <!-- The address field of Add Feed: a 42 tall card with a 2 pt accent ring while it has focus (D2). -->
+    <Style Selector="Border.settingsAddress">
+        <Setter Property="Height" Value="42" />
+        <Setter Property="Margin" Value="0,4,0,0" />
+        <Setter Property="Padding" Value="12,0" />
+        <Setter Property="CornerRadius" Value="{StaticResource CornerRadius.Card}" />
+        <Setter Property="BorderThickness" Value="2" />
+        <Setter Property="BorderBrush" Value="Transparent" />
+        <Setter Property="Background" Value="{DynamicResource Brush.Bg.List}" />
+    </Style>
+    <Style Selector="Border.settingsAddress:focus-within">
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Accent}" />
+    </Style>
+
+    <!-- The question over a page (D30): a centred dialog with the action and Cancel as rows on the pill. -->
+    <Style Selector="TextBlock.settingsDialogTitle">
+        <Setter Property="FontSize" Value="16" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="TextAlignment" Value="Center" />
+        <Setter Property="TextWrapping" Value="Wrap" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Ink.Primary}" />
+    </Style>
+</Styles>

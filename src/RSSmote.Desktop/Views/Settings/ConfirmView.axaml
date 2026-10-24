@@ -1,0 +1,22 @@
+<!-- Asks before Remove Feed or Delete Folder (D30): a centred dialog over the scrim. Cancel has the keyboard. -->
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:c="urn:RSSmote.App.Controls"
+             xmlns:vm="using:RSSmote.App.ViewModels"
+             x:Class="RSSmote.Desktop.Views.Settings.ConfirmView"
+             x:DataType="vm:ConfirmViewModel">
+    <c:PanelFrame Classes="narrow">
+        <StackPanel Margin="16,22,16,16">
+            <TextBlock Classes="settingsDialogTitle" Text="{Binding Title}" />
+            <TextBlock Classes="settingsFootnote" FontSize="13" TextAlignment="Center" Margin="12,6,12,18"
+                       Text="{Binding Message}" />
+            <Border Classes="settingsCard" Background="{DynamicResource Brush.Bg.Pill}">
+                <Button Classes="settingsRow danger" Content="{Binding ActionTitle}" Command="{Binding ConfirmCommand}" />
+            </Border>
+            <Border Classes="settingsCard" Background="{DynamicResource Brush.Bg.Pill}" Margin="0,8,0,0">
+                <Button x:Name="CancelButton" Classes="settingsRow" HorizontalContentAlignment="Center" FontWeight="SemiBold"
+                        Content="Cancel" Command="{Binding CloseCommand}" />
+            </Border>
+        </StackPanel>
+    </c:PanelFrame>
+</UserControl>

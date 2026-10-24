@@ -3,7 +3,6 @@ using CommunityToolkit.Mvvm.Input;
 using RSSmote.App.Formatting;
 using RSSmote.App.Services;
 using RSSmote.Core.Discovery;
-using RSSmote.Core.Opml;
 using RSSmote.Core.Rendering;
 using RSSmote.Core.Models;
 using RSSmote.Data;
@@ -75,12 +74,12 @@ public sealed partial class ShellViewModel : ObservableObject, IDisposable
     public ArticleViewModel Article { get; }
     public SettingsViewModel Settings { get; }
 
-    /// <summary>The open overlay panel (Add Feed, Edit Feed, Edit Folder, a confirmation), or null.</summary>
+    /// <summary>The desktop Settings mode while it shows (D30), or null.</summary>
     [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(IsPanelOpen))]
-    public partial PanelViewModel? Panel { get; private set; }
+    [NotifyPropertyChangedFor(nameof(IsSettingsOpen))]
+    public partial SettingsModeViewModel? SettingsMode { get; private set; }
 
-    public bool IsPanelOpen => Panel is not null;
+    public bool IsSettingsOpen => SettingsMode is not null;
 
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(RefreshCommand))]
@@ -97,7 +96,7 @@ public sealed partial class ShellViewModel : ObservableObject, IDisposable
     {
         _reload.Dispose();
         _recount.Dispose();
-        Panel?.Dispose();
+        SettingsMode?.Dispose();
         _store.Changed -= OnStoreChanged;
         _settings.Changed -= OnSettingsChanged;
         if (_refresher is not null)
@@ -268,22 +267,36 @@ public sealed partial class ShellViewModel : ObservableObject, IDisposable
     [RelayCommand]
     private void FocusSearch() => List.FocusSearch();
 
-    // MARK: Adding and removing feeds
+    // MARK: Settings
 
+    /// <summary>Opens Settings on <paramref name="section"/>, or on Articles &amp; Refresh; while open, moves to it.</summary>
     [RelayCommand]
-    private void ShowAddFeed()
+    private void OpenSettings(SettingsSection? section)
     {
-        if (Panel is AddFeedViewModel)
+        if (SettingsMode is { } open)
+        {
+            if (section is { } wanted)
+                open.Show(wanted);
             return;
-        var panel = CreateAddFeed();
-        panel.Saved += (_, e) => ShowNewFeed(e.Feed, e.FolderId);
-        ShowPanel(panel);
+        }
+        SettingsMode = new SettingsModeViewModel(this, section ?? SettingsSection.Reading);
     }
 
-    // The desktop shows these as overlay panels (A6); the phone pushes a page for each (A16).
+    /// <summary>Back to Feeds: pages left open are discarded.</summary>
+    [RelayCommand]
+    public void CloseSettings()
+    {
+        var mode = SettingsMode;
+        SettingsMode = null;
+        mode?.Dispose();
+    }
+
+    // MARK: Adding and removing feeds
+
+    // The desktop shows these in its Settings mode (A6); the phone pushes a page for each (A16).
 
     public AddFeedViewModel CreateAddFeed() =>
-        new(_store, (input, ct) => _finder.FindAllAsync(input, ct), SaveFeed, ImportOpmlAsync);
+        new(_store, (input, ct) => _finder.FindAllAsync(input, ct), SaveFeed);
 
     /// <summary>Null when the feed is gone.</summary>
     public EditFeedViewModel? CreateEditFeed(Feed feed) =>
@@ -299,7 +312,7 @@ public sealed partial class ShellViewModel : ObservableObject, IDisposable
 
     public ManageFeedsViewModel CreateManageFeeds() => new(_store, _settings, _images, _ui);
 
-    /// <summary>Import Feeds with a preview (D27, W2); an import that adds feeds starts a refresh.</summary>
+    /// <summary>Import Feeds with a preview (D27, D30); an import that adds feeds starts a refresh.</summary>
     public ImportFeedsViewModel CreateImportFeeds() => new(_store, _files, () => _ = RefreshAsync());
 
     public ExportFeedsViewModel CreateExportFeeds() => new(_store, _files);
@@ -316,36 +329,6 @@ public sealed partial class ShellViewModel : ObservableObject, IDisposable
         "The feed and all its articles, starred ones included, are deleted for good.",
         "Remove Feed",
         () => _store.DeleteFeed(feed.Id));
-
-    /// <summary>Replaces any open panel with <paramref name="panel"/>.</summary>
-    private void ShowPanel(PanelViewModel panel)
-    {
-        Panel?.Dispose();
-        panel.Closed += (_, _) =>
-        {
-            if (ReferenceEquals(Panel, panel))
-                Panel = null;
-        };
-        Panel = panel;
-    }
-
-    [RelayCommand]
-    private void EditFeed(Feed feed)
-    {
-        if (CreateEditFeed(feed) is { } panel)
-            ShowPanel(panel);
-    }
-
-    [RelayCommand]
-    private void EditFolder(long folderId)
-    {
-        if (CreateEditFolder(folderId, f => EditFeed(f), f => ShowPanel(ConfirmDeleteFolder(f))) is { } panel)
-            ShowPanel(panel);
-    }
-
-    /// <summary>Asks, then deletes the feed and all its articles (A14).</summary>
-    [RelayCommand]
-    private void RemoveFeed(Feed feed) => ShowPanel(ConfirmRemoveFeed(feed));
 
     [RelayCommand]
     private void OpenSite(Feed feed)
@@ -368,7 +351,8 @@ public sealed partial class ShellViewModel : ObservableObject, IDisposable
         return feed;
     }
 
-    private void ShowNewFeed(Feed feed, long? folderId)
+    /// <summary>Selects a feed just added, with its folder open and a filter that shows its articles.</summary>
+    internal void ShowNewFeed(Feed feed, long? folderId)
     {
         _settings.Update(s =>
         {
@@ -380,42 +364,6 @@ public sealed partial class ShellViewModel : ObservableObject, IDisposable
         });
         Sidebar.Select(new ArticleStream.OfFeed(feed.Id));
     }
-
-    /// <summary>Reads an OPML file the user picks; returns a line for the panel, or null when cancelled.</summary>
-    public async Task<string?> ImportOpmlAsync()
-    {
-        string? text;
-        try
-        {
-            text = (await _files.OpenTextAsync("Import Feeds", "OPML", ["*.opml", "*.xml"]))?.Text;
-        }
-        catch (Exception e) when (e is IOException or UnauthorizedAccessException)
-        {
-            return "Could not read that file";
-        }
-        if (text is null)
-            return null;
-        var outlines = OpmlDocument.Parse(text);
-        if (outlines.Count == 0)
-            return "No feeds in that file";
-        var added = _store.ImportOpml(outlines);
-        if (added > 0 && _refresher is not null)
-            _ = _refresher.RefreshAllAsync();
-        return added switch
-        {
-            0 => "All feeds were already added",
-            1 => "Imported 1 feed",
-            _ => $"Imported {added} feeds",
-        };
-    }
-
-    [RelayCommand]
-    private async Task ImportOpml() => await ImportOpmlAsync();
-
-    [RelayCommand]
-    private async Task ExportOpml() =>
-        await _files.SaveTextAsync("Export Feeds", "RSSmote Feeds.opml",
-            OpmlDocument.Export(_store.Folders(), _store.Feeds()));
 
     [RelayCommand]
     private void ChangeFontSize(int delta) =>

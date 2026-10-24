@@ -1,0 +1,52 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:c="urn:RSSmote.App.Controls"
+             xmlns:vm="using:RSSmote.App.ViewModels"
+             xmlns:s="using:RSSmote.Desktop.Views.Settings"
+             x:Class="RSSmote.Desktop.Views.Settings.ImportFeedsView"
+             x:DataType="vm:ImportFeedsViewModel">
+    <!-- Import Feeds (D27, D30): a file, what it adds folder by folder, what is skipped; nothing is saved before
+         Import. -->
+    <StackPanel>
+        <TextBlock Classes="settingsIntro"
+                   Text="Bring in the feeds you follow in another reader. Export them there as an OPML file, then choose it here." />
+        <Button Classes="settingsPrimary" Content="Choose File…" Command="{Binding ChooseCommand}" IsVisible="{Binding !HasFile}" />
+        <StackPanel IsVisible="{Binding HasFile}">
+            <TextBlock Classes="settingsGroup" Text="File" />
+            <Border Classes="settingsCard">
+                <Grid Classes="settingsRow tall" ColumnDefinitions="Auto,*,Auto" Margin="14,0,8,0">
+                    <c:Icon Classes="settingsLead" Data="{StaticResource Icon.FileText}" />
+                    <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                        <TextBlock Text="{Binding FileName}" TextTrimming="CharacterEllipsis" />
+                        <TextBlock Classes="settingsSubtitle" Text="{Binding FileSummary}" />
+                    </StackPanel>
+                    <Button Grid.Column="2" Classes="settingsLink small" Content="Change" Command="{Binding ChooseCommand}" />
+                </Grid>
+            </Border>
+            <TextBlock Classes="settingsFootnote error" Text="{Binding Error}" IsVisible="{Binding HasError}" />
+            <StackPanel IsVisible="{Binding !HasError}">
+                <TextBlock Classes="settingsGroup" Text="Will be added" IsVisible="{Binding HasNew}" />
+                <Border Classes="settingsCard" IsVisible="{Binding HasNew}">
+                    <ItemsControl Classes="settingsRows" ItemsSource="{Binding Groups}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate x:DataType="vm:ImportGroup">
+                                <Border Classes="settingsRowLine">
+                                    <Grid Classes="settingsRow" ColumnDefinitions="Auto,*,Auto">
+                                        <Panel>
+                                            <c:Icon Classes="settingsLead" Data="{StaticResource Icon.Folder}" IsVisible="{Binding IsFolder}" />
+                                            <c:Icon Classes="settingsLead" Data="{StaticResource Icon.Rss}" IsVisible="{Binding !IsFolder}" />
+                                        </Panel>
+                                        <TextBlock Grid.Column="1" Text="{Binding Title}" TextTrimming="CharacterEllipsis" />
+                                        <TextBlock Grid.Column="2" Classes="settingsValue" Text="{Binding CountText}" />
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </Border>
+                <TextBlock Classes="settingsFootnote" Text="{Binding SkippedText}" />
+                <Button Classes="settingsPrimary" Content="{Binding ImportTitle}" Command="{Binding ImportCommand}" />
+            </StackPanel>
+        </StackPanel>
+    </StackPanel>
+</UserControl>

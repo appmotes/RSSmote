@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Desktop Settings Draft</title>
+<style>
+/* Sand tokens, copied from Controls/Templates/templates.html. HTML recreations, not screenshots. */
+:root {
+  --Bg-Sidebar: #E9E4DA; --Bg-List: #FBF9F5; --Bg-Article: #FFFEFB; --Bg-Panel: #FFFEFB; --Bg-PanelRow: #F4F0E8;
+  --Bg-Pill: #EFE9DF; --Ink-Primary: #24201B; --Ink-Secondary: #6B6257; --Ink-Read: #83796D; --Ink-Icon: #5C544A;
+  --Accent: #A85607; --Ink-OnAccent: #FFFFFF; --Ink-Danger: #B3261E; --Line: rgba(58,42,16,.09);
+  --Shadow-Card: 0 1px 2px rgba(42,31,16,.08), 0 10px 28px -12px rgba(42,31,16,.14);
+  --Scrim: rgba(42,31,16,.28);
+}
+body { margin: 0; padding: 24px; background: #d9d3c8; font: 13px/1.35 Inter, system-ui, sans-serif; color: var(--Ink-Primary); }
+h1 { font-size: 20px; margin: 0 0 4px; }
+p.lead { margin: 0 0 20px; max-width: 900px; color: #4a443c; }
+.frames { display: flex; flex-wrap: wrap; gap: 28px; }
+figure { margin: 0; }
+figcaption { font-weight: 600; margin: 8px 2px 0; } figcaption span { display: block; font-weight: 400; color: #4a443c; max-width: 640px; }
+.win { width: 640px; height: 460px; border-radius: 10px; background: var(--Bg-Sidebar); box-shadow: 0 20px 50px -20px rgba(0,0,0,.4); display: flex; overflow: hidden; position: relative; }
+.side { width: 190px; display: flex; flex-direction: column; padding: 10px 8px 0; box-sizing: border-box; }
+.traffic { display: flex; gap: 6px; margin: 2px 4px 16px; } .traffic i { width: 10px; height: 10px; border-radius: 5px; background: #cfc6b8; display: block; }
+.srow { padding: 5px 8px; border-radius: 7px; display: flex; gap: 8px; } .srow.sel { background: var(--Bg-Article); box-shadow: 0 1px 2px rgba(42,31,16,.14); }
+.srow b { margin-left: auto; font-weight: 400; color: var(--Ink-Secondary); font-size: 11px; }
+.sec { color: var(--Ink-Secondary); font-size: 11px; font-weight: 600; margin: 12px 8px 4px; }
+.status { margin-top: auto; border-top: 1px solid var(--Line); padding: 7px 6px 8px; display: flex; align-items: center; gap: 6px; color: var(--Ink-Secondary); font-size: 11px; }
+.status .gear { margin-left: auto; width: 22px; height: 22px; border-radius: 6px; display: grid; place-items: center; color: var(--Ink-Icon); }
+.status .gear.hot { background: var(--Bg-PanelRow); color: var(--Accent); box-shadow: 0 0 0 2px var(--Accent); }
+.card { background: var(--Bg-List); border-radius: 12px; box-shadow: var(--Shadow-Card); }
+.main { flex: 1; display: flex; gap: 8px; padding: 8px 8px 8px 0; }
+.list { width: 200px; padding: 10px; box-sizing: border-box; } .art { flex: 1; background: var(--Bg-Article); padding: 18px; }
+.list h3, .art h3 { margin: 0 0 8px; font-size: 15px; } .item { padding: 6px 0; border-bottom: 1px solid var(--Line); font-weight: 600; font-size: 12px; } .item small { display: block; font-weight: 400; color: var(--Ink-Secondary); }
+/* The Settings area: one stack like the phone's (D23, D27), in place of the list and article columns. */
+.stage { flex: 1; margin: 8px 8px 8px 0; background: var(--Bg-Sidebar); border-radius: 12px; display: flex; flex-direction: column; overflow: hidden; }
+.bar { height: 44px; display: flex; align-items: center; position: relative; padding: 0 10px; flex: none; }
+.bar .back { color: var(--Accent); display: flex; align-items: center; gap: 2px; font-size: 13.5px; }
+.bar .title { position: absolute; left: 0; right: 0; text-align: center; font-weight: 600; font-size: 14px; pointer-events: none; }
+.bar .act { margin-left: auto; color: var(--Accent); font-weight: 600; font-size: 13.5px; }
+.page { overflow: hidden; padding: 0 0 16px; }
+.col { max-width: 440px; margin: 0 auto; }
+.big { font-size: 26px; font-weight: 700; margin: 6px 20px 8px; }
+.gh { color: var(--Ink-Secondary); font-size: 12px; font-weight: 500; margin: 12px 20px 5px; display: flex; justify-content: space-between; } .gh a { color: var(--Accent); }
+.grp { margin: 0 12px; background: var(--Bg-List); border-radius: 12px; overflow: hidden; }
+.row { min-height: 36px; display: flex; align-items: center; gap: 10px; padding: 0 12px; border-bottom: 1px solid var(--Line); font-size: 13.5px; }
+.row:last-child { border-bottom: 0; } .row.tall { min-height: 44px; }
+.row svg { flex: none; color: var(--Ink-Icon); } .row .v { margin-left: auto; color: var(--Ink-Secondary); font-size: 12.5px; }
+.row .ch { margin-left: auto; color: var(--Ink-Read); } .row .v + .ch { margin-left: 4px; }
+.row .sub { display: block; color: var(--Ink-Secondary); font-size: 11.5px; } .row .sub.err { color: var(--Ink-Danger); }
+.row.on { background: #F6EAD9; }
+.tg { margin-left: auto; width: 34px; height: 20px; border-radius: 10px; background: var(--Accent); position: relative; flex: none; } .tg i { position: absolute; right: 2px; top: 2px; width: 16px; height: 16px; border-radius: 8px; background: #fff; box-shadow: 0 1px 2px rgba(0,0,0,.2); }
+.fav { width: 16px; height: 16px; border-radius: 4px; background: #8C8276; color: #fff; font-size: 10px; font-weight: 600; display: grid; place-items: center; flex: none; }
+.lbl { width: 64px; color: var(--Ink-Secondary); }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; padding: 10px 12px; } .chip { padding: 5px 11px; border-radius: 7px; background: var(--Bg-PanelRow); font-size: 12.5px; } .chip.on { background: var(--Accent); color: #fff; font-weight: 600; } .chip.add { color: var(--Accent); }
+.danger { justify-content: center; color: var(--Ink-Danger); font-weight: 500; }
+.fn { margin: 6px 20px 0; color: var(--Ink-Secondary); font-size: 11.5px; }
+.search { margin: 2px 12px 4px; height: 28px; border-radius: 7px; background: var(--Bg-Pill); display: flex; align-items: center; gap: 6px; padding: 0 8px; color: var(--Ink-Read); }
+.split { display: flex; flex: 1; min-height: 0; } .split .nav { width: 220px; border-right: 1px solid var(--Line); padding-top: 6px; } .split .detail { flex: 1; }
+.notes { margin-top: 28px; max-width: 900px; background: #fbf8f2; border-radius: 10px; padding: 14px 18px; }
+.notes h2 { font-size: 15px; margin: 0 0 6px; } .notes li { margin: 4px 0; }
+</style>
+</head>
+<body>
+<h1>Desktop Settings: draft</h1>
+<p class="lead">Feeds are added, edited and removed only in Settings, as on the phone (D27). Settings is its own mode that takes the whole window: the sidebar shows the Settings sections instead of streams and feeds, and the right-hand area shows the chosen page, which pushes further pages as the phone does (Edit Feed, Edit Folder), with back and a centred title. Same groups, rows, chips and sheets as M5–M11, at desktop type sizes (13.5 rows, 36 pt high). HTML recreations with the Sand tokens, not screenshots.</p>
+
+<div class="frames">
+
+<figure>
+<div class="win">
+  <div class="side">
+    <div class="traffic"><i></i><i></i><i></i></div>
+    <div class="srow sel">◉ Unread<b>853</b></div>
+    <div class="sec">FOLDERS</div>
+    <div class="srow">› Apple<b>61</b></div><div class="srow">› Science<b>4</b></div>
+    <div class="sec">FEEDS</div>
+    <div class="srow">Daring Fireball<b>3</b></div><div class="srow">Night Sky Journal</div>
+    <div class="status">Updated 09.29 · 64 feeds<span class="gear hot" title="Settings">⚙</span></div>
+  </div>
+  <div class="main">
+    <div class="card list"><h3>Unread</h3><div class="item">Planets do not twinkle<small>Night Sky · 09.12</small></div><div class="item">The Duo, reviewed<small>Daring Fireball · 08.40</small></div></div>
+    <div class="card art"><h3>Planets do not twinkle</h3><span style="color:var(--Ink-Secondary)">A bright point that holds steady…</span></div>
+  </div>
+</div>
+<figcaption>1 · Reading, with the way in<span>The title strip loses Add Feed; the sidebar status bar gains a Settings button (⚙, ⌘, / Ctrl+,). The sidebar's context menu keeps reading actions (Mark All as Read, Open Website) and gets "Edit in Settings…", which opens Edit Feed or Edit Folder.</span></figcaption>
+</figure>
+
+<figure>
+<div class="win">
+  <div class="side">
+    <div class="traffic"><i></i><i></i><i></i></div>
+    <div class="srow" style="color:var(--Accent);font-weight:600">Done</div>
+    <div class="sec">FEEDS</div>
+    <div class="srow">＋ Add Feed</div>
+    <div class="srow">▭ Manage Feeds<b>64</b></div>
+    <div class="srow">⤓ Import Feeds</div><div class="srow">⤒ Export Feeds</div>
+    <div class="sec">DISPLAY</div>
+    <div class="srow">◐ Appearance</div>
+    <div class="sec">READING</div>
+    <div class="srow sel">◎ Articles &amp; Refresh</div>
+    <div class="status">RSSmote 0.1.0</div>
+  </div>
+  <div class="stage">
+    <div class="bar"><span class="title">Articles &amp; Refresh</span></div>
+    <div class="page"><div class="col">
+      <div class="gh">Articles</div>
+      <div class="grp">
+        <div class="row">◎ Read when opened<span class="tg"><i></i></span></div>
+        <div class="row">↓ Newest first<span class="tg"><i></i></span></div>
+        <div class="row">▦ Group by date<span class="tg"><i></i></span></div>
+      </div>
+      <div class="gh">Refresh</div>
+      <div class="grp">
+        <div class="row">◷ Every<span class="v">30 min ⇕</span></div>
+        <div class="row">▤ Keep read<span class="v">30 days ⇕</span></div>
+      </div>
+    </div></div>
+  </div>
+</div>
+<figcaption>2 · Settings mode: the sidebar is the root (M5)<span>Settings takes the whole window: no streams, folders or feeds anywhere. The sidebar holds M5's sections; "Done" (and Esc) returns to reading. A page picked in the sidebar has no back link; only a page pushed from it has one, named after the page it came from. Articles and Refresh share one page, as they are a few switches and pickers each.</span></figcaption>
+</figure>
+
+<figure>
+<div class="win">
+  <div class="side">
+    <div class="traffic"><i></i><i></i><i></i></div>
+    <div class="srow" style="color:var(--Accent);font-weight:600">Done</div>
+    <div class="sec">FEEDS</div>
+    <div class="srow">＋ Add Feed</div>
+    <div class="srow sel">▭ Manage Feeds<b>64</b></div>
+    <div class="srow">⤓ Import Feeds</div><div class="srow">⤒ Export Feeds</div>
+    <div class="sec">DISPLAY</div>
+    <div class="srow">◐ Appearance</div>
+    <div class="sec">READING</div>
+    <div class="srow">◎ Articles &amp; Refresh</div>
+    <div class="status">RSSmote 0.1.0</div>
+  </div>
+  <div class="stage">
+    <div class="bar"><span class="title">Manage Feeds</span><span class="act">New Folder</span></div>
+    <div class="page"><div class="col">
+      <div class="search">⌕ Filter feeds</div>
+      <div class="gh">Apple<a>Edit</a></div>
+      <div class="grp">
+        <div class="row tall"><span class="fav">a</span><span>AppleInsider News<span class="sub">appleinsider.com</span></span><span class="ch">›</span></div>
+        <div class="row tall on"><span class="fav">d</span><span>Daring Fireball<span class="sub">daringfireball.net</span></span><span class="ch">›</span></div>
+      </div>
+      <div class="gh">No folder</div>
+      <div class="grp">
+        <div class="row tall"><span class="fav">q</span><span>The Quiet Web<span class="sub err">No longer returns a feed</span></span><span class="ch">›</span></div>
+      </div>
+    </div></div>
+  </div>
+</div>
+<figcaption>3 · Manage Feeds (M6)<span>The one place feeds and folders appear in Settings, as a list to edit, not to read. A group per folder with Edit, No folder last, the filter box, New Folder in the bar. A row opens Edit Feed (frame 4), which pushes inside the right-hand area with "‹ Manage Feeds".</span></figcaption>
+</figure>
+
+<figure>
+<div class="win">
+  <div class="side">
+    <div class="traffic"><i></i><i></i><i></i></div>
+    <div class="srow" style="color:var(--Accent);font-weight:600">Done</div>
+    <div class="sec">FEEDS</div>
+    <div class="srow">＋ Add Feed</div>
+    <div class="srow sel">▭ Manage Feeds<b>64</b></div>
+    <div class="srow">⤓ Import Feeds</div><div class="srow">⤒ Export Feeds</div>
+    <div class="sec">DISPLAY</div>
+    <div class="srow">◐ Appearance</div>
+    <div class="sec">READING</div>
+    <div class="srow">◎ Articles &amp; Refresh</div>
+    <div class="status">RSSmote 0.1.0</div>
+  </div>
+  <div class="stage">
+    <div class="bar"><span class="back">‹ Manage Feeds</span><span class="title">Edit Feed</span><span class="act">Save</span></div>
+    <div class="page"><div class="col">
+      <div class="grp" style="margin-top:6px">
+        <div class="row"><span class="lbl">Name</span>Daring Fireball</div>
+        <div class="row"><span class="lbl">Address</span><span style="color:var(--Ink-Secondary)">https://daringfireball.net/feeds/main</span></div>
+      </div>
+      <div class="gh">Folder</div>
+      <div class="grp"><div class="chips"><span class="chip">None</span><span class="chip on">Apple</span><span class="chip">Science</span><span class="chip add">＋ New</span></div></div>
+      <div class="grp" style="margin-top:14px"><div class="row">↗ Open daringfireball.net</div><div class="row">↻ Reload Icon</div></div>
+      <div class="grp" style="margin-top:14px"><div class="row danger">Remove Feed…</div></div>
+      <div class="fn">The feed and all its articles, starred ones included, are deleted for good.</div>
+    </div></div>
+  </div>
+</div>
+<figcaption>4 · Edit Feed (M7)<span>Save in the bar; back discards. Remove Feed… asks in the phone's bottom sheet (D29), drawn here from the bottom of the Settings area over a scrim.</span></figcaption>
+</figure>
+
+
+
+</div>
+
+<div class="notes">
+<h2>What changes, what stays</h2>
+<ul>
+<li>Moves to Settings: Add Feed (title-strip button, ⌘N / Ctrl+N), Edit…, Remove Feed… and folder Edit… from the sidebar menus, Import/Export from the menus, the theme and list-order menu items.</li>
+<li>Stays where it is: reading (streams, list, article), Mark All as Read, Open Website, Refresh, the filter bar.</li>
+<li>Shared with the phone: <code>SettingsViewModel</code>, <code>ManageFeedsViewModel</code>, the panel view-models and <code>ImportFeedsViewModel</code> (W2). Desktop gets its own views at desktop sizes; the overlay panels (A6) go.</li>
+<li>Open: ⌘N could stay as a shortcut that opens Settings › Add Feed directly. The macOS menu bar could keep its View ▸ Theme items as shortcuts to the same settings.</li>
+</ul>
+</div>
+</body>
+</html>

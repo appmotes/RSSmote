@@ -135,14 +135,14 @@ Article body typography is CSS in the HTML template (D14), not a type role.
 | Filter box | Always visible under the list strip: search icon, placeholder "Filter", a ⌘F / Ctrl+F chip or a clear button; ⌘/Ctrl+F focuses it, Escape clears it and returns to the list | `TextBox.filter` with inner content |
 | Article | `ArticleHost`: `NativeWebView` with HTML template; falls back to `HtmlPanel` (A9) | WebView / HtmlRenderer |
 | Empty states | `EmptyState` (templated): a soft box with title, subtitle and shortcut chips in the article card; `.compact` an icon tile, title and subtitle in an empty list | `Panel` + `StackPanel` |
-| Overlays | `PanelFrame` (templated): scrim that catches clicks + a sheet as tall as its content (`.narrow` for confirmations); pages use `sheetHeader` · `sheetBody` · `sheetFooter` | `ContentControl` over sidebar and list (A6) |
+| Overlays | `PanelFrame` (templated): scrim that catches clicks + a sheet as tall as its content (`.narrow` for the Settings question, D30) | `ContentControl` over the window (A6) |
 | Grouped rows | `PanelGroup` + `PanelRow` (text / subtitle / chevron or round check); fields are `TextBox.panel-field` on their own, labelled with `TextBlock.formLabel` | `ItemsControl` + `Button` |
 | Buttons | `Button.primary` (accent), `.secondary` (pill), `.danger` (ink), `.dangerSecondary` (danger ink on the pill); a `TextBlock.keyHint` names the key ("esc", "↵") | stock `Button` |
 | Folder choice | Chips: `Button.chip` in a `WrapPanel`, the chosen one `.on` in the accent; clicking it again chooses no folder | `ItemsControl` + `Button` |
 | Shortcut chip | `Border.kbd` + `TextBlock.kbd` | `Border` |
 | Context menus | Stock `ContextMenu` / `MenuFlyout` | — |
-| Settings | Separate `Window`, `TabControl` (General · Reading · Appearance · Feeds), form grid | stock |
-| Real tables | `TableView` (D17), e.g. the Feeds tab | stock, Avalonia.Controls |
+| Settings | A mode over the whole window: menu sidebar, one page of cards (D30); `settings*` classes in `Styles/Settings.axaml` | stock `Button`, `Border`, `ToggleSwitch` |
+| Real tables | `TableView` (D17) | stock, Avalonia.Controls |
 | Everything else that repeats | `ListBox` (virtualizing, selection) or `ItemsControl` with a virtualizing panel (D18) | stock |
 
 **D10 — Sidebar is a flattened `ListBox`, not a `TreeView`.** The rows need a custom indent, a
@@ -185,14 +185,14 @@ Licence notice in `Assets/Icons/LICENSE-lucide.txt`.
 | Menu (Win/Linux) | `Icon.Menu` | ellipsis |
 | Open website | `Icon.Globe`, `Icon.ExternalLink` | globe, external-link |
 | Checked row | `Icon.Check` | check |
-| Import, Export (phone) | `Icon.Download`, `Icon.Upload` | download, upload |
-| Appearance (phone) | `Icon.Palette` | palette |
-| Read when opened (phone) | `Icon.Eye` | eye |
-| Newest first (phone) | `Icon.SortDown` | arrow-down-wide-narrow |
-| Group by date (phone) | `Icon.Calendar` | calendar |
-| Refresh interval, Keep read (phone) | `Icon.Clock`, `Icon.Archive` | clock, archive |
-| Picker (phone) | `Icon.ChevronsUpDown` | chevrons-up-down |
-| Import file (phone) | `Icon.FileText` | file-text |
+| Import, Export | `Icon.Download`, `Icon.Upload` | download, upload |
+| Appearance | `Icon.Palette` | palette |
+| Read when opened | `Icon.Eye` | eye |
+| Newest first | `Icon.SortDown` | arrow-down-wide-narrow |
+| Group by date | `Icon.Calendar` | calendar |
+| Refresh interval, Keep read | `Icon.Clock`, `Icon.Archive` | clock, archive |
+| Picker | `Icon.ChevronsUpDown` | chevrons-up-down |
+| Import file | `Icon.FileText` | file-text |
 
 **D13 — Other assets.**
 - App icon: the Sand accent as a rounded square with a white Lucide star; master SVG in
@@ -213,19 +213,18 @@ stylesheet as opaque hex (L10). The font family is user-selectable (System, Seri
 
 **D15 — Keyboard first.** Single-key shortcuts as in the original: `j`/`k` next/previous, `space` scroll or
 next, `m` read, `s` star, `b` browser, `v` web page, `r` refresh, `a` mark all read, `n`/`p` next/previous
-feed, `.` go back. They are ignored while a text box has focus. Modified shortcuts: ⌘/Ctrl+1/2/3
-filter, ⌘/Ctrl+N add feed, ⌘/Ctrl+F filter box, ⌘/Ctrl+, settings.
+feed, `.` go back. They are ignored while a text box has focus, and off in Settings, where Escape leaves (D30).
+Modified shortcuts: ⌘/Ctrl+1/2/3 filter, ⌘/Ctrl+N Add Feed in Settings, ⌘/Ctrl+F filter box, ⌘/Ctrl+, settings.
 
-**D16 — Menus per OS.** macOS gets a full `NativeMenu` (app, File, Edit, View, Feeds, Article, Window).
-Windows and Linux get no menu bar; the same commands are reachable from shortcuts and a menu button
-(`Icon.Menu`) in the sidebar's title strip.
+**D16 — Menus per OS.** macOS gets a full `NativeMenu` (app, File, Edit, View, Feeds, Article, Window), with
+"Settings…" (⌘,) in the application menu. Windows and Linux get no menu bar; the same commands are reachable from
+shortcuts and a menu button (`Icon.Menu`) in the sidebar's title strip, which starts with "Settings…".
 
 ## Lists and tables
 
 **D17 — Tables are `TableView`.** Read-only, column-based data uses the core `TableView` (Avalonia 12.1+): it is a
-`ListBox` with `TableViewColumn`s, row virtualization, resizable columns, and `CellTemplate` for rich cells. First
-use: the Feeds tab in Settings (Title · Folder · Unread · Last updated · Status). Keep the column count
-small; columns are not virtualized (P5).
+`ListBox` with `TableViewColumn`s, row virtualization, resizable columns, and `CellTemplate` for rich cells. Not in
+use: Manage Feeds lists feeds as cards (D30). Keep the column count small; columns are not virtualized (P5).
 
 **D18 — The sidebar and the article list are virtualized `ListBox`es, not tables.** They mix row types (date
 header + article, section + folder + feed), have no column header, and render one rich cell per row — none of
@@ -365,4 +364,37 @@ The tab bar (`Button.tab`) is `Bg.Sidebar` under a hairline, two 22 pt icons ove
 `Scrim`: the question as a page title, the line of what happens, the action in `Ink.Danger`, then Cancel, both as
 44 pt rows on `Bg.Pill` (the pair D21 holds at 4.5:1); a tap on the scrim or the system back cancels. A sheet rather
 than a centred dialog because it sits under the thumb and leaves the page it asks about in view. It reuses
-`ConfirmViewModel`, which the desktop shows as a panel (A6).
+`ConfirmViewModel`, which the desktop shows in a centred dialog (D30).
+
+## Desktop Settings
+
+The pages are drawn as HTML recreations, not screenshots, on the design canvas
+(https://claude.ai/artifact/9cqJDTGPM5W52TwnyVj4bm), in Sand and Ember at 1100 × 720.
+
+**D30 — Desktop Settings are a mode of the window, not a window or overlay panels.** ⌘/Ctrl+,, "Settings…" in the
+menus and the gear (`Icon.Settings`) in the sidebar's status bar turn the whole window into Settings; Escape and
+"‹ Back to Feeds" turn it back. It opens on Articles & Refresh. A mode, so feeds are added, edited and removed in one
+place on both form factors, with the phone's pages and view-models (D27), and nothing floats over the article's
+native view (L9).
+- The left column is as wide as the sidebar, on the canvas, with a hairline on its right, and holds only the menu:
+  "Settings" (`largeTitle`), then Feeds (Add Feed, Manage Feeds, Import Feeds, Export Feeds), Display (Appearance) and
+  Reading (Articles & Refresh), 32 pt items with a 15 pt icon. The chosen item is raised like a selected sidebar row
+  (`Selection.Sidebar`, `BoxShadows.Raised`). At the foot sit "‹ Back to Feeds" on the accent (40 pt, `Ink.OnAccent`)
+  and the version. No feeds and no streams.
+- The right side has no back links: 8 pt of canvas, then a 44 pt bar with the page's title centred (`listTitle`) and
+  its action at the right in the accent: New Folder on Manage Feeds, Save on Edit Feed, Edit Folder and New Folder.
+  Under it one page in a centred 520 pt column: the phone's cards at desktop density. Cards are `Bg.List` with
+  `CornerRadius.Card` on the canvas; rows are 40 pt (50 with a subtitle) in 14 pt with hairlines between; group labels
+  13 Medium; values and subtitles 13 and 12 in `Ink.Secondary`; a 36 × 22 switch; the primary button 44 pt.
+- Edit Feed, Edit Folder and New Folder open over Manage Feeds, which stays chosen in the menu. Save returns to the
+  page below; Manage Feeds in the menu returns at once and discards. Remove Feed… and Delete Folder… ask in a centred
+  dialog (`PanelFrame.narrow`) over the scrim: the question, what happens, the action in `Ink.Danger` and Cancel as
+  rows on `Bg.Pill` (D21); Escape or a click on the scrim cancels. A dialog rather than D29's sheet, as a desktop has
+  no thumb to keep it near.
+- Adding a feed stays in Settings, so feeds go in one after another: Add Feed starts again, empty, in the same folder,
+  and its line says what was added. The reading window selects the last feed added for when Settings close. An import
+  ends on Manage Feeds with what arrived.
+- In the reading window the sidebar's context menus keep only Open site and Reload Icon, and "Add Feed…",
+  "Import Feeds…" and "Export Feeds…" (menus, ⌘/Ctrl+N) open Settings on their page.
+
+Looks live in `Styles/Settings.axaml` as `settings*` style classes; Settings have no tokens of their own.

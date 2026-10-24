@@ -49,7 +49,7 @@ public partial class MobileShell : NavigationPage
     public static MobileShell? Of(Avalonia.Visual visual) => visual.FindAncestorOfType<MobileShell>();
 
     /// <summary>
-    /// Pushes a page for one of the panels the desktop shows as an overlay (A6): the panel closing (Save, Add Feed)
+    /// Pushes a page for one of the panels the desktop shows in its Settings mode (A6): the panel closing (Save, Add Feed)
     /// pops its page, and a page that goes any other way disposes its panel.
     /// </summary>
     public Task PushPanelAsync(Page page, PanelViewModel panel)

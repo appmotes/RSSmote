@@ -1,0 +1,19 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:c="urn:RSSmote.App.Controls"
+             xmlns:vm="using:RSSmote.App.ViewModels"
+             xmlns:s="using:RSSmote.Desktop.Views.Settings"
+             x:Class="RSSmote.Desktop.Views.Settings.NewFolderView"
+             x:DataType="vm:NewFolderViewModel">
+    <!-- New Folder (D27, D30): a name; Save adds it to Manage Feeds. -->
+    <Border Classes="settingsCard" Margin="0,6,0,0">
+        <Grid Classes="settingsRow" ColumnDefinitions="70,*">
+            <TextBlock Classes="settingsLabel" Text="Name" />
+            <TextBox x:Name="NameBox" Grid.Column="1" Classes="settingsField" Text="{Binding Name}" PlaceholderText="Folder">
+                <TextBox.KeyBindings>
+                    <KeyBinding Gesture="Enter" Command="{Binding SaveCommand}" />
+                </TextBox.KeyBindings>
+            </TextBox>
+        </Grid>
+    </Border>
+</UserControl>

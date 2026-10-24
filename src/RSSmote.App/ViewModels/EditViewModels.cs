@@ -1,3 +1,4 @@
+using Avalonia.Media.Imaging;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using RSSmote.App.Formatting;
@@ -30,6 +31,10 @@ public sealed partial class EditFeedViewModel : PanelViewModel
 
     public FolderPickerViewModel Picker { get; }
 
+    /// <summary>The feed's icon as a list already holds it; the page shows it large.</summary>
+    [ObservableProperty]
+    public partial Bitmap? Favicon { get; set; }
+
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(SaveCommand))]
     public partial string Name { get; set; }
@@ -45,7 +50,7 @@ public sealed partial class EditFeedViewModel : PanelViewModel
         Close();
     }
 
-    /// <summary>"host/path" without the scheme, as panels show addresses.</summary>
+    /// <summary>"host/path" without the scheme, as pages show addresses.</summary>
     public static string AddressText(string url) =>
         Uri.TryCreate(url, UriKind.Absolute, out var uri) && uri.Scheme is "http" or "https"
             ? uri.Host + (uri.PathAndQuery == "/" ? "" : uri.PathAndQuery)
@@ -71,7 +76,7 @@ public sealed partial class NewFolderViewModel(Store store) : PanelViewModel
     }
 }
 
-/// <summary>One feed listed in the Edit Folder panel; picking it opens that feed's panel.</summary>
+/// <summary>One feed listed on Edit Folder; picking it opens Edit Feed.</summary>
 public sealed record FolderFeedRow(Feed Feed)
 {
     public string Title => Feed.Title;

@@ -1,0 +1,45 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:c="urn:RSSmote.App.Controls"
+             xmlns:vm="using:RSSmote.App.ViewModels"
+             xmlns:s="using:RSSmote.Desktop.Views.Settings"
+             x:Class="RSSmote.Desktop.Views.Settings.ExportFeedsView"
+             x:DataType="vm:ExportFeedsViewModel">
+    <!-- Export Feeds (D27, D30): what the file holds, then the system's save dialog. -->
+    <StackPanel>
+        <TextBlock Classes="settingsIntro" Text="Saves all your feeds and folders in one OPML file. Any feed reader can import it." />
+        <TextBlock Classes="settingsGroup" Text="Contents" />
+        <Border Classes="settingsCard">
+            <StackPanel>
+                <Border Classes="settingsRowLine">
+                    <Grid Classes="settingsRow" ColumnDefinitions="*,Auto">
+                        <TextBlock Text="Feeds" />
+                        <TextBlock Grid.Column="1" Classes="settingsValue" Text="{Binding FeedCount}" />
+                    </Grid>
+                </Border>
+                <Border Classes="settingsRowLine">
+                    <Grid Classes="settingsRow" ColumnDefinitions="*,Auto">
+                        <TextBlock Text="Folders" />
+                        <TextBlock Grid.Column="1" Classes="settingsValue" Text="{Binding FolderCount}" />
+                    </Grid>
+                </Border>
+                <Border Classes="settingsRowLine last">
+                    <Grid Classes="settingsRow" ColumnDefinitions="Auto,*">
+                        <TextBlock Text="File name" />
+                        <TextBlock Grid.Column="1" Classes="settingsValue" HorizontalAlignment="Right"
+                                   Text="{x:Static vm:ExportFeedsViewModel.FileName}" TextTrimming="CharacterEllipsis" />
+                    </Grid>
+                </Border>
+            </StackPanel>
+        </Border>
+        <TextBlock Classes="settingsFootnote" Text="Articles, read state and stars are not part of the file." />
+        <Button Classes="settingsPrimary" Command="{Binding ExportCommand}">
+            <StackPanel Orientation="Horizontal" Spacing="8">
+                <c:Icon Data="{StaticResource Icon.Upload}" Size="16" StrokeThickness="2" VerticalAlignment="Center" />
+                <TextBlock Text="Export…" VerticalAlignment="Center" />
+            </StackPanel>
+        </Button>
+        <TextBlock Classes="settingsFootnote" TextAlignment="Center" Text="Opens the system dialog to save the file." />
+        <TextBlock Classes="settingsFootnote" TextAlignment="Center" Text="{Binding ResultText}" />
+    </StackPanel>
+</UserControl>

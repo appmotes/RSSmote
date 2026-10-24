@@ -14,16 +14,17 @@
                         <Button Classes="icon" ToolTip.Tip="Refresh (R)" Command="{Binding RefreshCommand}">
                             <c:Icon Data="{StaticResource Icon.Refresh}" />
                         </Button>
-                        <Button Classes="icon" ToolTip.Tip="Add Feed" Command="{Binding ShowAddFeedCommand}">
-                            <c:Icon Data="{StaticResource Icon.Plus}" />
-                        </Button>
                         <Button Classes="icon" ToolTip.Tip="Menu" IsVisible="{x:Static v:Chrome.UsesMenuButton}">
                             <c:Icon Data="{StaticResource Icon.Menu}" />
                             <Button.Flyout>
                                 <MenuFlyout Placement="BottomEdgeAlignedRight">
-                                    <MenuItem Header="Add Feed…" InputGesture="Ctrl+N" Command="{Binding ShowAddFeedCommand}" />
-                                    <MenuItem Header="Import Feeds…" Command="{Binding ImportOpmlCommand}" />
-                                    <MenuItem Header="Export Feeds…" Command="{Binding ExportOpmlCommand}" />
+                                    <MenuItem Header="Settings…" InputGesture="Ctrl+OemComma" Command="{Binding OpenSettingsCommand}" />
+                                    <MenuItem Header="Add Feed…" InputGesture="Ctrl+N" Command="{Binding OpenSettingsCommand}"
+                                              CommandParameter="{x:Static vm:SettingsSection.AddFeed}" />
+                                    <MenuItem Header="Import Feeds…" Command="{Binding OpenSettingsCommand}"
+                                              CommandParameter="{x:Static vm:SettingsSection.ImportFeeds}" />
+                                    <MenuItem Header="Export Feeds…" Command="{Binding OpenSettingsCommand}"
+                                              CommandParameter="{x:Static vm:SettingsSection.ExportFeeds}" />
                                     <Separator />
                                     <MenuItem Header="Refresh" InputGesture="R" Command="{Binding RefreshCommand}" />
                                     <MenuItem Header="Mark All as Read" InputGesture="A" Command="{Binding MarkAllReadCommand}" />
@@ -63,6 +64,12 @@
                                    FontFeatures="+tnum" VerticalAlignment="Center" />
                     </StackPanel>
                 </c:StatusBar.Leading>
+                <c:StatusBar.Trailing>
+                    <Button x:Name="SettingsButton" Classes="icon" ToolTip.Tip="{x:Static v:Chrome.SettingsTip}"
+                            Command="{Binding OpenSettingsCommand}">
+                        <c:Icon Data="{StaticResource Icon.Settings}" />
+                    </Button>
+                </c:StatusBar.Trailing>
             </c:StatusBar>
 
             <ListBox x:Name="Rows" Classes="sidebar"

@@ -111,7 +111,7 @@
                                    Document="{Binding Article.Document}"
                                    ArticleFont="{Binding Article.Font}"
                                    ArticleFontSize="{Binding Article.FontSize}"
-                                   IsObscured="{Binding IsPanelOpen}"
+                                   IsObscured="{Binding IsSettingsOpen}"
                                    LinkClicked="OnLinkClicked" />
                 </Panel>
             </DockPanel>

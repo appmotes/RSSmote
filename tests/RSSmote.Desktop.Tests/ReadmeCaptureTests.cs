@@ -83,15 +83,17 @@ public class ReadmeCaptureTests
             await Shot(window, output, "no-article");
 
             Use("sand");
-            shell.EditFeedCommand.Execute(nightSky);
+            shell.OpenSettingsCommand.Execute(SettingsSection.ManageFeeds);
+            var managed = ((ManageFeedsViewModel)shell.SettingsMode!.Page!).Groups.SelectMany(g => g.Feeds).First(r => r.Feed.Id == nightSky.Id);
+            shell.SettingsMode.EditFeedCommand.Execute(managed);
             await Shot(window, output, "edit-feed");
-            shell.Panel?.CloseCommand.Execute(null);
+            shell.CloseSettings();
 
             Use("ember");
-            shell.ShowAddFeedCommand.Execute(null);
-            ((AddFeedViewModel)shell.Panel!).Address = "https://example.org/blog";
+            shell.OpenSettingsCommand.Execute(SettingsSection.AddFeed);
+            ((AddFeedViewModel)shell.SettingsMode!.Page!).Address = "https://example.org/blog";
             await Shot(window, output, "add-feed");
-            shell.Panel?.CloseCommand.Execute(null);
+            shell.CloseSettings();
 
             window.Close();
         }

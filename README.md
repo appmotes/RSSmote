@@ -50,7 +50,8 @@ Hele appen kan styres uden mus. Tasterne virker ikke, mens du skriver i et felt.
 | `.` eller `esc` | Luk artiklen |
 | `⌘1` `⌘2` `⌘3` | Starred / Unread / All (`Ctrl` på Windows og Linux) |
 | `⌘F` | Gå til filterfeltet; `esc` rydder det |
-| `⌘N` | Tilføj feed |
+| `⌘,` | Indstillinger: tilføj, ret og fjern feeds, import, eksport, udseende; `esc` går tilbage |
+| `⌘N` | Tilføj feed (i Indstillinger) |
 | `⌘+` `⌘−` `⌘0` | Større / mindre / normal tekst i artiklen |
 
 Uden en artikel valgt viser højre side de vigtigste genveje:
@@ -64,7 +65,7 @@ Uden en artikel valgt viser højre side de vigtigste genveje:
 | ![Filterfeltet i brug](Docs/images/filter-box.png) | ![Rediger et feed](Docs/images/edit-feed.png) |
 | Filterfeltet søger i listen, mens du skriver | Omdøb et feed og flyt det mellem mapper |
 | ![Tilføj et feed](Docs/images/add-feed.png) | ![Temaet Phosphor](Docs/images/theme-phosphor.png) |
-| Tilføj et feed ud fra en adresse eller en OPML-fil | Phosphor: grønt på et slukket rør |
+| Tilføj et feed ud fra en adresse, i Indstillinger | Phosphor: grønt på et slukket rør |
 
 Alle skærmbilleder er taget af appen selv, uden skærm, over et opdigtet demo-bibliotek: feeds, artikler, favicons og
 billeder er lavet til formålet (se `tests/RSSmote.Desktop.Tests/ReadmeCaptureTests.cs`).

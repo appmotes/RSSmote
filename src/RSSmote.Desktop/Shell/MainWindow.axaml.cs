@@ -1,3 +1,4 @@
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
@@ -30,6 +31,26 @@ public partial class MainWindow : Window
         Fill(items, "Appearance", shell.Settings.Appearances);
         Fill(items, "Light Theme", shell.Settings.LightThemes);
         Fill(items, "Dark Theme", shell.Settings.DarkThemes);
+        if (OperatingSystem.IsMacOS() && Application.Current is { } app)
+            AddSettingsItem(app, shell);
+    }
+
+    public const string SettingsItemHeader = "Settings…";
+
+    /// <summary>
+    /// "Settings…" with ⌘, in the macOS application menu, which belongs to the application rather than to a window.
+    /// An item already there takes the new shell, so a second window adds no second item.
+    /// </summary>
+    internal static void AddSettingsItem(Application app, ShellViewModel shell)
+    {
+        if (NativeMenu.GetMenu(app) is not { } menu)
+            NativeMenu.SetMenu(app, menu = new NativeMenu());
+        if (menu.Items.OfType<NativeMenuItem>().FirstOrDefault(i => i.Header == SettingsItemHeader) is not { } item)
+        {
+            item = new NativeMenuItem(SettingsItemHeader) { Gesture = new KeyGesture(Key.OemComma, KeyModifiers.Meta) };
+            menu.Items.Add(item);
+        }
+        item.Command = shell.OpenSettingsCommand;
     }
 
     private static IEnumerable<NativeMenuItem> AllItems(NativeMenu? menu) =>
@@ -80,14 +101,8 @@ public partial class MainWindow : Window
             return false;
         var command = OperatingSystem.IsMacOS() ? KeyModifiers.Meta : KeyModifiers.Control;
 
-        // An open panel owns the keyboard; Escape closes it.
-        if (shell.Panel is { } panel)
-        {
-            if (key != Key.Escape)
-                return false;
-            panel.CloseCommand.Execute(null);
-            return true;
-        }
+        if (shell.SettingsMode is { } settings)
+            return HandleSettingsShortcut(shell, settings, key, modifiers == command);
 
         if (modifiers == command)
         {
@@ -97,7 +112,8 @@ public partial class MainWindow : Window
                 Key.D2 => Run(() => shell.ShowFilterCommand.Execute(StreamFilter.Unread)),
                 Key.D3 => Run(() => shell.ShowFilterCommand.Execute(StreamFilter.All)),
                 Key.F => Run(shell.List.FocusSearch),
-                Key.N => Run(shell.ShowAddFeedCommand.Execute),
+                Key.N => Run(() => shell.OpenSettingsCommand.Execute(SettingsSection.AddFeed)),
+                Key.OemComma => Run(shell.OpenSettingsCommand.Execute),
                 Key.OemPlus or Key.Add => Run(() => shell.ChangeFontSizeCommand.Execute(1)),
                 Key.OemMinus or Key.Subtract => Run(() => shell.ChangeFontSizeCommand.Execute(-1)),
                 Key.D0 => Run(() => shell.ChangeFontSizeCommand.Execute(0)),
@@ -132,6 +148,30 @@ public partial class MainWindow : Window
             Key.N => Run(shell.NextFeedCommand.Execute),
             Key.P => Run(shell.PreviousFeedCommand.Execute),
             Key.OemPeriod or Key.Escape => Run(shell.GoBackCommand.Execute),
+            _ => false,
+        };
+    }
+
+    /// <summary>
+    /// Settings own the keyboard (D30): Escape cancels a question or leaves Settings, ⌘/Ctrl+N moves to Add Feed and
+    /// ⌘/Ctrl+, stays; every other key goes to the page.
+    /// </summary>
+    private static bool HandleSettingsShortcut(ShellViewModel shell, SettingsModeViewModel settings, Key key, bool command)
+    {
+        if (key == Key.Escape && !command)
+        {
+            if (settings.Confirm is { } confirm)
+                confirm.CloseCommand.Execute(null);
+            else
+                shell.CloseSettings();
+            return true;
+        }
+        if (!command)
+            return false;
+        return key switch
+        {
+            Key.N => Run(() => settings.Show(SettingsSection.AddFeed)),
+            Key.OemComma => true,
             _ => false,
         };
     }

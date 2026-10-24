@@ -75,6 +75,11 @@ code { font: 12.5px ui-monospace, Menlo, monospace; background: #f3f3f3; padding
 .srow.folder { padding-left: 26px; } .srow .disc { margin-left: -20px; width: 12px; color: var(--Ink-Secondary); }
 .sfoot { height: var(--Size-StatusBar); display: flex; align-items: center; gap: 8px; padding: 0 18px; font-size: 11.5px; color: var(--Ink-Secondary); }
 .sfoot .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--Accent); }
+.sfoot .gear { margin-left: auto; margin-right: -12px; width: 15px; height: 15px; border: 1.5px dashed var(--Ink-Icon); border-radius: 50%; }
+.dialog { width: 360px; background: var(--Bg-Panel); border-radius: var(--Radius-Panel); box-shadow: var(--Shadow-Panel); padding: 22px 16px 16px; display: flex; flex-direction: column; text-align: center; }
+.dialog b { font-size: 16px; font-weight: 600; } .dialog small { font-size: 13px; color: var(--Ink-Secondary); margin: 6px 12px 18px; }
+.dialog span { height: 40px; border-radius: var(--Radius-Card); background: var(--Bg-Pill); display: grid; place-items: center; font-size: 14px; }
+.dialog span + span { margin-top: 8px; font-weight: 600; } .dialog .danger { color: var(--Ink-Danger); font-weight: 500; }
 .statusbar { width: 320px; height: var(--Size-StatusBar); display: flex; align-items: center; padding: 0 16px; font-size: 11.5px; color: var(--Ink-Secondary); border-top: 1px solid var(--Line-Separator); background: var(--Bg-List); }
 .srow .t { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } .srow .n { min-width: 24px; height: var(--Size-Badge); padding: 0 6px; border-radius: var(--Radius-Badge); background: var(--Bg-Panel); color: var(--Ink-Secondary); font-size: 11px; font-weight: 500; display: grid; place-items: center; }
 .srow.smart, .srow.section { padding-left: 10px; font-weight: 500; } .srow.section { height: var(--Size-SidebarSection); align-items: flex-end; padding-bottom: 6px; font-size: 12px; font-weight: 600; color: var(--Ink-Secondary); }
@@ -127,14 +132,15 @@ with the Sand token values, not screenshots.</p></header>
   <p>The thin bar at the foot of a column: status text on the left, a few controls on the right, in 11.5 pt
   <code>Ink.Secondary</code>. Under the list and the article it draws a hairline above itself; with the style class
   <code>canvas</code> it sits on the sidebar without one and shows the refresh dot (accent, secondary ink while a
-  refresh runs, <code>Ink.Danger</code> when a feed failed) and "Today at 13.33 · 5 feeds".</p>
+  refresh runs, <code>Ink.Danger</code> when a feed failed) and "Today at 13.33 · 5 feeds", with the Settings button
+  (an <code>Icon.Settings</code> icon button) on the right.</p>
   <table><tr><th>Property</th><th>Type</th><th>Description</th></tr>
     <tr><td>Leading</td><td>object? (null)</td><td>Content docked left.</td></tr>
     <tr><td>Trailing</td><td>object? (null)</td><td>Content docked right.</td></tr>
     <tr><td>Padding</td><td>Thickness (16,0,8,0)</td><td>18,0,8,0 with <code>canvas</code>.</td></tr>
     <tr><td>Height</td><td>double (28)</td><td><code>Size.StatusBar.Height</code>.</td></tr>
   </table>
-  <div class="preview"><div class="sidebar"><div class="sfoot"><i class="dot"></i>Today at 13.33 · 5 feeds</div></div>
+  <div class="preview"><div class="sidebar"><div class="sfoot"><i class="dot"></i>Today at 13.33 · 5 feeds<i class="gear"></i></div></div>
     <div class="statusbar">9 today · newest first</div></div>
 </article>
 
@@ -175,20 +181,18 @@ with the Sand token values, not screenshots.</p></header>
   <h3>PanelFrame</h3>
   <p>An overlay sheet, 400 wide and as tall as its content (at most 600), radius 16, with
   <code>BoxShadows.Panel</code>, centred over a <code>Scrim</code> that covers the window and catches clicks. The
-  style class <code>narrow</code> makes it 360 wide, for confirmations. Clicking the scrim or pressing Escape raises
-  <code>DismissRequested</code>. Pages inside use the <code>sheetHeader</code>, <code>sheetBody</code> and
-  <code>sheetFooter</code> styles: title and close (or back) on top, content, then the buttons on the right.</p>
+  style class <code>narrow</code> makes it 360 wide. Clicking the scrim or pressing Escape raises
+  <code>DismissRequested</code>. Settings show their question in a narrow frame (D30): the question, what happens,
+  then the action in <code>Ink.Danger</code> and Cancel as rows on <code>Bg.Pill</code>.</p>
   <table><tr><th>Member</th><th>Type</th><th>Description</th></tr>
-    <tr><td>Content</td><td>object? (null)</td><td>The panel page.</td></tr>
+    <tr><td>Content</td><td>object? (null)</td><td>What the sheet shows.</td></tr>
     <tr><td>Classes <code>narrow</code></td><td>—</td><td>Width <code>Size.Panel.NarrowWidth</code> (360).</td></tr>
     <tr><td>DismissRequested</td><td>routed event</td><td>The caller closes the overlay.</td></tr>
   </table>
-  <div class="preview"><div class="scrimmock"><div class="panel"><div class="phead"><b>Edit Feed</b><span>✕</span></div>
-    <small class="psub">devblogs.microsoft.com/dotnet/feed/</small>
-    <div class="field">.NET Blog</div>
-    <div class="chips"><span class="chip on">.NET</span><span class="chip">AI</span><span class="chip">Apple</span></div>
-    <div class="pfoot"><span class="danger">Delete Folder…</span><span class="btn sec">Cancel</span><span class="btn pri">Save</span></div></div></div></div>
-  <div class="note">Hosted over all three columns; the article hides its native web view meanwhile (L9). Two borders, so the shadow survives the clip (L12).</div>
+  <div class="preview"><div class="scrimmock"><div class="dialog"><b>Remove “Daring Fireball”?</b>
+    <small>The feed and all its articles, starred ones included, are deleted for good.</small>
+    <span class="danger">Remove Feed</span><span>Cancel</span></div></div></div>
+  <div class="note">Hosted over the whole window. Two borders, so the shadow survives the clip (L12).</div>
 </article>
 
 

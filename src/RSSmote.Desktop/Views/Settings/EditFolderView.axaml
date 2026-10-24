@@ -1,0 +1,43 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:c="urn:RSSmote.App.Controls"
+             xmlns:vm="using:RSSmote.App.ViewModels"
+             xmlns:s="using:RSSmote.Desktop.Views.Settings"
+             x:Class="RSSmote.Desktop.Views.Settings.EditFolderView"
+             x:DataType="vm:EditFolderViewModel">
+    <!-- Edit Folder (D27, D30): its name, its feeds (each opens Edit Feed), and Delete Folder…, which keeps the feeds. -->
+    <StackPanel>
+        <Border Classes="settingsCard" Margin="0,6,0,0">
+            <Grid Classes="settingsRow" ColumnDefinitions="70,*">
+                <TextBlock Classes="settingsLabel" Text="Name" />
+                <TextBox x:Name="NameBox" Grid.Column="1" Classes="settingsField" Text="{Binding Name}">
+                    <TextBox.KeyBindings>
+                        <KeyBinding Gesture="Enter" Command="{Binding SaveCommand}" />
+                    </TextBox.KeyBindings>
+                </TextBox>
+            </Grid>
+        </Border>
+        <TextBlock Classes="settingsGroup" Text="{Binding Subtitle}" IsVisible="{Binding HasFeeds}" />
+        <Border Classes="settingsCard" IsVisible="{Binding HasFeeds}">
+            <ItemsControl Classes="settingsRows" ItemsSource="{Binding Feeds}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate x:DataType="vm:FolderFeedRow">
+                        <Border Classes="settingsRowLine">
+                            <Button Classes="settingsRow" CommandParameter="{Binding}"
+                                    Command="{Binding $parent[s:EditFolderView].((vm:EditFolderViewModel)DataContext).EditFeedCommand}">
+                                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+                                    <TextBlock Text="{Binding Title}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
+                                    <c:Icon Grid.Column="1" Classes="settingsChevron" />
+                                </Grid>
+                            </Button>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </Border>
+        <Border Classes="settingsCard" Margin="0,20,0,0">
+            <Button Classes="settingsRow danger" Content="Delete Folder…" Command="{Binding DeleteCommand}" />
+        </Border>
+        <TextBlock Classes="settingsFootnote" Text="Its feeds stay and move out of the folder." />
+    </StackPanel>
+</UserControl>

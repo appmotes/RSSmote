@@ -2,7 +2,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Threading;
 
-namespace RSSmote.Desktop.Views.Panels;
+namespace RSSmote.Desktop.Views.Settings;
 
 public partial class ConfirmView : UserControl
 {

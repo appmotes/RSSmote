@@ -1,0 +1,66 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:c="urn:RSSmote.App.Controls"
+             xmlns:vm="using:RSSmote.App.ViewModels"
+             xmlns:s="using:RSSmote.Desktop.Views.Settings"
+             x:Class="RSSmote.Desktop.Views.Settings.EditFeedView"
+             x:DataType="vm:EditFeedViewModel">
+    <!-- Edit Feed (D27, D30): name, the address it is fetched from, its folder, the site, the icon, and removal. Save
+         sits in the bar and answers Enter in the name field. -->
+    <StackPanel>
+        <c:Favicon Size="52" Radius="12" HorizontalAlignment="Center" Margin="0,6,0,14"
+                   Source="{Binding Favicon}" Title="{Binding Title}" TileBrush="{DynamicResource Brush.Bg.FaviconTile}"
+                   LetterBrush="{DynamicResource Brush.Ink.OnTile}" />
+        <Border Classes="settingsCard">
+            <StackPanel>
+                <Border Classes="settingsRowLine">
+                    <Grid Classes="settingsRow" ColumnDefinitions="70,*">
+                        <TextBlock Classes="settingsLabel" Text="Name" />
+                        <TextBox x:Name="NameBox" Grid.Column="1" Classes="settingsField" Text="{Binding Name}">
+                            <TextBox.KeyBindings>
+                                <KeyBinding Gesture="Enter" Command="{Binding SaveCommand}" />
+                            </TextBox.KeyBindings>
+                        </TextBox>
+                    </Grid>
+                </Border>
+                <Border Classes="settingsRowLine last">
+                    <Grid Classes="settingsRow" ColumnDefinitions="70,*">
+                        <TextBlock Classes="settingsLabel" Text="Address" />
+                        <TextBlock Grid.Column="1" Classes="settingsLabel" Text="{Binding Feed.Url}"
+                                   TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding Feed.Url}" />
+                    </Grid>
+                </Border>
+            </StackPanel>
+        </Border>
+        <TextBlock Classes="settingsGroup" Text="Folder" />
+        <s:FolderChips DataContext="{Binding Picker}" />
+        <Border Classes="settingsCard" Margin="0,20,0,0">
+            <StackPanel>
+                <Border Classes="settingsRowLine">
+                    <Button Classes="settingsRow" CommandParameter="{Binding Feed}"
+                            Command="{Binding $parent[s:SettingsView].((vm:SettingsModeViewModel)DataContext).OpenSiteCommand}">
+                        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
+                            <c:Icon Classes="settingsLead" Data="{StaticResource Icon.ExternalLink}" />
+                            <TextBlock Grid.Column="1" Text="{Binding OpenSiteTitle}" VerticalAlignment="Center"
+                                       TextTrimming="CharacterEllipsis" />
+                        </Grid>
+                    </Button>
+                </Border>
+                <Border Classes="settingsRowLine last">
+                    <Button Classes="settingsRow" CommandParameter="{Binding Feed}"
+                            Command="{Binding $parent[s:SettingsView].((vm:SettingsModeViewModel)DataContext).ReloadIconCommand}">
+                        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
+                            <c:Icon Classes="settingsLead" Data="{StaticResource Icon.Refresh}" />
+                            <TextBlock Grid.Column="1" Text="Reload Icon" VerticalAlignment="Center" />
+                        </Grid>
+                    </Button>
+                </Border>
+            </StackPanel>
+        </Border>
+        <Border Classes="settingsCard" Margin="0,20,0,0">
+            <Button Classes="settingsRow danger" Content="Remove Feed…" CommandParameter="{Binding Feed}"
+                    Command="{Binding $parent[s:SettingsView].((vm:SettingsModeViewModel)DataContext).RemoveFeedCommand}" />
+        </Border>
+        <TextBlock Classes="settingsFootnote" Text="The feed and all its articles, starred ones included, are deleted for good." />
+    </StackPanel>
+</UserControl>

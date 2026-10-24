@@ -15,8 +15,8 @@ public sealed partial class FolderChoiceViewModel(Folder folder) : ObservableObj
 }
 
 /// <summary>
-/// Picks at most one folder for a feed, or none: the folders as radio rows plus a field that creates a new one
-/// and picks it. Used by the Add Feed and Edit Feed panels.
+/// Picks at most one folder for a feed, or none: the folders as chips plus a field that creates a new one
+/// and picks it. Used by Add Feed and Edit Feed.
 /// </summary>
 public sealed partial class FolderPickerViewModel : ObservableObject
 {

@@ -15,10 +15,8 @@ Linux strip layout (P2).
 
 **W1 — Sync services** (Feedbin, Fever, …). Deliberately out of scope for now.
 
-**N9 — Settings window and article context menus.** General · Reading · Appearance · Feeds (TableView, D17),
-over the same `SettingsViewModel` and `ManageFeedsViewModel` the phone uses;
-article-list context menu (mark above/below as read, star, open in browser). Sidebar menus are done (A6). The
-Settings button goes in the sidebar status bar.
+**N9 — Article-list context menu.** Mark above / below as read, star, open in browser. Settings (D30) and the
+sidebar menus (A6) are done. Done when a right click on an article row offers these without selecting the row.
 
 **N12 — Check Automatic theme switching on each OS.** Switch the OS between light and dark while RSSmote runs, with
 Automatic and with non-default palettes in both slots: the window repaints, and the macOS menu and the Windows/Linux
@@ -26,15 +24,9 @@ menu button show the checked items.
 
 **N13 — Look at the cards and panels on each OS.** On macOS, Windows 11 and Linux: the article's web view sits inside
 the card with its rounded corners intact; the 8 pt band above the cards and the card strips drag the window; on
-Windows the caption buttons clear the article card's actions (P3, N2); panels show their shadow and scrim; and the ten
-palettes switch from the menus.
+Windows the caption buttons clear the article card's actions (P3, N2); the Settings question shows its shadow and
+scrim; and the ten palettes switch from the menus.
 
-
-**W2 — Preview an OPML import on desktop, as the mobile Import Feeds page does (D27).** Today "Import Feeds…"
-imports the chosen file at once and only reports the count afterwards (`ShellViewModel.ImportOpmlAsync`). The shared
-view-model exists (`ImportFeedsViewModel`, tested in `ImportExportTests`); what is left is its desktop panel (A6) in
-place of the direct import, and the same for Export (`ExportFeedsViewModel`). Done when "Import Feeds…" on desktop
-shows the preview and imports only on "Import N Feeds".
 
 **W3 — Tablet layout.** The mobile design covers the phone only (D23–D28). A tablet in landscape needs its own
 answer (list and article side by side, or three columns as on desktop). Done when it is drawn and recorded as a
@@ -65,3 +57,16 @@ background and the last pass is older than the interval; it is tested headless o
 across a refresh (P25) was seen on the iPhone 17 Pro simulator, not yet on the API 35 emulator. Done when a resume
 after the interval starts a refresh on both, and the list keeps its place on Android.
 
+**N20 — Check desktop Settings on each OS (D30).** On macOS: "Settings…" with ⌘, sits in the application menu and
+opens Settings (the item is added from code after the window is built, which the headless tests cannot see exported;
+L13), and the traffic lights clear the Settings title. On Windows: the caption buttons clear New Folder and Save
+(P3). On all three: the settings sidebar's strip and the band above the bar drag the window, the article's native
+view stays hidden while Settings show (L9), and Import and Export open the system's file dialogs. Done when each is
+seen.
+
+**W5 — Remove the panel pieces no screen uses.** With the overlay panels gone (D30), `PanelGroup`, `PanelRow`, the
+`sheetHeader` / `sheetBody` / `sheetFooter` / `formLabel` / `hint` styles (`Styles/Panels.axaml`), `TextBox.panel-field`,
+`Button.primary` / `.secondary` / `.danger` / `.dangerSecondary` and `keyHint` appear only in the gallery, and the
+tokens `Size.PanelRow.Height`, `Size.PanelRowTall.Height`, `Size.FormLabel.Width`, `Thickness.Panel.Inset`,
+`TextTheme.PanelRow.Size` and `TextTheme.PanelRowSubtitle.Size` only there or nowhere. Done when they are removed from
+the code, the gallery, `templates.html` (two controls fewer) and D6, D7, D9, or kept with a reason in D9.

@@ -1,0 +1,52 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:c="urn:RSSmote.App.Controls"
+             xmlns:vm="using:RSSmote.App.ViewModels"
+             xmlns:s="using:RSSmote.Desktop.Views.Settings"
+             x:Class="RSSmote.Desktop.Views.Settings.AddFeedView"
+             x:DataType="vm:AddFeedViewModel">
+    <!-- Add Feed (D27, D30): an address, the feeds found there as radio rows, a folder, one primary button. Enter in
+         the address searches. -->
+    <StackPanel>
+        <Border Classes="settingsAddress">
+            <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
+                <c:Icon Data="{StaticResource Icon.Search}" Size="16" Foreground="{DynamicResource Brush.Ink.Secondary}"
+                        VerticalAlignment="Center" />
+                <TextBox x:Name="AddressBox" Grid.Column="1" Classes="settingsField" Text="{Binding Address}"
+                         PlaceholderText="Feed or website address">
+                    <TextBox.KeyBindings>
+                        <KeyBinding Gesture="Enter" Command="{Binding SearchCommand}" />
+                    </TextBox.KeyBindings>
+                </TextBox>
+            </Grid>
+        </Border>
+        <TextBlock Classes="settingsFootnote" Classes.error="{Binding HasError}" Text="{Binding Hint}" />
+
+        <StackPanel IsVisible="{Binding HasResults}">
+            <TextBlock Classes="settingsGroup" Text="{Binding FoundText}" />
+            <Border Classes="settingsCard">
+                <ItemsControl Classes="settingsRows" ItemsSource="{Binding Results}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="vm:FoundFeedRowViewModel">
+                            <Border Classes="settingsRowLine">
+                                <Button Classes="settingsRow tall" IsEnabled="{Binding !IsSaved}" CommandParameter="{Binding}"
+                                        Command="{Binding $parent[s:AddFeedView].((vm:AddFeedViewModel)DataContext).PickResultCommand}">
+                                    <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
+                                        <Border Classes="settingsRadio" Classes.on="{Binding IsOn}" />
+                                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                            <TextBlock Text="{Binding Title}" TextTrimming="CharacterEllipsis" />
+                                            <TextBlock Classes="settingsSubtitle" Text="{Binding Detail}" />
+                                        </StackPanel>
+                                    </Grid>
+                                </Button>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </Border>
+            <TextBlock Classes="settingsGroup" Text="Folder" />
+            <s:FolderChips DataContext="{Binding Picker}" />
+            <Button Classes="settingsPrimary" Content="Add Feed" Command="{Binding SaveCommand}" />
+        </StackPanel>
+    </StackPanel>
+</UserControl>

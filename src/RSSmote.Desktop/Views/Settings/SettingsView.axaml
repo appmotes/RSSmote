@@ -1,0 +1,144 @@
+<!-- The Settings mode (D30): the whole window, a menu sidebar on the left and one page in a centred column. -->
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:c="urn:RSSmote.App.Controls"
+             xmlns:vm="using:RSSmote.App.ViewModels"
+             xmlns:v="using:RSSmote.Desktop.Views"
+             xmlns:s="using:RSSmote.Desktop.Views.Settings"
+             x:Class="RSSmote.Desktop.Views.Settings.SettingsView"
+             x:DataType="vm:SettingsModeViewModel"
+             Background="{DynamicResource Brush.Bg.Sidebar}">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="{StaticResource GridLength.Column.Sidebar}" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <Border BorderThickness="0,0,1,0" BorderBrush="{DynamicResource Brush.Line.Separator}">
+            <DockPanel>
+                <c:TitleStrip DockPanel.Dock="Top" Padding="{x:Static v:Chrome.SidebarStripPadding}" />
+                <StackPanel DockPanel.Dock="Bottom" Margin="10,0">
+                    <Button Classes="settingsBack" Command="{Binding CloseCommand}" ToolTip.Tip="Back to Feeds (Esc)">
+                        <StackPanel Orientation="Horizontal" Spacing="6">
+                            <c:Icon Data="{StaticResource Icon.ChevronLeft}" Size="16" StrokeThickness="2" VerticalAlignment="Center" />
+                            <TextBlock Text="Back to Feeds" VerticalAlignment="Center" />
+                        </StackPanel>
+                    </Button>
+                    <TextBlock Classes="meta" Text="{Binding Settings.VersionText}" Margin="10,10,10,12" />
+                </StackPanel>
+                <ScrollViewer HorizontalScrollBarVisibility="Disabled">
+                    <StackPanel Margin="10,0,10,12">
+                        <TextBlock Classes="largeTitle" Text="Settings" Margin="10,2,10,4" />
+
+                        <TextBlock Classes="settingsMenuSection" Text="Feeds" />
+                        <Button Classes="settingsMenu" Command="{Binding ShowCommand}" CommandParameter="{x:Static vm:SettingsSection.AddFeed}"
+                                Classes.selected="{Binding Section, Converter={x:Static s:SettingsConverters.SectionIs}, ConverterParameter=AddFeed}">
+                            <StackPanel Orientation="Horizontal" Spacing="10">
+                                <c:Icon Data="{StaticResource Icon.Plus}" />
+                                <TextBlock Text="Add Feed" VerticalAlignment="Center" />
+                            </StackPanel>
+                        </Button>
+                        <Button Classes="settingsMenu" Command="{Binding ShowCommand}" CommandParameter="{x:Static vm:SettingsSection.ManageFeeds}"
+                                Classes.selected="{Binding Section, Converter={x:Static s:SettingsConverters.SectionIs}, ConverterParameter=ManageFeeds}">
+                            <StackPanel Orientation="Horizontal" Spacing="10">
+                                <c:Icon Data="{StaticResource Icon.Folder}" />
+                                <TextBlock Text="Manage Feeds" VerticalAlignment="Center" />
+                            </StackPanel>
+                        </Button>
+                        <Button Classes="settingsMenu" Command="{Binding ShowCommand}" CommandParameter="{x:Static vm:SettingsSection.ImportFeeds}"
+                                Classes.selected="{Binding Section, Converter={x:Static s:SettingsConverters.SectionIs}, ConverterParameter=ImportFeeds}">
+                            <StackPanel Orientation="Horizontal" Spacing="10">
+                                <c:Icon Data="{StaticResource Icon.Download}" />
+                                <TextBlock Text="Import Feeds" VerticalAlignment="Center" />
+                            </StackPanel>
+                        </Button>
+                        <Button Classes="settingsMenu" Command="{Binding ShowCommand}" CommandParameter="{x:Static vm:SettingsSection.ExportFeeds}"
+                                Classes.selected="{Binding Section, Converter={x:Static s:SettingsConverters.SectionIs}, ConverterParameter=ExportFeeds}">
+                            <StackPanel Orientation="Horizontal" Spacing="10">
+                                <c:Icon Data="{StaticResource Icon.Upload}" />
+                                <TextBlock Text="Export Feeds" VerticalAlignment="Center" />
+                            </StackPanel>
+                        </Button>
+
+                        <TextBlock Classes="settingsMenuSection" Text="Display" />
+                        <Button Classes="settingsMenu" Command="{Binding ShowCommand}" CommandParameter="{x:Static vm:SettingsSection.Appearance}"
+                                Classes.selected="{Binding Section, Converter={x:Static s:SettingsConverters.SectionIs}, ConverterParameter=Appearance}">
+                            <StackPanel Orientation="Horizontal" Spacing="10">
+                                <c:Icon Data="{StaticResource Icon.Palette}" />
+                                <TextBlock Text="Appearance" VerticalAlignment="Center" />
+                            </StackPanel>
+                        </Button>
+
+                        <TextBlock Classes="settingsMenuSection" Text="Reading" />
+                        <Button Classes="settingsMenu" Command="{Binding ShowCommand}" CommandParameter="{x:Static vm:SettingsSection.Reading}"
+                                Classes.selected="{Binding Section, Converter={x:Static s:SettingsConverters.SectionIs}, ConverterParameter=Reading}">
+                            <StackPanel Orientation="Horizontal" Spacing="10">
+                                <c:Icon Data="{StaticResource Icon.Eye}" />
+                                <TextBlock Text="Articles &amp; Refresh" VerticalAlignment="Center" />
+                            </StackPanel>
+                        </Button>
+                    </StackPanel>
+                </ScrollViewer>
+            </DockPanel>
+        </Border>
+
+        <!-- No back links: a 44 pt bar under 8 pt of canvas, the title centred, the page's action at the right. -->
+        <DockPanel Grid.Column="1">
+            <Panel DockPanel.Dock="Top">
+                <StackPanel>
+                    <Border Height="8" Background="Transparent" WindowDecorationProperties.ElementRole="TitleBar" />
+                    <c:TitleStrip Classes="card" Padding="{x:Static v:Chrome.ArticleStripPadding}">
+                        <c:TitleStrip.Trailing>
+                            <Button Classes="settingsLink" Content="{Binding ActionTitle}" Command="{Binding ActionCommand}"
+                                    IsVisible="{Binding HasAction}" />
+                        </c:TitleStrip.Trailing>
+                    </c:TitleStrip>
+                </StackPanel>
+                <TextBlock Classes="listTitle" Text="{Binding Title}" Margin="0,8,0,0" MaxWidth="360"
+                           HorizontalAlignment="Center" VerticalAlignment="Center" IsHitTestVisible="False" />
+            </Panel>
+            <ScrollViewer x:Name="Scroller" HorizontalScrollBarVisibility="Disabled">
+                <ContentControl Content="{Binding Page}" Width="520" HorizontalAlignment="Center" Margin="0,4,0,24">
+                    <ContentControl.DataTemplates>
+                        <DataTemplate x:DataType="vm:ReadingPageViewModel">
+                            <s:ReadingView />
+                        </DataTemplate>
+                        <DataTemplate x:DataType="vm:AppearancePageViewModel">
+                            <s:AppearanceView />
+                        </DataTemplate>
+                        <DataTemplate x:DataType="vm:AddFeedViewModel">
+                            <s:AddFeedView />
+                        </DataTemplate>
+                        <DataTemplate x:DataType="vm:ManageFeedsViewModel">
+                            <s:ManageFeedsView />
+                        </DataTemplate>
+                        <DataTemplate x:DataType="vm:EditFeedViewModel">
+                            <s:EditFeedView />
+                        </DataTemplate>
+                        <DataTemplate x:DataType="vm:EditFolderViewModel">
+                            <s:EditFolderView />
+                        </DataTemplate>
+                        <DataTemplate x:DataType="vm:NewFolderViewModel">
+                            <s:NewFolderView />
+                        </DataTemplate>
+                        <DataTemplate x:DataType="vm:ImportFeedsViewModel">
+                            <s:ImportFeedsView />
+                        </DataTemplate>
+                        <DataTemplate x:DataType="vm:ExportFeedsViewModel">
+                            <s:ExportFeedsView />
+                        </DataTemplate>
+                    </ContentControl.DataTemplates>
+                </ContentControl>
+            </ScrollViewer>
+        </DockPanel>
+
+        <ContentControl Grid.ColumnSpan="2" Content="{Binding Confirm}" IsVisible="{Binding IsConfirming}"
+                        c:PanelFrame.DismissRequested="OnConfirmDismissRequested">
+            <ContentControl.DataTemplates>
+                <DataTemplate x:DataType="vm:ConfirmViewModel">
+                    <s:ConfirmView />
+                </DataTemplate>
+            </ContentControl.DataTemplates>
+        </ContentControl>
+    </Grid>
+</UserControl>

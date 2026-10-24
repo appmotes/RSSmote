@@ -18,7 +18,7 @@
                              PlaceholderText="Feed or website address" />
                 </Grid>
             </Border>
-            <TextBlock x:Name="Hint" Classes="phoneFootnote" Classes.error="{Binding HasError}" />
+            <TextBlock Classes="phoneFootnote" Classes.error="{Binding HasError}" Text="{Binding Hint}" />
 
             <StackPanel IsVisible="{Binding HasResults}">
                 <TextBlock Classes="phoneGroup" Text="{Binding FoundText}" Margin="28,18,28,6" />

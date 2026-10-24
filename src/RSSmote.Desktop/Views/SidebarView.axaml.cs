@@ -51,7 +51,7 @@ public partial class SidebarView : UserControl
         e.Handled = true;
     }
 
-    /// <summary>Feed rows: open site, reload icon, edit, remove. Folder rows: edit. Others have no menu.</summary>
+    /// <summary>Feed rows: open site, reload icon. Others have no menu; feeds and folders are edited in Settings (D30).</summary>
     internal static List<Control> MenuItems(ShellViewModel shell, SidebarRowViewModel row)
     {
         static MenuItem Item(string header, System.Windows.Input.ICommand command, object? parameter) =>
@@ -64,13 +64,8 @@ public partial class SidebarView : UserControl
                 Item(row.OpenSiteTitle, shell.OpenSiteCommand, feed),
                 new Separator(),
                 Item("Reload Icon", shell.ReloadIconCommand, feed),
-                new Separator(),
-                Item("Edit…", shell.EditFeedCommand, feed),
-                Item("Remove Feed…", shell.RemoveFeedCommand, feed),
             ];
         }
-        if (row.IsFolder && row.FolderId is { } folderId)
-            return [Item("Edit…", shell.EditFolderCommand, folderId)];
         return [];
     }
 }

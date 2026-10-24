@@ -3,7 +3,7 @@ using CommunityToolkit.Mvvm.Input;
 
 namespace RSSmote.App.ViewModels;
 
-/// <summary>An overlay panel (A6): one is open at a time, on <see cref="ShellViewModel.Panel"/>.</summary>
+/// <summary>A page a flow opens and closes: a Settings page on desktop (A6), a pushed page on the phone (A16).</summary>
 public abstract partial class PanelViewModel : ObservableObject, IDisposable
 {
     /// <summary>The panel asks to close.</summary>

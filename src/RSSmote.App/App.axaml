@@ -45,5 +45,6 @@
         <StyleInclude Source="avares://RSSmote.App/Styles/Menus.axaml" />
         <StyleInclude Source="avares://RSSmote.App/Styles/Chrome.axaml" />
         <StyleInclude Source="avares://RSSmote.App/Styles/Phone.axaml" />
+        <StyleInclude Source="avares://RSSmote.App/Styles/Settings.axaml" />
     </Application.Styles>
 </Application>

@@ -23,26 +23,31 @@ public sealed class AddFeedTests : IDisposable
 
     public void Dispose() => _f.Dispose();
 
+    /// <summary>Add Feed as the desktop shows it, in Settings (D30).</summary>
     private AddFeedViewModel Open()
     {
-        _f.Shell.ShowAddFeedCommand.Execute(null);
-        return Assert.IsType<AddFeedViewModel>(_f.Shell.Panel);
+        _f.Shell.OpenSettingsCommand.Execute(SettingsSection.AddFeed);
+        return Assert.IsType<AddFeedViewModel>(_f.Shell.SettingsMode!.Page);
     }
 
     [Fact]
-    public async Task A_site_address_finds_its_feed_and_saving_selects_it()
+    public async Task A_site_address_finds_its_feed_and_saving_starts_add_feed_again()
     {
         var panel = Open();
         panel.Address = "blog.example";
         await panel.SearchCommand.ExecuteAsync(null);
 
-        Assert.Equal(AddFeedPage.Results, panel.Page);
+        Assert.True(panel.HasResults);
         var row = Assert.Single(panel.Results);
         Assert.Equal("Example Blog", row.Title);
         Assert.True(row.IsOn);
 
         panel.SaveCommand.Execute(null);
-        Assert.Null(_f.Shell.Panel);
+        var next = Assert.IsType<AddFeedViewModel>(_f.Shell.SettingsMode?.Page);
+        Assert.NotSame(panel, next);
+        Assert.Equal(SettingsSection.AddFeed, _f.Shell.SettingsMode!.Section);
+        Assert.Equal(("", false), (next.Address, next.HasResults));
+        Assert.Equal("Added “Example Blog”. Paste the next address to add another.", next.Hint);
         var feed = Assert.Single(_f.Store.Feeds(), f => f.Url == FeedUrl);
         Assert.Equal(new ArticleStream.OfFeed(feed.Id), _f.Shell.Sidebar.SelectedStream);
         Assert.Equal(["Hello"], _f.Shell.List.Articles.Select(a => a.Item.Title));
@@ -61,7 +66,7 @@ public sealed class AddFeedTests : IDisposable
         page.PickResultCommand.Execute(page.Results[0]);
         page.SaveCommand.Execute(null);
         Assert.Single(_f.Store.Feeds(), f => f.Url == FeedUrl);
-        Assert.Null(_f.Shell.Panel);
+        Assert.Equal(new ArticleStream.All(), _f.Shell.Sidebar.SelectedStream);
     }
 
     [Fact]
@@ -75,20 +80,21 @@ public sealed class AddFeedTests : IDisposable
         var row = Assert.Single(panel.Results);
         Assert.True(row.IsSaved);
         Assert.False(row.IsOn);
-        Assert.StartsWith("Already added", row.Subtitle);
+        Assert.StartsWith("Already added", row.Detail);
         Assert.False(panel.SaveCommand.CanExecute(null));
     }
 
     [Fact]
-    public async Task A_failed_search_stays_on_the_search_page_with_the_reason()
+    public async Task A_failed_search_shows_no_results_and_the_reason_under_the_address()
     {
         var panel = Open();
+        Assert.Equal(AddFeedViewModel.Prompt, panel.Hint);
         panel.Address = "https://nothing.example/";
         await panel.SearchCommand.ExecuteAsync(null);
 
-        Assert.Equal(AddFeedPage.Search, panel.Page);
+        Assert.False(panel.HasResults);
         Assert.True(panel.HasError);
-        Assert.Equal(panel.Error, panel.SearchTitle);
+        Assert.Equal(panel.Error, panel.Hint);
     }
 
     [Fact]
@@ -97,60 +103,27 @@ public sealed class AddFeedTests : IDisposable
         var panel = Open();
         panel.Address = FeedUrl;
         await panel.SearchCommand.ExecuteAsync(null);
-        panel.ShowFoldersCommand.Execute(null);
         panel.Picker.NewFolderName = "Blogs";
         panel.Picker.AddFolderCommand.Execute(null);
 
-        Assert.Equal("Folder: Blogs", panel.FolderTitle);
+        Assert.Equal("Blogs", panel.Picker.Selected?.Title);
         Assert.True(panel.Picker.Folders.Single(f => f.Folder.Title == "Blogs").IsOn);
-        panel.BackCommand.Execute(null);
-        Assert.Equal(AddFeedPage.Results, panel.Page);
         panel.SaveCommand.Execute(null);
 
         var folder = _f.Store.FolderNamed("Blogs")!;
         Assert.Equal(folder.Id, _f.Store.FeedWithUrl(FeedUrl)?.FolderId);
+        Assert.Equal(folder.Id, Assert.IsType<AddFeedViewModel>(_f.Shell.SettingsMode?.Page).Picker.Selected?.Id);
         Assert.Contains(folder.Id, _f.Settings.Current.ExpandedFolders);
     }
 
     [Fact]
-    public async Task Opml_import_adds_feeds_and_reports_the_count()
-    {
-        _f.Files.NextOpen = """
-            <opml version="2.0"><body>
-              <outline text="News"><outline text="A" xmlUrl="https://a.example/rss" /><outline text="B" xmlUrl="https://b.example/rss" /></outline>
-              <outline text="WIRED" xmlUrl="https://wired.example/rss" />
-            </body></opml>
-            """;
-        var panel = Open();
-        await panel.ImportOpmlCommand.ExecuteAsync(null);
-
-        Assert.Equal("Imported 2 feeds", panel.ImportTitle);
-        Assert.NotNull(_f.Store.FeedWithUrl("https://a.example/rss"));
-        Assert.NotNull(_f.Store.FolderNamed("News"));
-    }
-
-    [Fact]
-    public async Task Cancelling_the_file_dialog_changes_nothing()
+    public void Leaving_settings_discards_the_page()
     {
         var panel = Open();
-        await panel.ImportOpmlCommand.ExecuteAsync(null);
-        Assert.Equal("Import from OPML…", panel.ImportTitle);
-    }
-
-    [Fact]
-    public async Task Export_writes_every_feed()
-    {
-        await _f.Shell.ExportOpmlCommand.ExecuteAsync(null);
-        Assert.Contains("xmlUrl=\"https://wired.example/rss\"", _f.Files.Saved);
-        Assert.Contains("text=\"Apple\"", _f.Files.Saved);
-    }
-
-    [Fact]
-    public void Closing_the_panel_clears_it()
-    {
-        var panel = Open();
-        panel.CloseCommand.Execute(null);
-        Assert.Null(_f.Shell.Panel);
-        Assert.False(_f.Shell.IsPanelOpen);
+        panel.Address = "blog.example";
+        _f.Shell.CloseSettings();
+        Assert.False(_f.Shell.IsSettingsOpen);
+        Assert.Null(_f.Shell.SettingsMode);
+        Assert.DoesNotContain(_f.Store.Feeds(), f => f.Url == FeedUrl);
     }
 }

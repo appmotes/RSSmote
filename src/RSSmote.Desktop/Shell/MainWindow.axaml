@@ -14,9 +14,13 @@
         <NativeMenu>
             <NativeMenuItem Header="File">
                 <NativeMenu>
-                    <NativeMenuItem Header="Add Feed…" Gesture="Meta+N" Command="{Binding ShowAddFeedCommand}" />
-                    <NativeMenuItem Header="Import Feeds…" Command="{Binding ImportOpmlCommand}" />
-                    <NativeMenuItem Header="Export Feeds…" Command="{Binding ExportOpmlCommand}" />
+                    <!-- Each opens Settings on its page (D30). -->
+                    <NativeMenuItem Header="Add Feed…" Gesture="Meta+N" Command="{Binding OpenSettingsCommand}"
+                                    CommandParameter="{x:Static vm:SettingsSection.AddFeed}" />
+                    <NativeMenuItem Header="Import Feeds…" Command="{Binding OpenSettingsCommand}"
+                                    CommandParameter="{x:Static vm:SettingsSection.ImportFeeds}" />
+                    <NativeMenuItem Header="Export Feeds…" Command="{Binding OpenSettingsCommand}"
+                                    CommandParameter="{x:Static vm:SettingsSection.ExportFeeds}" />
                     <NativeMenuItemSeparator />
                     <NativeMenuItem Header="Refresh" Gesture="Meta+R" Command="{Binding RefreshCommand}" />
                     <NativeMenuItem Header="Mark All as Read" Gesture="Meta+Shift+A" Command="{Binding MarkAllReadCommand}" />

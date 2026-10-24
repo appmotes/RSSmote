@@ -13,7 +13,7 @@ public sealed record ImportGroup(string Title, bool IsFolder, int Count)
 }
 
 /// <summary>
-/// Import Feeds (D27, W2): a chosen OPML file shows what it would add, folder by folder, and how many of its feeds
+/// Import Feeds (D27, D30): a chosen OPML file shows what it would add, folder by folder, and how many of its feeds
 /// are already added; nothing is saved until <see cref="ImportCommand"/>.
 /// </summary>
 public sealed partial class ImportFeedsViewModel(Store store, IFilePicker files, Action imported) : PanelViewModel

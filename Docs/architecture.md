@@ -13,13 +13,13 @@ src/RSSmote.Core             models, feed parsing, OPML, HTML helpers, service i
 src/RSSmote.Data             SQLite store, settings store, refresher, data folder — no Avalonia
 src/RSSmote.App              shared Avalonia UI with no screens: view-models, controls, styles, themes, assets, services
 src/RSSmote.Desktop          the desktop executable and its screens: Program.cs, Shell/ (MainWindow), Views/
-                             (shell, columns, Panels/), Services/ (ProcessLauncher), per-OS packaging metadata
+                             (shell, columns, Settings/), Services/ (ProcessLauncher), per-OS packaging metadata
 src/RSSmote.Mobile           phone and tablet screens, shared by both mobile heads (plain net10.0, A15):
                              MobileShellHost, Shell/ (MobileShell, RootPage), Views/, Services/ (TopLevelLauncher)
 src/RSSmote.Android          Android head: AndroidApp, MainActivity, manifest
 src/RSSmote.iOS              iOS head: AppDelegate, Program, Info.plist
 tests/RSSmote.App.Tests      headless tests: view-models, palette key sets, gallery snapshots per theme (xUnit v3)
-tests/RSSmote.Desktop.Tests  headless tests of the desktop screens: shell renders, panels, menus, captures
+tests/RSSmote.Desktop.Tests  headless tests of the desktop screens: shell renders, Settings, menus, captures
 tests/RSSmote.Mobile.Tests   headless tests of the phone screens, rendered at 402 × 874 in Sand and Ember
 tests/RSSmote.Core.Tests     parser, dates, HTML helpers, feed discovery (fake HTTP), OPML
 tests/RSSmote.Data.Tests     store: upsert, filters, counts, retention, migrations, macOS-library compatibility
@@ -72,25 +72,32 @@ branch; without one it lands in the Linux fallback.
 
 `IFilePicker.OpenTextAsync` returns the chosen file's name with its text (`PickedText`), which Import Feeds shows.
 
-**A5 — Desktop shell.** Everything here lives in `RSSmote.Desktop`. `MainWindow` hosts `ShellView`: a `Grid` with three columns (sidebar · list · article) and two
+**A5 — Desktop shell.** Everything here lives in `RSSmote.Desktop`. `MainWindow` hosts `ShellView`: a `Grid` with three columns (sidebar · list · article), or Settings in their place (A6), and two
 invisible 5 pt `GridSplitter`s, the first on the list card's left edge, the second in the 8 pt gap between the cards.
 The window background is the canvas (`Bg.Sidebar`); the sidebar sits on it and the list and article views are
 cards (`Border.card` + `Border.cardClip`, D20, L12). Each column view (`SidebarView`, `ArticleListView`,
 `ArticleView`) takes the `ShellViewModel` and owns its `TitleStrip` (D9): 52 pt on the sidebar, 44 pt inside a
-card, where an 8 pt band of canvas above the cards is also a title-bar drag area. On macOS and Windows the window
-extends its client area into a 52 pt title bar; `Views/Chrome` gives the per-OS strip insets (traffic lights
+card, where an 8 pt band of canvas above the cards is also a title-bar drag area. The sidebar's strip holds Refresh
+(and the menu button on Windows and Linux); its status bar the refresh state and the Settings button. On macOS and
+Windows the window extends its client area into a 52 pt title bar; `Views/Chrome` gives the per-OS strip insets (traffic lights
 left on macOS, caption buttons right on Windows). Linux keeps system decorations (P2). The window handles single-key shortcuts in the tunnel phase
 (D15, L3); macOS also gets a `NativeMenu`, Windows and Linux a menu button in the sidebar strip (D16).
 
-**A6 — Overlays, not windows.** One panel at a time lives on `ShellViewModel.Panel` (a `PanelViewModel`: Add Feed,
-Edit Feed, Edit Folder, or a `ConfirmViewModel` before anything that cannot be undone). `ShellView` shows it
-through a `DataTemplate` per type, in a `PanelFrame` centred in the window over all three columns, on a scrim. The
-article's native web view would draw over it, so `ArticleHost.IsObscured` hides that view while a panel is open (L9).
-A click on the scrim, Escape, Cancel or the close button ends a panel; Save sits in the footer and answers Enter.
-While a panel is open the window's single-key shortcuts are off.
-Right-clicking a sidebar row opens its menu without selecting it: feeds get Open site, Reload Icon, Edit… and
-Remove Feed…; folders get Edit… (rename, its feeds, Delete Folder…, which moves the feeds out). Folder choice in
-Add Feed and Edit Feed is the shared `FolderPickerViewModel`. Settings is the only separate `Window`.
+**A6 — Settings are a mode of the window (D30).** `ShellViewModel.SettingsMode` holds a `SettingsModeViewModel`
+while Settings show, and `IsSettingsOpen` says so; `OpenSettingsCommand` (with a `SettingsSection`, or none for
+Articles & Refresh) creates it or moves it to a section, and `CloseSettings` disposes it. `ShellView` hides the three
+columns and shows `Views/Settings/SettingsView` in their place: the menu, and the mode's `Page` through a
+`DataTemplate` per view-model type. The pages are the phone's view-models (A16): Add Feed, `ManageFeedsViewModel`,
+Import and Export Feeds, and `AppearancePageViewModel` / `ReadingPageViewModel` over the shared `SettingsViewModel`.
+Under Manage Feeds the mode stacks Edit Feed, Edit Folder and New Folder (`PanelViewModel`s from `ShellViewModel.Create*`);
+one closing (Save) pops it and any page above it, a menu item replaces the whole stack, and each page removed is
+disposed, so Manage Feeds stops following the store when it goes. `Confirm` holds a `ConfirmViewModel` from
+`ShellViewModel.Confirm*`, shown in a `PanelFrame` over the window; a click on its scrim or Escape cancels it. The
+article's native web view would draw over Settings, so `ArticleHost.IsObscured` follows `IsSettingsOpen` (L9).
+While Settings show the window's single-key shortcuts are off; Escape cancels the question or leaves, ⌘/Ctrl+N moves
+to Add Feed. The macOS application menu gets "Settings…" from `MainWindow.AddSettingsItem`, as it belongs to the
+application, not the window. Right-clicking a sidebar row opens its menu without selecting it: feeds get Open site
+and Reload Icon; folders and the smart rows have none. There is no separate window.
 
 **A7 — MVVM.** CommunityToolkit.Mvvm source generators (`[ObservableProperty]` on partial properties,
 `[RelayCommand]`). Compiled bindings everywhere (`x:DataType` on every view and template). Views are created
@@ -199,12 +206,12 @@ realises only the rows in view. A rebuild keeps the top row where it was (P25).
 The Settings tab shows `SettingsView` (D27); its rows push pages from `RSSmote.Mobile/Pages`, which derive from
 `PhonePage` (back title, centred title, bar button). Preferences live in `SettingsViewModel` (App), which the desktop
 menus bind as `Settings.*`; Manage Feeds has its own `ManageFeedsViewModel`, which follows the store while its page
-lives and is disposed when the page leaves. The phone reuses the desktop's panel view-models (A6) through
-`ShellViewModel.Create*` and `Confirm*` instead of `ShellViewModel.Panel`: `MobileShell.PushPanelAsync` pushes a page
+lives and is disposed when the page leaves. The phone and the desktop Settings mode (A6) share the page view-models
+from `ShellViewModel.Create*` and `Confirm*`; the phone pushes them: `MobileShell.PushPanelAsync` pushes a page
 for a panel, the panel closing (Save, Add Feed) pops it and a page that goes any other way disposes its panel;
 `MobileShell.ConfirmAsync` shows a `ConfirmViewModel` as a modal bottom sheet (D29) and runs what follows a
 confirmation only after the sheet is gone (P24). The system back closes a sheet before it pops a page.
-Import and Export Feeds are panels too (`ImportFeedsViewModel` previews a file before anything is saved, W2), and Aa
+Import and Export Feeds are pages too (`ImportFeedsViewModel` previews a file before anything is saved), and Aa
 on the article opens `TextSheet` over `SettingsViewModel`'s text size, font and appearance. The article page hides
 both bars on a scroll down and shows them on a scroll up, a tap or a new article, from `ArticleHost.Scrolled` and
 `PageTapped` (D26). An article whose host is native is pushed without a slide (P29). Back from the background
