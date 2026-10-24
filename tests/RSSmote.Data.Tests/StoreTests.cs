@@ -136,6 +136,21 @@ public sealed class StoreTests : IDisposable
     }
 
     [Fact]
+    public void Marking_read_before_a_date_touches_only_older_unread_items()
+    {
+        var a = _store.AddFeed("https://a.example/feed", "A", null, null);
+        _store.Upsert(a.Id, [Item("old", published: Now.AddDays(-6)), Item("new", published: Now.AddDays(-1))]);
+        var changed = new List<StoreChangedEventArgs>();
+        _store.Changed += (_, e) => changed.Add(e);
+
+        Assert.Equal(1, _store.MarkReadBefore(Now.AddDays(-5)));
+        Assert.Equal(["new"], _store.Items(new ArticleStream.All(), StreamFilter.Unread).Select(i => i.Guid));
+        Assert.True(Assert.Single(changed).FlagsOnly);
+        Assert.Equal(0, _store.MarkReadBefore(Now.AddDays(-5)));
+        Assert.Equal(new Dictionary<long, int> { [a.Id] = 2 }, _store.TotalCounts());
+    }
+
+    [Fact]
     public void Deleting_a_folder_can_keep_or_drop_its_feeds()
     {
         var keep = _store.AddFolder("Keep");

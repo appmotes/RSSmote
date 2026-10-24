@@ -12,17 +12,18 @@ namespace RSSmote.App.ViewModels;
 /// <summary>Which list of streams the sidebar view-model builds.</summary>
 public enum SidebarLayout
 {
-    /// <summary>One smart row named by the filter, feeds hidden by the filter, a lasting selection (D10).</summary>
+    /// <summary>One smart row named by the filter, counts under the filter, a lasting selection (D10).</summary>
     Desktop,
 
-    /// <summary>The phone's Feeds root: Unread, Starred and All Items rows, unread counts, every feed listed, and no
-    /// lasting selection, so the same row can be picked again after coming back (D24).</summary>
+    /// <summary>The phone's Feeds root: Unread, Starred and All Items rows, unread counts, and no lasting selection,
+    /// so the same row can be picked again after coming back (D24).</summary>
     Phone,
 }
 
 /// <summary>
-/// The sidebar: the filter-named smart stream, then collapsible Folders and Feeds sections (D10). Under the
-/// Unread and Starred filters only feeds with something to show are listed, plus the selected one.
+/// The sidebar: the filter-named smart stream, then collapsible Folders and Feeds sections (D10). With
+/// <see cref="AppSettings.HideEmptyFeeds"/> only feeds with articles to show are listed, plus the selected one: under
+/// the filter on desktop (any article under All Items), unread ones on the phone.
 /// </summary>
 public sealed partial class SidebarViewModel : ObservableObject
 {
@@ -162,6 +163,7 @@ public sealed partial class SidebarViewModel : ObservableObject
         var phone = IsPhone;
         var filter = settings.Filter;
         var counts = _store.Counts(phone ? StreamFilter.Unread : filter);
+        var showable = !settings.HideEmptyFeeds ? null : !phone && filter == StreamFilter.All ? _store.TotalCounts() : counts;
         var folders = _store.Folders();
         var feeds = _store.Feeds();
         var expandedFolders = settings.ExpandedFolders.ToHashSet();
@@ -169,7 +171,7 @@ public sealed partial class SidebarViewModel : ObservableObject
 
         int CountOf(Feed f) => counts.GetValueOrDefault(f.Id);
         bool IsSelected(ArticleStream s) => s == SelectedStream;
-        bool Visible(Feed f) => phone || filter == StreamFilter.All || CountOf(f) > 0 || IsSelected(new ArticleStream.OfFeed(f.Id));
+        bool Visible(Feed f) => showable is null || showable.GetValueOrDefault(f.Id) > 0 || (!phone && IsSelected(new ArticleStream.OfFeed(f.Id)));
 
         var rows = phone
             ? new List<SidebarRowViewModel>
@@ -185,9 +187,9 @@ public sealed partial class SidebarViewModel : ObservableObject
         {
             var inFolder = feeds.Where(f => f.FolderId == folder.Id).ToList();
             var visible = inFolder.Where(Visible).ToList();
-            var selectedInside = IsSelected(new ArticleStream.InFolder(folder.Id))
-                                 || inFolder.Any(f => IsSelected(new ArticleStream.OfFeed(f.Id)));
-            if (!phone && filter != StreamFilter.All && visible.Count == 0 && !selectedInside)
+            var selectedInside = !phone && (IsSelected(new ArticleStream.InFolder(folder.Id))
+                                            || inFolder.Any(f => IsSelected(new ArticleStream.OfFeed(f.Id))));
+            if (showable is not null && visible.Count == 0 && !selectedInside)
                 continue;
             var expanded = expandedFolders.Contains(folder.Id);
             folderRows.Add(new SidebarRowViewModel(SidebarRowKind.Folder, folder.Title, new ArticleStream.InFolder(folder.Id))

@@ -138,6 +138,31 @@ public sealed class RefresherTests : IDisposable
     }
 
     [Fact]
+    public async Task A_pass_marks_unread_items_older_than_the_setting_read()
+    {
+        Assert.Equal(5, _settings.Current.MarkReadAfterDays);
+        _http.Pages["https://a.example/feed"] = Rss("A", ("fresh", Today), ("week", "Mon, 12 Oct 2026 10:00:00 GMT"));
+        _store.AddFeed("https://a.example/feed", "A", null, null);
+
+        await _refresher.RefreshAllAsync();
+        Assert.Equal(["fresh"], _store.Items(new ArticleStream.All(), StreamFilter.Unread).Select(i => i.Guid));
+        Assert.Equal(2, _store.Count(new ArticleStream.All(), StreamFilter.All));
+    }
+
+    [Fact]
+    public async Task Never_leaves_old_items_unread_and_a_shorter_setting_applies_at_once()
+    {
+        _settings.Update(s => s.MarkReadAfterDays = 0);
+        _http.Pages["https://a.example/feed"] = Rss("A", ("fresh", Today), ("week", "Mon, 12 Oct 2026 10:00:00 GMT"));
+        _store.AddFeed("https://a.example/feed", "A", null, null);
+        await _refresher.RefreshAllAsync();
+        Assert.Equal(2, _store.Count(new ArticleStream.All(), StreamFilter.Unread));
+
+        _settings.Update(s => s.MarkReadAfterDays = 3);
+        Assert.Equal(["fresh"], _store.Items(new ArticleStream.All(), StreamFilter.Unread).Select(i => i.Guid));
+    }
+
+    [Fact]
     public void AddFeed_stores_the_feed_and_its_items()
     {
         var parsed = Core.Parsing.FeedParser.Parse(Rss("Beta", ("1", Today)))!;

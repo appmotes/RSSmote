@@ -168,7 +168,7 @@ public sealed partial class ShellViewModel : ObservableObject, IDisposable
         Article.ApplySettings(settings);
         if (previous.Filter != settings.Filter || previous.SortNewestFirst != settings.SortNewestFirst
             || previous.GroupByDate != settings.GroupByDate || previous.DisplayFavicons != settings.DisplayFavicons
-            || previous.GrayscaleFavicons != settings.GrayscaleFavicons
+            || previous.GrayscaleFavicons != settings.GrayscaleFavicons || previous.HideEmptyFeeds != settings.HideEmptyFeeds
             || !previous.ExpandedFolders.SequenceEqual(settings.ExpandedFolders)
             || !previous.CollapsedSections.SequenceEqual(settings.CollapsedSections))
         {

@@ -82,11 +82,18 @@
                             <ToggleSwitch Grid.Column="2" Classes="phone" IsChecked="{Binding Settings.SortNewestFirst}" />
                         </Grid>
                     </Border>
-                    <Border Classes="phoneRowLine last">
+                    <Border Classes="phoneRowLine">
                         <Grid Classes="phoneSwitchRow" ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
                             <c:Icon Classes="lead" Data="{StaticResource Icon.Calendar}" />
                             <TextBlock Grid.Column="1" Classes="phoneRow" Text="Group by date" VerticalAlignment="Center" />
                             <ToggleSwitch Grid.Column="2" Classes="phone" IsChecked="{Binding Settings.GroupByDate}" />
+                        </Grid>
+                    </Border>
+                    <Border Classes="phoneRowLine last">
+                        <Grid Classes="phoneSwitchRow" ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+                            <c:Icon Classes="lead" Data="{StaticResource Icon.Folder}" />
+                            <TextBlock Grid.Column="1" Classes="phoneRow" Text="Hide empty feeds" VerticalAlignment="Center" />
+                            <ToggleSwitch Grid.Column="2" Classes="phone" IsChecked="{Binding Settings.HideEmptyFeeds}" />
                         </Grid>
                     </Border>
                 </StackPanel>
@@ -105,6 +112,21 @@
                                 <c:Icon Classes="lead" Data="{StaticResource Icon.Clock}" />
                                 <TextBlock Grid.Column="1" Text="Every" VerticalAlignment="Center" />
                                 <TextBlock Grid.Column="2" Classes="phoneValue" Text="{Binding Settings.RefreshIntervalText}" />
+                                <c:Icon Grid.Column="3" Classes="chevron" Size="16" Data="{StaticResource Icon.ChevronsUpDown}"
+                                        Foreground="{DynamicResource Brush.Ink.Secondary}" Margin="-8,0,0,0" />
+                            </Grid>
+                        </Button>
+                    </Border>
+                    <Border Classes="phoneRowLine">
+                        <Button x:Name="MarkReadRow" Classes="phoneRow">
+                            <Button.Flyout>
+                                <MenuFlyout ItemsSource="{Binding Settings.MarkReadDays}" Placement="BottomEdgeAlignedRight"
+                                            FlyoutPresenterClasses="choices phone" />
+                            </Button.Flyout>
+                            <Grid ColumnDefinitions="Auto,*,Auto,Auto" ColumnSpacing="12">
+                                <c:Icon Classes="lead" Data="{StaticResource Icon.CheckCircle}" />
+                                <TextBlock Grid.Column="1" Text="Mark read after" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
+                                <TextBlock Grid.Column="2" Classes="phoneValue" Text="{Binding Settings.MarkReadText}" />
                                 <c:Icon Grid.Column="3" Classes="chevron" Size="16" Data="{StaticResource Icon.ChevronsUpDown}"
                                         Foreground="{DynamicResource Brush.Ink.Secondary}" Margin="-8,0,0,0" />
                             </Grid>

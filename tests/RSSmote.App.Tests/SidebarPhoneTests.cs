@@ -14,8 +14,16 @@ public sealed class SidebarPhoneTests : IDisposable
     public void Dispose() => _f.Dispose();
 
     [Fact]
-    public void Three_streams_then_every_folder_and_feed_with_unread_counts()
+    public void Three_streams_then_the_folders_and_feeds_with_unread_articles()
     {
+        Assert.Equal(["Unread", "Starred", "All Items", "Folders", "Apple", "AppleInsider News", "Daring Fireball",
+            "Feeds", "WIRED"], _f.Shell.Sidebar.Rows.Select(r => r.Title));
+    }
+
+    [Fact]
+    public void With_empty_feeds_shown_every_folder_and_feed_is_listed_with_unread_counts()
+    {
+        _f.Shell.Settings.HideEmptyFeeds = false;
         var rows = _f.Shell.Sidebar.Rows;
         Assert.Equal(["Unread", "Starred", "All Items", "Folders", "Apple", "AppleInsider News", "Daring Fireball", "Tech",
             "Feeds", "Quiet Feed", "WIRED"], rows.Select(r => r.Title));
@@ -77,11 +85,11 @@ public sealed class SidebarPhoneTests : IDisposable
     }
 
     [Fact]
-    public void Counts_stay_unread_whatever_the_filter()
+    public void Counts_and_hiding_stay_unread_whatever_the_filter()
     {
         _f.Shell.ShowFilterCommand.Execute(StreamFilter.All);
         Assert.Equal(3, _f.Row("Apple").Count);
-        Assert.Contains(_f.Shell.Sidebar.Rows, r => r.Title == "Quiet Feed");
+        Assert.DoesNotContain(_f.Shell.Sidebar.Rows, r => r.Title == "Quiet Feed");
     }
 
     [Fact]

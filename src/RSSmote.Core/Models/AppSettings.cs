@@ -26,6 +26,7 @@ public sealed record AppSettings
 {
     public static readonly int[] RefreshIntervals = [0, 15, 30, 60, 120];
     public static readonly int[] RetentionDays = [7, 14, 30, 90, 0];
+    public static readonly int[] MarkReadDays = [1, 3, 5, 7, 14, 30, 0];
     public const int MinFontSize = 11;
     public const int MaxFontSize = 32;
     public const int DefaultFontSize = 16;
@@ -35,6 +36,12 @@ public sealed record AppSettings
 
     /// <summary>Read, unstarred items older than this many days are deleted; 0 keeps everything.</summary>
     public int KeepArchivedDays { get; set; } = 30;
+
+    /// <summary>Unread items older than this many days are marked read; 0 leaves them unread.</summary>
+    public int MarkReadAfterDays { get; set; } = 5;
+
+    /// <summary>The sidebars list only folders and feeds with articles to show (D10, D24).</summary>
+    public bool HideEmptyFeeds { get; set; } = true;
 
     public bool SortNewestFirst { get; set; } = true;
     public bool MarkAsReadOnSelect { get; set; } = true;
@@ -65,6 +72,7 @@ public sealed record AppSettings
     {
         RefreshIntervalMinutes = RefreshIntervals.Contains(RefreshIntervalMinutes) ? RefreshIntervalMinutes : 30,
         KeepArchivedDays = Math.Max(0, KeepArchivedDays),
+        MarkReadAfterDays = Math.Max(0, MarkReadAfterDays),
         ArticleFontSize = Math.Clamp(ArticleFontSize, MinFontSize, MaxFontSize),
         Theme = Theme == AppTheme.Black ? AppTheme.Dark : Enum.IsDefined(Theme) ? Theme : AppTheme.Automatic,
         LightTheme = string.IsNullOrWhiteSpace(LightTheme) ? DefaultLightTheme : LightTheme,

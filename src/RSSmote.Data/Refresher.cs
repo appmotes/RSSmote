@@ -9,7 +9,7 @@ public sealed record RefreshSummary(int Feeds, int NewItems, int Failed, int Pru
 
 /// <summary>
 /// The local account's network side (A10): fetches every feed (at most six at a time), stores new items, records
-/// per-feed errors, prunes old items, and repeats on the interval from settings. A refresh requested while one is
+/// per-feed errors, marks old unread items read, prunes old items, and repeats on the interval from settings. A refresh requested while one is
 /// running joins the running one. Events are raised on background threads.
 /// </summary>
 public sealed class Refresher : IDisposable
@@ -24,6 +24,7 @@ public sealed class Refresher : IDisposable
     private Task<RefreshSummary>? _running;
     private ITimer? _timer;
     private int _scheduledMinutes = -1;
+    private int _markReadAfterDays;
     private bool _started;
 
     public event EventHandler? StateChanged;
@@ -34,6 +35,7 @@ public sealed class Refresher : IDisposable
         _finder = finder;
         _settings = settings;
         _clock = clock ?? TimeProvider.System;
+        _markReadAfterDays = settings.Current.MarkReadAfterDays;
         _settings.Changed += OnSettingsChanged;
     }
 
@@ -117,6 +119,7 @@ public sealed class Refresher : IDisposable
                     Interlocked.Increment(ref failed);
             }).ConfigureAwait(false);
 
+        MarkOldRead();
         var pruned = _store.Prune(_settings.Current.KeepArchivedDays);
         _settings.Update(s => s.LastRefresh = _clock.GetUtcNow());
         return new RefreshSummary(feeds.Count, newItems, failed, pruned);
@@ -165,7 +168,19 @@ public sealed class Refresher : IDisposable
         return days > 0 ? _clock.GetUtcNow().AddDays(-days) : null;
     }
 
-    private void OnSettingsChanged(object? sender, AppSettings settings) => Schedule();
+    /// <summary>Unread items older than the setting become read; after every pass, and at once when the setting changes.</summary>
+    private int MarkOldRead()
+    {
+        var days = _settings.Current.MarkReadAfterDays;
+        return days > 0 ? _store.MarkReadBefore(_clock.GetUtcNow().AddDays(-days)) : 0;
+    }
+
+    private void OnSettingsChanged(object? sender, AppSettings settings)
+    {
+        Schedule();
+        if (Interlocked.Exchange(ref _markReadAfterDays, settings.MarkReadAfterDays) != settings.MarkReadAfterDays)
+            MarkOldRead();
+    }
 
     /// <summary>(Re)creates the periodic timer when the interval changes; 0 minutes means no timer.</summary>
     private void Schedule()

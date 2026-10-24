@@ -149,7 +149,9 @@ Article body typography is CSS in the HTML template (D14), not a type role.
 chevron on the left for folders, a chevron on the right for sections, and filter-driven hiding; a flat list of
 row view-models with `Level` and `IsExpanded` gives that with one template per row type and keeps selection
 styling in one place. Collapsing a folder or section that hides the selected feed moves the selection to the
-folder, or to the top stream when the folder is hidden too.
+folder, or to the top stream when the folder is hidden too. "Hide empty feeds" (on by default) lists only feeds with
+articles under the filter (any article under All Items), plus the selected one, and only folders with such a feed;
+off, every folder and feed is listed under every filter.
 
 **D11 — One line of title, two of source and summary.** The title is one `TextBlock` with `MaxLines=1` and an
 ellipsis (the full title is its tooltip), so every title starts at the same place and the eye can run down the
@@ -300,8 +302,9 @@ there is one back history and one place that owns the selection.
 status bar. Grouped cards on `Bg.Sidebar`, each `Bg.List` with `CornerRadius.Card`: a stream card (Unread, Starred,
 All Items, with `Icon.CircleDot`, `Icon.Star` and `Icon.AlignLeft` in `Accent`), then Folders and Feeds, each under
 a collapsible section header. A folder's chevron expands it in place; the row itself opens the folder's list. Counts
-are plain `Ink.Secondary` figures, not badges, and always count unread articles, because the root has no filter. A
-feed whose last refresh failed shows an `Ink.Danger` alert icon in its row.
+are plain `Ink.Secondary` figures, not badges, and always count unread articles, because the root has no filter; so
+"Hide empty feeds" (D10) hides the feeds with no unread article and the folders with none of those. A feed whose last
+refresh failed shows an `Ink.Danger` alert icon in its row.
 
 **D25 — Article list: three lines of title.** A large title (the stream's name) over "3 unread · newest first".
 Each row is a source line (favicon · feed name · star · time), the title in up to three lines, one line of summary,
@@ -321,8 +324,9 @@ are segments on a `Bg.Pill` track, the chosen one raised on `Bg.Segment` in the 
 so it has no grabber; on Android the native article hides while it is open (P29).
 
 **D27 — Settings are plain pushed pages.** The Settings root lists Feeds (Add Feed, Manage Feeds, Import Feeds,
-Export Feeds), Display (Appearance), Articles (Read when opened, Newest first, Group by date as switches) and Refresh
-(interval and how long read articles are kept, as pickers), then the version. Every row that opens a page has a
+Export Feeds), Display (Appearance), Articles (Read when opened, Newest first, Group by date, Hide empty feeds as
+switches) and Refresh (interval, after how many days unread articles are marked read, and how long read articles are
+kept, as pickers), then the version. Every row that opens a page has a
 chevron; pages have a back button and a centred title, no large title.
 - Appearance: Mode (Automatic, Light, Dark), then the light and the dark palettes as rows with a swatch (`Bg.Article`
   with an `Accent` dot) and a check, then the favicon switches. Choosing a palette follows D22.
@@ -383,7 +387,7 @@ native view (L9).
   and the version. No feeds and no streams.
 - The right side has no back links: 8 pt of canvas, then a 44 pt bar with the page's title centred (`listTitle`) and
   its action at the right in the accent: New Folder on Manage Feeds, Save on Edit Feed, Edit Folder and New Folder.
-  Under it one page in a centred 520 pt column: the phone's cards at desktop density. Cards are `Bg.List` with
+  Under it one page in a centred 520 pt column: the phone's cards at desktop density, the same rows as D27. Cards are `Bg.List` with
   `CornerRadius.Card` on the canvas; rows are 40 pt (50 with a subtitle) in 14 pt with hairlines between; group labels
   13 Medium; values and subtitles 13 and 12 in `Ink.Secondary`; a 36 × 22 switch; the primary button 44 pt.
 - Edit Feed, Edit Folder and New Folder open over Manage Feeds, which stays chosen in the menu. Save returns to the

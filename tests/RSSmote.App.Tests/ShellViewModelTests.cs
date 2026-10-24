@@ -49,11 +49,11 @@ public sealed class ShellViewModelTests : IDisposable
     }
 
     [Fact]
-    public void All_filter_lists_everything_and_folders_open_on_request()
+    public void All_filter_lists_every_feed_with_articles_and_folders_open_on_request()
     {
         _f.Shell.ShowFilterCommand.Execute(StreamFilter.All);
         Assert.Contains("Quiet Feed", _f.Shell.Sidebar.Rows.Select(r => r.Title));
-        Assert.Contains("Tech", _f.Shell.Sidebar.Rows.Select(r => r.Title));
+        Assert.DoesNotContain("Tech", _f.Shell.Sidebar.Rows.Select(r => r.Title));
         Assert.DoesNotContain("Daring Fireball", _f.Shell.Sidebar.Rows.Select(r => r.Title));
 
         _f.Shell.Sidebar.Toggle(_f.Row("Apple"));
@@ -61,6 +61,22 @@ public sealed class ShellViewModelTests : IDisposable
         var titles = _f.Shell.Sidebar.Rows.Select(r => r.Title).ToList();
         Assert.Equal(titles.IndexOf("Apple") + 1, titles.IndexOf("AppleInsider News"));
         Assert.Contains(_f.Apple.Id, _f.Settings.Current.ExpandedFolders);
+    }
+
+    [Fact]
+    public void With_empty_feeds_shown_every_folder_and_feed_is_listed_under_any_filter()
+    {
+        _f.Store.AddFeed("https://empty.example/rss", "Empty Feed", null, null);
+        _f.Shell.Settings.HideEmptyFeeds = false;
+        _f.Shell.FlushPendingReload();
+        Assert.Equal(["Unread", "Folders", "Apple", "Tech", "Feeds", "Empty Feed", "Quiet Feed", "WIRED"],
+            _f.Shell.Sidebar.Rows.Select(r => r.Title));
+        Assert.Equal(0, _f.Row("Quiet Feed").Count);
+
+        _f.Shell.Settings.HideEmptyFeeds = true;
+        _f.Shell.ShowFilterCommand.Execute(StreamFilter.All);
+        _f.Shell.FlushPendingReload();
+        Assert.DoesNotContain("Empty Feed", _f.Shell.Sidebar.Rows.Select(r => r.Title));
     }
 
     [Fact]

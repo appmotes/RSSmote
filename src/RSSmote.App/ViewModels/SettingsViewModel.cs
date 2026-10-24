@@ -29,6 +29,7 @@ public sealed partial class SettingsViewModel : ObservableObject
         DarkThemes = [.. ThemeCatalogue.Dark.Select(t => new ChoiceViewModel(DisplayName(t), t.Id, SetDarkThemeCommand, t.Variant))];
         RefreshIntervals = [.. AppSettings.RefreshIntervals.Select(m => new ChoiceViewModel(IntervalText(m), m, SetRefreshIntervalCommand))];
         KeepReadDays = [.. AppSettings.RetentionDays.Select(d => new ChoiceViewModel(KeepText(d), d, SetKeepReadDaysCommand))];
+        MarkReadDays = [.. AppSettings.MarkReadDays.Select(d => new ChoiceViewModel(MarkReadAfterText(d), d, SetMarkReadAfterDaysCommand))];
         Fonts = [.. Enum.GetValues<ArticleFont>().Select(f => new ChoiceViewModel(f.ToString(), f, SetArticleFontCommand))];
         Apply(settings.Current);
     }
@@ -47,6 +48,9 @@ public sealed partial class SettingsViewModel : ObservableObject
 
     /// <summary>Days read articles are kept.</summary>
     public IReadOnlyList<ChoiceViewModel> KeepReadDays { get; }
+
+    /// <summary>Days after which unread articles are marked read.</summary>
+    public IReadOnlyList<ChoiceViewModel> MarkReadDays { get; }
 
     /// <summary>System, Serif, Rounded, Mono: the article's typeface (D26).</summary>
     public IReadOnlyList<ChoiceViewModel> Fonts { get; }
@@ -86,6 +90,12 @@ public sealed partial class SettingsViewModel : ObservableObject
     public partial string KeepReadText { get; private set; } = "";
 
     [ObservableProperty]
+    public partial string MarkReadText { get; private set; } = "";
+
+    [ObservableProperty]
+    public partial bool HideEmptyFeeds { get; set; }
+
+    [ObservableProperty]
     public partial bool MarkAsReadOnSelect { get; set; }
 
     [ObservableProperty]
@@ -110,6 +120,8 @@ public sealed partial class SettingsViewModel : ObservableObject
 
     partial void OnGrayscaleFaviconsChanged(bool value) => Write(s => s.GrayscaleFavicons = value);
 
+    partial void OnHideEmptyFeedsChanged(bool value) => Write(s => s.HideEmptyFeeds = value);
+
     private void Write(Action<AppSettings> change)
     {
         if (!_applying)
@@ -127,6 +139,7 @@ public sealed partial class SettingsViewModel : ObservableObject
             GroupByDate = settings.GroupByDate;
             DisplayFavicons = settings.DisplayFavicons;
             GrayscaleFavicons = settings.GrayscaleFavicons;
+            HideEmptyFeeds = settings.HideEmptyFeeds;
             ArticleFontSize = settings.ArticleFontSize;
         }
         finally
@@ -141,10 +154,12 @@ public sealed partial class SettingsViewModel : ObservableObject
         Check(DarkThemes, dark);
         Check(RefreshIntervals, settings.RefreshIntervalMinutes);
         Check(KeepReadDays, settings.KeepArchivedDays);
+        Check(MarkReadDays, settings.MarkReadAfterDays);
         Check(Fonts, settings.ArticleFont);
         AppearanceText = Appearances.FirstOrDefault(c => c.IsChecked)?.Header ?? "";
         RefreshIntervalText = IntervalText(settings.RefreshIntervalMinutes);
         KeepReadText = KeepText(settings.KeepArchivedDays);
+        MarkReadText = MarkReadAfterText(settings.MarkReadAfterDays);
     }
 
     private static void Check(IEnumerable<ChoiceViewModel> choices, object key)
@@ -195,6 +210,12 @@ public sealed partial class SettingsViewModel : ObservableObject
 
     [RelayCommand]
     private void SetKeepReadDays(int days) => _settings.Update(s => s.KeepArchivedDays = days);
+
+    /// <summary>"5 days", or "Never" for 0.</summary>
+    public static string MarkReadAfterText(int days) => days == 0 ? "Never" : KeepText(days);
+
+    [RelayCommand]
+    private void SetMarkReadAfterDays(int days) => _settings.Update(s => s.MarkReadAfterDays = days);
 
     [RelayCommand]
     private void SetArticleFont(ArticleFont font) => _settings.Update(s => s.ArticleFont = font);

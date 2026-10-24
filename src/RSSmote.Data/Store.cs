@@ -313,6 +313,14 @@ public sealed class Store : IDisposable
                 .ToDictionary(p => p.Item1, p => p.Item2);
     }
 
+    /// <summary>Every item per feed, read or not.</summary>
+    public IReadOnlyDictionary<long, int> TotalCounts()
+    {
+        lock (_gate)
+            return Query("SELECT feed_id, COUNT(*) FROM items GROUP BY feed_id", [], r => (r.GetInt64(0), r.GetInt32(1)))
+                .ToDictionary(p => p.Item1, p => p.Item2);
+    }
+
     public void SetUnread(IReadOnlyCollection<long> ids, bool unread) => SetFlag("unread", ids, unread);
 
     public void SetStarred(IReadOnlyCollection<long> ids, bool starred) => SetFlag("starred", ids, starred);
@@ -321,6 +329,21 @@ public sealed class Store : IDisposable
     {
         var ids = Items(stream, StreamFilter.Unread, limit: int.MaxValue).Select(i => i.Id).ToList();
         SetUnread(ids, false);
+    }
+
+    /// <summary>Marks unread items published before <paramref name="cutoff"/> as read; returns how many.</summary>
+    public int MarkReadBefore(DateTimeOffset cutoff)
+    {
+        List<long> ids;
+        lock (_gate)
+        {
+            ids = Query("SELECT id FROM items WHERE unread=1 AND published < ?", [cutoff], r => r.GetInt64(0));
+            if (ids.Count > 0)
+                Run("UPDATE items SET unread=0 WHERE unread=1 AND published < ?", cutoff);
+        }
+        if (ids.Count > 0)
+            Notify(ids);
+        return ids.Count;
     }
 
     /// <summary>Deletes read, unstarred items older than <paramref name="days"/> days; 0 keeps everything.</summary>

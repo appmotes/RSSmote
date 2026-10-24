@@ -53,6 +53,21 @@ public sealed class SettingsViewModelTests : IDisposable
     }
 
     [Fact]
+    public void Marking_old_articles_read_is_on_at_five_days_and_never_turns_it_off()
+    {
+        var settings = _f.Shell.Settings;
+        Assert.Equal("5 days", settings.MarkReadText);
+        Assert.Equal(["1 day", "3 days", "5 days", "7 days", "14 days", "30 days", "Never"], settings.MarkReadDays.Select(c => c.Header));
+        Assert.True(settings.MarkReadDays.Single(c => c.Header == "5 days").IsChecked);
+
+        var never = settings.MarkReadDays.Single(c => c.Header == "Never");
+        never.Command.Execute(never.Key);
+        Assert.Equal(0, _f.Settings.Current.MarkReadAfterDays);
+        Assert.Equal("Never", settings.MarkReadText);
+        Assert.True(settings.HideEmptyFeeds);
+    }
+
+    [Fact]
     public void The_version_line_names_the_product()
     {
         Assert.Matches(@"^RSSmote \d+\.\d+\.\d+$", Settings.VersionText);

@@ -21,6 +21,7 @@ public sealed class SettingsStoreTests : IDisposable
         Assert.Equal(new AppSettings(), settings);
         Assert.Equal(30, settings.RefreshIntervalMinutes);
         Assert.Equal(StreamFilter.Unread, settings.Filter);
+        Assert.Equal((5, true), (settings.MarkReadAfterDays, settings.HideEmptyFeeds));
         Assert.False(File.Exists(SettingsPath));
     }
 

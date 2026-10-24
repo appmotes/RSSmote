@@ -143,7 +143,8 @@ parsed once more; `FeedDates` reads ISO 8601 and RFC 822 with named zones, no zo
 from `TimeProvider.CreateTimer` (manual / 15 / 30 / 60 / 120 min, rescheduled when the setting changes) with at
 most six feeds in flight; a refresh asked for while one runs joins it. Each feed's failure is stored in
 `last_error` and cleared by the next success; a feed whose title is still its URL takes the feed's own title.
-After the pass it prunes read, unstarred items older than the retention setting and stamps
+After the pass it marks unread items older than `MarkReadAfterDays` read (default 5, 0 = never; also at once when the
+setting changes), prunes read, unstarred items older than the retention setting and stamps
 `AppSettings.LastRefresh`. `Refresher.AddFeed` stores a validated `FoundFeed` with its current items. `StateChanged` fires
 on a background thread when a pass starts and after it ends.
 
