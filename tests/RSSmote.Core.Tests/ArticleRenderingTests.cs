@@ -68,7 +68,7 @@ public class ArticleTemplateTests
     [Fact]
     public void Header_is_escaped_and_the_title_links_to_the_article()
     {
-        var html = ArticleTemplate.Render(ArticleDocument.Create(Item(), "MONDAY"), new(Palette, ArticleFont.System, 17, true));
+        var html = ArticleTemplate.Render(ArticleDocument.Create(Item(), "MONDAY"), new(Palette, 17, true));
         Assert.Contains("<h1><a href=\"https://example.com/post\">Title &lt;&amp;&gt;</a></h1>", html);
         Assert.Contains("<span>Ann</span> · <span class=\"source\">Example</span>", html);
         Assert.Contains("<div class=\"content\"><p>Body</p></div>", html);
@@ -77,27 +77,27 @@ public class ArticleTemplateTests
     [Fact]
     public void Stylesheet_has_literal_values_only()
     {
-        var css = ArticleTemplate.Stylesheet(new(Palette, ArticleFont.Serif, 21, false));
+        var css = ArticleTemplate.Stylesheet(new(Palette, 17.6, false));
         Assert.DoesNotContain("var(--", css);
-        Assert.Contains("font-size: 21px", css);
+        Assert.Contains("font-size: 17.6px", css);
         Assert.Contains("background: #fffefb", css);
         Assert.Contains("::selection { background: #f6ead9", css);
-        Assert.Contains("ui-serif", css);
+        Assert.Contains("system-ui", css);
     }
 
     [Fact]
     public void Only_the_scripted_page_carries_the_script()
     {
         var document = ArticleDocument.Create(Item(), "");
-        Assert.Contains("<script>", ArticleTemplate.Render(document, new(Palette, ArticleFont.System, 17, true)));
-        Assert.DoesNotContain("<script>", ArticleTemplate.Render(document, new(Palette, ArticleFont.System, 17, false)));
+        Assert.Contains("<script>", ArticleTemplate.Render(document, new(Palette, 17, true)));
+        Assert.DoesNotContain("<script>", ArticleTemplate.Render(document, new(Palette, 17, false)));
     }
 
     [Fact]
     public void Without_scripts_video_frames_become_links()
     {
         var document = ArticleDocument.Create(Item("<iframe src=\"https://player.vimeo.com/video/1\"></iframe>"), "");
-        var html = ArticleTemplate.Render(document, new(Palette, ArticleFont.System, 17, false));
+        var html = ArticleTemplate.Render(document, new(Palette, 17, false));
         Assert.DoesNotContain("<iframe", html);
         Assert.Contains("<a href=\"https://player.vimeo.com/video/1\">▶ Video on player.vimeo.com</a>", html);
     }

@@ -137,8 +137,8 @@ files forward: a stored `Black` theme becomes Dark with the `black` palette in t
 (HtmlSanitizer: no scripts, styles, forms or inline styles; URLs absolute against the article; lazy images given
 their real source; iframes kept only for YouTube/Vimeo, others become links). `ArticleViewModel` rebuilds the
 document only when another article is selected, so flag changes do not reload the page. `ArticleHost` renders it
-through `ArticleTemplate` (embedded `article.css` and `article.js`) with the palette, font and size, and renders
-again when any of them or the theme changes. It uses `NativeWebView` (`NavigateToString`, no base address) when
+through `ArticleTemplate` (embedded `article.css` and `article.js`) with the palette and the body's size (D31), and
+renders again when either or the theme changes. It uses `NativeWebView` (`NavigateToString`, no base address) when
 `WebViewAdapterInfo` reports an installed engine, otherwise an `HtmlLabel` (Avalonia.HtmlRenderer) in a
 `ScrollViewer`, which gets the same page without the script and with video frames as links.
 `RSSMOTE_ARTICLE_RENDERER=fallback` forces the fallback; tests always use it. The page never navigates: its
@@ -187,10 +187,14 @@ then. The UI says "Add Feed", "Save", "Remove Feed", never "subscribe".
 **A15 — Mobile heads.** `RSSmote.Android` (`net10.0-android`, API 24+) and `RSSmote.iOS` (`net10.0-ios`, iOS 15+)
 are thin heads over `RSSmote.Mobile`, the same way `RSSmote.Desktop` is over `App`. Both share the id
 `com.ahrentlov.rssmote`. Avalonia builds the app itself on mobile: `AndroidApp` (`AvaloniaAndroidApplication<App>`)
-and `AppDelegate` (`AvaloniaAppDelegate<App>`) start `App` with `Host = new MobileShellHost()` from
+and `AppDelegate` (`AvaloniaAppDelegate<App>`) start `App` with their `MobileShellHost` as `Host` from
 `CreateAppBuilder` (`AppBuilder.Configure(() => new App { Host = … }).UseAndroid()` / `.UseiOS(this)`) and add
 `WithInterFont()` in `CustomizeAppBuilder`. Android starts `App` under `IActivityApplicationLifetime`, iOS under
-`ISingleViewApplicationLifetime` (A3). The heads need the `android` and `ios` workloads and live only in
+`ISingleViewApplicationLifetime` (A3). The heads also hand the host the system's text size, which it passes to
+`SettingsViewModel.SystemTextScale` (D31); Avalonia 12.1.4 reads neither. iOS takes body text's size at the current
+Larger Text setting over its default (`UIFontMetrics.DefaultMetrics.GetScaledValue(17) / 17`) and follows
+content-size-category changes (`UIApplication.Notifications.ObserveContentSizeCategoryChanged`); Android takes `Configuration.FontScale`, and `MainActivity` declares
+`ConfigChanges.FontScale` so a change arrives in `OnConfigurationChanged` instead of restarting the activity. The heads need the `android` and `ios` workloads and live only in
 `RSSmote.Mobile.slnx`; `RSSmote.slnx` builds `RSSmote.Mobile` but not the heads, so the desktop build needs no
 mobile tooling. Building a head:
 
@@ -229,7 +233,8 @@ for a panel, the panel closing (Save, Add Feed) pops it and a page that goes any
 `MobileShell.ConfirmAsync` shows a `ConfirmViewModel` as a modal bottom sheet (D29) and runs what follows a
 confirmation only after the sheet is gone (P24). The system back closes a sheet before it pops a page.
 Import and Export Feeds are pages too (`ImportFeedsViewModel` previews a file before anything is saved), and Aa
-on the article opens `TextSheet` over `SettingsViewModel`'s text size, font and appearance. The article page hides
+on the Feeds root, the list and the article opens `TextSheet` through `MobileShell.ShowTextSheet` with that page's
+pane chosen (D31); from the article it narrows the native view to the space above the sheet. The article page hides
 both bars on a scroll down and shows them on a scroll up, a tap or a new article, from `ArticleHost.Scrolled` and
 `PageTapped` (D26). An article whose host is native is pushed without a slide (P29). Back from the background
 (`IActivatableLifetime.Activated`), `MobileShell` calls `ShellViewModel.RefreshIfStale`, which refreshes when

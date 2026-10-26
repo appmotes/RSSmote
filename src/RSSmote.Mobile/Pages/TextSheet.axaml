@@ -5,9 +5,10 @@
              x:Class="RSSmote.Mobile.Pages.TextSheet"
              x:DataType="vm:SettingsViewModel"
              AutomaticallyApplySafeAreaPadding="False"
-             Background="{DynamicResource Brush.Scrim}"
+             Background="Transparent"
              NavigationPage.HasNavigationBar="False">
-    <!-- Aa (M4, D26): text size, font, and Automatic / Light / Dark, the same setting as Appearance. -->
+    <!-- Aa (D26, D31): which pane and its size. No scrim, so the page above shows the size as it changes; a tap on it
+         closes the sheet. -->
     <ContentPage.Resources>
         <DataTemplate x:Key="Segment" x:DataType="vm:ChoiceViewModel">
             <Button Classes="phoneSegment" Classes.on="{Binding IsChecked}" Content="{Binding Header}"
@@ -16,27 +17,15 @@
     </ContentPage.Resources>
     <Panel>
         <Button Classes="phoneScrim" Click="OnScrimClick" />
-        <Border Classes="phoneSheet"
+        <Border x:Name="Sheet" Classes="phoneSheet"
                 Padding="{Binding $parent[ContentPage].SafeAreaPadding, Converter={x:Static v:PhoneConverters.BottomInset}}">
             <StackPanel Margin="20,20,20,16">
                 <Grid ColumnDefinitions="*,Auto">
                     <TextBlock Classes="phonePageTitle" Text="Text" />
-                    <TextBlock Grid.Column="1" Classes="phoneValue" Text="{Binding FontSizeText}" />
-                </Grid>
-                <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="14" Margin="0,10,0,0">
-                    <Button Classes="phoneBarText" Content="A" FontSize="14" Foreground="{DynamicResource Brush.Ink.Primary}"
-                            Command="{Binding StepFontSizeCommand}" ToolTip.Tip="Smaller text" >
-                        <Button.CommandParameter><x:Int32>-1</x:Int32></Button.CommandParameter>
-                    </Button>
-                    <Slider Grid.Column="1" Classes="phone" Minimum="{Binding MinFontSize}" Maximum="{Binding MaxFontSize}"
-                            Value="{Binding ArticleFontSize}" TickFrequency="1" IsSnapToTickEnabled="True" />
-                    <Button Grid.Column="2" Classes="phoneBarText" Content="A" FontSize="22" Foreground="{DynamicResource Brush.Ink.Primary}"
-                            Command="{Binding StepFontSizeCommand}" ToolTip.Tip="Larger text" >
-                        <Button.CommandParameter><x:Int32>1</x:Int32></Button.CommandParameter>
-                    </Button>
+                    <TextBlock Grid.Column="1" Classes="phoneValue" Text="{Binding PaneSizeText}" />
                 </Grid>
                 <Border Classes="phoneSegments">
-                    <ItemsControl ItemsSource="{Binding Fonts}" ItemTemplate="{StaticResource Segment}">
+                    <ItemsControl ItemsSource="{Binding Panes}" ItemTemplate="{StaticResource Segment}">
                         <ItemsControl.ItemsPanel>
                             <ItemsPanelTemplate>
                                 <UniformGrid Rows="1" />
@@ -44,15 +33,13 @@
                         </ItemsControl.ItemsPanel>
                     </ItemsControl>
                 </Border>
-                <Border Classes="phoneSegments">
-                    <ItemsControl ItemsSource="{Binding Appearances}" ItemTemplate="{StaticResource Segment}">
-                        <ItemsControl.ItemsPanel>
-                            <ItemsPanelTemplate>
-                                <UniformGrid Rows="1" />
-                            </ItemsPanelTemplate>
-                        </ItemsControl.ItemsPanel>
-                    </ItemsControl>
-                </Border>
+                <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="6" Margin="0,10,0,0">
+                    <Button Classes="textStep" Content="A" FontSize="14" MinWidth="44" MinHeight="44" ToolTip.Tip="Smaller text"
+                            Command="{Binding SmallerCommand}" CommandParameter="{Binding SelectedPane}" />
+                    <Slider Grid.Column="1" Classes="textSize" Maximum="{Binding MaxTextStep}" Value="{Binding PaneStep}" />
+                    <Button Grid.Column="2" Classes="textStep" Content="A" FontSize="22" MinWidth="44" MinHeight="44" ToolTip.Tip="Larger text"
+                            Command="{Binding LargerCommand}" CommandParameter="{Binding SelectedPane}" />
+                </Grid>
             </StackPanel>
         </Border>
     </Panel>

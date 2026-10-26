@@ -77,19 +77,24 @@ public partial class ArticlePage : ContentPage
         Padding = shown ? default : new Thickness(0, MobileShell.Of(this)?.SafeAreaPadding.Top ?? 0, 0, 0);
     }
 
-    /// <summary>A native web view would cover the sheet, so it steps aside while the sheet is open (L9).</summary>
+    /// <summary>
+    /// A native web view is drawn over everything (L9), so while the sheet is open the article ends where the sheet
+    /// begins: the reader sees the size change, and nothing covers the sheet (D31).
+    /// </summary>
     private void OnTextClick(object? sender, RoutedEventArgs e)
     {
-        if (Shell is not { } vm || MobileShell.Of(this) is not { } shell)
+        if (MobileShell.Of(this) is not { } shell || shell.ShowTextSheet(TextPane.Article) is not { } sheet)
             return;
-        Host.IsObscured = true;
+        void Fit(object? s, SizeChangedEventArgs args) =>
+            Host.Margin = new Thickness(0, 0, 0, Math.Max(0, args.NewSize.Height - BottomBar.Bounds.Height));
         void Closed(object? s, EventArgs args)
         {
             shell.ModalPopped -= Closed;
-            Host.IsObscured = false;
+            sheet.Body.SizeChanged -= Fit;
+            Host.Margin = default;
         }
+        sheet.Body.SizeChanged += Fit;
         shell.ModalPopped += Closed;
-        _ = shell.ShowSheetAsync(new TextSheet { DataContext = vm.Settings });
     }
 
     /// <summary>Previous and next stay inside the list; at either end the button does nothing (D26).</summary>

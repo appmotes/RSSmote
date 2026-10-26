@@ -1,0 +1,78 @@
+<p:PhonePage xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:RSSmote.App.ViewModels"
+             xmlns:p="using:RSSmote.Mobile.Pages"
+             x:Class="RSSmote.Mobile.Pages.TextPage"
+             x:DataType="vm:SettingsViewModel"
+             Title="Text" BackTitle="Settings">
+    <!-- Text (D31): the system's size to follow, then a size for each page on a slider between a small and a large A. -->
+    <ScrollViewer>
+        <StackPanel Margin="0,12,0,24">
+            <Border Classes="phoneCard">
+                <Grid Classes="phoneSwitchRow" ColumnDefinitions="*,Auto" MinHeight="{StaticResource Size.Phone.RowSubtitle}">
+                    <StackPanel VerticalAlignment="Center" Spacing="2">
+                        <TextBlock Classes="phoneRow" Text="Follow system text size" />
+                        <TextBlock Classes="phoneMeta" Text="{Binding SystemSizeText}" />
+                    </StackPanel>
+                    <ToggleSwitch Grid.Column="1" Classes="phone" IsChecked="{Binding FollowSystemTextSize}" />
+                </Grid>
+            </Border>
+            <Grid ColumnDefinitions="*,Auto">
+                <TextBlock Classes="phoneGroup" Text="Text size" />
+                <Button Grid.Column="1" Classes="phoneBarText phoneGroupAction" Content="Reset" Margin="0,8,22,0"
+                        Command="{Binding ResetTextSizesCommand}" />
+            </Grid>
+            <Border Classes="phoneCard">
+                <StackPanel>
+                    <Border Classes="phoneRowLine">
+                        <StackPanel Margin="16,10,4,4">
+                            <Grid ColumnDefinitions="*,Auto" Margin="0,0,12,0">
+                                <TextBlock Classes="phoneRow" Text="Feeds" />
+                                <TextBlock Grid.Column="1" Classes="phoneValue" Text="{Binding FeedsSizeText}" />
+                            </Grid>
+                            <Grid ColumnDefinitions="Auto,*,Auto" Margin="-12,0,0,0">
+                                <Button Classes="textStep" Content="A" FontSize="14" MinWidth="44" MinHeight="44" ToolTip.Tip="Smaller text"
+                                        Command="{Binding SmallerCommand}" CommandParameter="{x:Static vm:TextPane.Feeds}" />
+                                <Slider Grid.Column="1" Classes="textSize" Maximum="{Binding MaxTextStep}" Value="{Binding FeedsStep}" />
+                                <Button Grid.Column="2" Classes="textStep" Content="A" FontSize="22" MinWidth="44" MinHeight="44" ToolTip.Tip="Larger text"
+                                        Command="{Binding LargerCommand}" CommandParameter="{x:Static vm:TextPane.Feeds}" />
+                            </Grid>
+                        </StackPanel>
+                    </Border>
+                    <Border Classes="phoneRowLine">
+                        <StackPanel Margin="16,10,4,4">
+                            <Grid ColumnDefinitions="*,Auto" Margin="0,0,12,0">
+                                <TextBlock Classes="phoneRow" Text="Article list" />
+                                <TextBlock Grid.Column="1" Classes="phoneValue" Text="{Binding ListSizeText}" />
+                            </Grid>
+                            <Grid ColumnDefinitions="Auto,*,Auto" Margin="-12,0,0,0">
+                                <Button Classes="textStep" Content="A" FontSize="14" MinWidth="44" MinHeight="44" ToolTip.Tip="Smaller text"
+                                        Command="{Binding SmallerCommand}" CommandParameter="{x:Static vm:TextPane.List}" />
+                                <Slider Grid.Column="1" Classes="textSize" Maximum="{Binding MaxTextStep}" Value="{Binding ListStep}" />
+                                <Button Grid.Column="2" Classes="textStep" Content="A" FontSize="22" MinWidth="44" MinHeight="44" ToolTip.Tip="Larger text"
+                                        Command="{Binding LargerCommand}" CommandParameter="{x:Static vm:TextPane.List}" />
+                            </Grid>
+                        </StackPanel>
+                    </Border>
+                    <Border Classes="phoneRowLine last">
+                        <StackPanel Margin="16,10,4,4">
+                            <Grid ColumnDefinitions="*,Auto" Margin="0,0,12,0">
+                                <TextBlock Classes="phoneRow" Text="Article" />
+                                <TextBlock Grid.Column="1" Classes="phoneValue" Text="{Binding ArticleSizeText}" />
+                            </Grid>
+                            <Grid ColumnDefinitions="Auto,*,Auto" Margin="-12,0,0,0">
+                                <Button Classes="textStep" Content="A" FontSize="14" MinWidth="44" MinHeight="44" ToolTip.Tip="Smaller text"
+                                        Command="{Binding SmallerCommand}" CommandParameter="{x:Static vm:TextPane.Article}" />
+                                <Slider Grid.Column="1" Classes="textSize" Maximum="{Binding MaxTextStep}" Value="{Binding ArticleStep}" />
+                                <Button Grid.Column="2" Classes="textStep" Content="A" FontSize="22" MinWidth="44" MinHeight="44" ToolTip.Tip="Larger text"
+                                        Command="{Binding LargerCommand}" CommandParameter="{x:Static vm:TextPane.Article}" />
+                            </Grid>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </Border>
+            <TextBlock Classes="phoneFootnote"
+                       Text="On top of the system size. A step also scales row heights, favicons and thumbnails; bars and buttons keep their size." />
+        </StackPanel>
+    </ScrollViewer>
+</p:PhonePage>

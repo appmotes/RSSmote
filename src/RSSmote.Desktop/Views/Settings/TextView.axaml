@@ -1,0 +1,70 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:RSSmote.App.ViewModels"
+             xmlns:v="using:RSSmote.Desktop.Views"
+             x:Class="RSSmote.Desktop.Views.Settings.TextView"
+             x:DataType="vm:TextPageViewModel">
+    <!-- Text (D31): a size for each pane, each on a slider between a small and a large A. -->
+    <StackPanel>
+        <Grid ColumnDefinitions="*,Auto">
+            <TextBlock Classes="settingsGroup" Text="Text size" />
+            <Button Grid.Column="1" Classes="settingsLink small" Content="Reset to Standard" Margin="0,8,18,0"
+                    Command="{Binding Settings.ResetTextSizesCommand}" />
+        </Grid>
+        <Border Classes="settingsCard">
+            <StackPanel>
+                <Border Classes="settingsRowLine">
+                    <StackPanel Classes="settingsSliderRow">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <TextBlock Text="Feeds" FontSize="14" Foreground="{DynamicResource Brush.Ink.Primary}" />
+                            <TextBlock Grid.Column="1" Classes="settingsValue" Text="{Binding Settings.FeedsSizeText}" />
+                        </Grid>
+                        <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="6">
+                            <Button Classes="textStep" Content="A" FontSize="12" ToolTip.Tip="Smaller"
+                                    Command="{Binding Settings.SmallerCommand}" CommandParameter="{x:Static vm:TextPane.Feeds}" />
+                            <Slider Grid.Column="1" Classes="textSize" Maximum="{Binding Settings.MaxTextStep}"
+                                    Value="{Binding Settings.FeedsStep}" />
+                            <Button Grid.Column="2" Classes="textStep" Content="A" FontSize="18" ToolTip.Tip="Larger"
+                                    Command="{Binding Settings.LargerCommand}" CommandParameter="{x:Static vm:TextPane.Feeds}" />
+                        </Grid>
+                    </StackPanel>
+                </Border>
+                <Border Classes="settingsRowLine">
+                    <StackPanel Classes="settingsSliderRow">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <TextBlock Text="Article list" FontSize="14" Foreground="{DynamicResource Brush.Ink.Primary}" />
+                            <TextBlock Grid.Column="1" Classes="settingsValue" Text="{Binding Settings.ListSizeText}" />
+                        </Grid>
+                        <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="6">
+                            <Button Classes="textStep" Content="A" FontSize="12" ToolTip.Tip="Smaller"
+                                    Command="{Binding Settings.SmallerCommand}" CommandParameter="{x:Static vm:TextPane.List}" />
+                            <Slider Grid.Column="1" Classes="textSize" Maximum="{Binding Settings.MaxTextStep}"
+                                    Value="{Binding Settings.ListStep}" />
+                            <Button Grid.Column="2" Classes="textStep" Content="A" FontSize="18" ToolTip.Tip="Larger"
+                                    Command="{Binding Settings.LargerCommand}" CommandParameter="{x:Static vm:TextPane.List}" />
+                        </Grid>
+                    </StackPanel>
+                </Border>
+                <Border Classes="settingsRowLine last">
+                    <StackPanel Classes="settingsSliderRow">
+                        <Grid ColumnDefinitions="*,Auto">
+                            <TextBlock Text="Article" FontSize="14" Foreground="{DynamicResource Brush.Ink.Primary}" />
+                            <TextBlock Grid.Column="1" Classes="settingsValue" Text="{Binding Settings.ArticleSizeText}" />
+                        </Grid>
+                        <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="6">
+                            <Button Classes="textStep" Content="A" FontSize="12" ToolTip.Tip="Smaller"
+                                    Command="{Binding Settings.SmallerCommand}" CommandParameter="{x:Static vm:TextPane.Article}" />
+                            <Slider Grid.Column="1" Classes="textSize" Maximum="{Binding Settings.MaxTextStep}"
+                                    Value="{Binding Settings.ArticleStep}" />
+                            <Button Grid.Column="2" Classes="textStep" Content="A" FontSize="18" ToolTip.Tip="Larger"
+                                    Command="{Binding Settings.LargerCommand}" CommandParameter="{x:Static vm:TextPane.Article}" />
+                        </Grid>
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+        </Border>
+        <TextBlock Classes="settingsFootnote"
+                   Text="A step scales the text, line spacing, favicons and thumbnails of that pane. Bars and buttons keep their size." />
+        <TextBlock Classes="settingsFootnote" Text="{x:Static v:Chrome.TextSizeHint}" />
+    </StackPanel>
+</UserControl>

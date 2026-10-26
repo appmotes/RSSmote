@@ -6,6 +6,7 @@ using Avalonia.Data.Converters;
 using Avalonia.Interactivity;
 using Avalonia.Threading;
 using RSSmote.App.ViewModels;
+using RSSmote.Mobile.Shell;
 
 namespace RSSmote.Mobile.Views;
 
@@ -27,6 +28,8 @@ public partial class FeedsView : UserControl
     }
 
     private ShellViewModel? Shell => DataContext as ShellViewModel;
+
+    private void OnTextClick(object? sender, RoutedEventArgs e) => MobileShell.Of(this)?.ShowTextSheet(TextPane.Feeds);
 
     private void Attach(SidebarViewModel? sidebar)
     {

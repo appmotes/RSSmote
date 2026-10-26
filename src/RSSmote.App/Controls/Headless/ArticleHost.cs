@@ -57,11 +57,9 @@ public sealed class ArticleHost : Decorator
     public static readonly StyledProperty<ArticleDocument?> DocumentProperty =
         AvaloniaProperty.Register<ArticleHost, ArticleDocument?>(nameof(Document));
 
-    public static readonly StyledProperty<ArticleFont> ArticleFontProperty =
-        AvaloniaProperty.Register<ArticleHost, ArticleFont>(nameof(ArticleFont));
-
-    public static readonly StyledProperty<int> ArticleFontSizeProperty =
-        AvaloniaProperty.Register<ArticleHost, int>(nameof(ArticleFontSize), AppSettings.DefaultFontSize);
+    /// <summary>The body's size in pixels (D31).</summary>
+    public static readonly StyledProperty<double> ArticleFontSizeProperty =
+        AvaloniaProperty.Register<ArticleHost, double>(nameof(ArticleFontSize), ArticleTemplate.StandardFontSize);
 
     /// <summary>Something is drawn over the article (an overlay panel); the native view hides, as it would cover it (L9).</summary>
     public static readonly StyledProperty<bool> IsObscuredProperty =
@@ -130,13 +128,7 @@ public sealed class ArticleHost : Decorator
         set => SetValue(DocumentProperty, value);
     }
 
-    public ArticleFont ArticleFont
-    {
-        get => GetValue(ArticleFontProperty);
-        set => SetValue(ArticleFontProperty, value);
-    }
-
-    public int ArticleFontSize
+    public double ArticleFontSize
     {
         get => GetValue(ArticleFontSizeProperty);
         set => SetValue(ArticleFontSizeProperty, value);
@@ -216,8 +208,7 @@ public sealed class ArticleHost : Decorator
         base.OnPropertyChanged(change);
         if (change.Property == IsObscuredProperty && _web is not null)
             _web.IsVisible = !IsObscured;
-        if (change.Property == DocumentProperty || change.Property == ArticleFontProperty
-            || change.Property == ArticleFontSizeProperty)
+        if (change.Property == DocumentProperty || change.Property == ArticleFontSizeProperty)
             Render();
     }
 
@@ -236,7 +227,7 @@ public sealed class ArticleHost : Decorator
             Show("");
             return;
         }
-        var style = new ArticleStyle(Palette(), ArticleFont, ArticleFontSize, Scripted: _web is not null);
+        var style = new ArticleStyle(Palette(), ArticleFontSize, Scripted: _web is not null);
         Show(ArticleTemplate.Render(document, style));
     }
 

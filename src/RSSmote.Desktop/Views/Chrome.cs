@@ -23,6 +23,10 @@ public static class Chrome
     /// <summary>The Settings button's tooltip, with its shortcut.</summary>
     public static string SettingsTip => OperatingSystem.IsMacOS() ? "Settings (⌘,)" : "Settings (Ctrl+,)";
 
+    /// <summary>The line under the text sizes in Settings (D31).</summary>
+    public static string TextSizeHint => (OperatingSystem.IsMacOS() ? "⌘+ and ⌘−" : "Ctrl++ and Ctrl+−")
+        + " change the article, or the pane chosen under Aa. Aa beside the gear opens the same choice while you read.";
+
     /// <summary>The Add Feed shortcut as the empty state shows it.</summary>
     public static string AddFeedShortcut => OperatingSystem.IsMacOS() ? "⌘N" : "Ctrl+N";
 }

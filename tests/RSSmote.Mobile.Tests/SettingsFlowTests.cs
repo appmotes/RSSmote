@@ -74,6 +74,12 @@ public class SettingsFlowTests
         _ = shell.PopAsync();
         Settle();
 
+        Click(shell, "Text");
+        Assert.IsType<TextPage>(shell.NavigationStack[^1]);
+        PhoneRender.Save(window, $"phone-text-{palette}");
+        _ = shell.PopAsync();
+        Settle();
+
         Click(shell, "Manage Feeds");
         var manage = Assert.IsType<ManageFeedsPage>(shell.NavigationStack[^1]);
         PhoneRender.Save(window, $"phone-m6-{palette}");

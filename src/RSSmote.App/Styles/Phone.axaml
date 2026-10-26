@@ -484,20 +484,6 @@
         </Style>
     </Style>
 
-    <!-- The Aa sheet's size slider: the accent up to the thumb, the pill after it, a knob for the thumb. On a phone the
-         Fluent slider takes the platform's accent, so the parts are set here, as style triggers (P22, P27). -->
-    <Style Selector="Slider.phone /template/ RepeatButton#PART_DecreaseButton:not(:disabled)">
-        <Setter Property="Background" Value="{DynamicResource Brush.Accent}" />
-    </Style>
-    <Style Selector="Slider.phone /template/ RepeatButton#PART_IncreaseButton:not(:disabled)">
-        <Setter Property="Background" Value="{DynamicResource Brush.Bg.Pill}" />
-    </Style>
-    <Style Selector="Slider.phone /template/ Thumb:not(:disabled)">
-        <Setter Property="Background" Value="{DynamicResource Brush.Bg.Knob}" />
-        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Line.Separator}" />
-        <Setter Property="BorderThickness" Value="1" />
-    </Style>
-
     <!-- The 3 pt reading-progress line that stays when the article's bars step aside (D26). -->
     <Style Selector="ProgressBar.phoneProgress">
         <Setter Property="Height" Value="3" />

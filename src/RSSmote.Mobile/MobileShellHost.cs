@@ -1,4 +1,5 @@
 using Avalonia.Controls;
+using Avalonia.Threading;
 using RSSmote.App;
 using RSSmote.App.Services;
 using RSSmote.App.ViewModels;
@@ -11,12 +12,30 @@ namespace RSSmote.Mobile;
 public sealed class MobileShellHost : IShellHost
 {
     private Control? _root;
+    private ShellViewModel? _shell;
 
     public MobileShellHost() => Launcher = new TopLevelLauncher(() => TopLevel.GetTopLevel(_root));
 
     public ILauncher Launcher { get; }
 
-    public Control CreateRoot(ShellViewModel shell) => _root = new MobileShell(shell);
+    /// <summary>The system's text size as a factor; the platform heads set it at start and when it changes (D31).</summary>
+    public double SystemTextScale
+    {
+        get;
+        set
+        {
+            field = value;
+            if (_shell is { } shell)
+                Dispatcher.UIThread.Post(() => shell.Settings.SystemTextScale = value);
+        }
+    } = 1;
+
+    public Control CreateRoot(ShellViewModel shell)
+    {
+        _shell = shell;
+        shell.Settings.SystemTextScale = SystemTextScale;
+        return _root = new MobileShell(shell);
+    }
 
     public SidebarLayout Layout => SidebarLayout.Phone;
 }

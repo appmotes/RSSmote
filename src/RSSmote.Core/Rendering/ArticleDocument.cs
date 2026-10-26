@@ -46,4 +46,4 @@ public sealed record ArticlePalette(
 /// How a document is rendered. <paramref name="Scripted"/> is false for the fallback renderer, which runs no
 /// JavaScript and cannot show iframes.
 /// </summary>
-public sealed record ArticleStyle(ArticlePalette Palette, ArticleFont Font, int FontSize, bool Scripted);
+public sealed record ArticleStyle(ArticlePalette Palette, double FontSize, bool Scripted);

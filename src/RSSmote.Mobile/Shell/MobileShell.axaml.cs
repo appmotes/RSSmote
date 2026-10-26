@@ -96,6 +96,17 @@ public partial class MobileShell : NavigationPage
 
     public Task CloseSheetAsync() => ModalStack.Count > 0 ? PopModalAsync() : Task.CompletedTask;
 
+    /// <summary>The Aa sheet (D31), on the pane of the page it was opened from.</summary>
+    public TextSheet? ShowTextSheet(TextPane pane)
+    {
+        if (_shell is null)
+            return null;
+        _shell.Settings.SelectedPane = pane;
+        var sheet = new TextSheet { DataContext = _shell.Settings };
+        _ = ShowSheetAsync(sheet);
+        return sheet;
+    }
+
     private void ReleasePanel(Page page)
     {
         if (_panels.Remove(page, out var panel))

@@ -37,12 +37,6 @@ public sealed partial class ArticleViewModel : ObservableObject
     [ObservableProperty]
     public partial string EmptySubtitle { get; set; } = "";
 
-    [ObservableProperty]
-    public partial ArticleFont Font { get; set; }
-
-    [ObservableProperty]
-    public partial int FontSize { get; set; } = AppSettings.DefaultFontSize;
-
     public bool HasArticle => Item is not null;
 
     public string FeedTitle => Item?.FeedTitle ?? "";
@@ -52,12 +46,6 @@ public sealed partial class ArticleViewModel : ObservableObject
     public bool IsStarred => Item?.Starred == true;
 
     public Uri? Link => ArticleSanitizer.Resolve(Item?.Url, null);
-
-    public void ApplySettings(AppSettings settings)
-    {
-        Font = settings.ArticleFont;
-        FontSize = settings.ArticleFontSize;
-    }
 
     partial void OnItemChanged(Item? oldValue, Item? newValue)
     {

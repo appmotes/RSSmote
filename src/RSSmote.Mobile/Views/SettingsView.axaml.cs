@@ -41,4 +41,10 @@ public partial class SettingsView : UserControl
         if (Shell is { ViewModel: { } vm } shell)
             _ = shell.PushAsync(new AppearancePage { DataContext = vm.Settings });
     }
+
+    private void OnTextClick(object? sender, RoutedEventArgs e)
+    {
+        if (Shell is { ViewModel: { } vm } shell)
+            _ = shell.PushAsync(new TextPage { DataContext = vm.Settings });
+    }
 }

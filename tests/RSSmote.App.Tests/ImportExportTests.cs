@@ -70,20 +70,42 @@ public sealed class ImportExportTests : IDisposable
     }
 
     [Fact]
-    public void The_text_size_steps_within_its_range_and_the_font_is_one_of_four()
+    public void Each_pane_steps_its_own_size_within_the_scale()
     {
         var settings = _f.Shell.Settings;
-        settings.ArticleFontSize = 17.4;
-        Assert.Equal(17, _f.Settings.Current.ArticleFontSize);
-        Assert.Equal("17 pt", settings.FontSizeText);
-        _f.Settings.Update(s => s.ArticleFontSize = AppSettings.MaxFontSize);
-        settings.StepFontSizeCommand.Execute(1);
-        Assert.Equal(AppSettings.MaxFontSize, _f.Settings.Current.ArticleFontSize);
+        settings.ListStep = 4.4;
+        Assert.Equal(120, _f.Settings.Current.ListTextSize);
+        Assert.Equal("120 %", settings.ListSizeText);
+        Assert.Equal(AppSettings.StandardTextSize, _f.Settings.Current.FeedsTextSize);
+        Assert.Equal("100 % · Standard", settings.FeedsSizeText);
 
-        Assert.Equal(["System", "Serif", "Rounded", "Mono"], settings.Fonts.Select(f => f.Header));
-        settings.Fonts[1].Command.Execute(settings.Fonts[1].Key);
-        Assert.Equal(ArticleFont.Serif, _f.Settings.Current.ArticleFont);
-        Assert.Equal(["Serif"], settings.Fonts.Where(f => f.IsChecked).Select(f => f.Header));
+        _f.Settings.Update(s => s.ArticleTextSize = AppSettings.TextSizes[^1]);
+        settings.LargerCommand.Execute(TextPane.Article);
+        Assert.Equal(AppSettings.TextSizes[^1], _f.Settings.Current.ArticleTextSize);
+
+        settings.Panes[1].Command.Execute(settings.Panes[1].Key);
+        Assert.Equal(TextPane.List, settings.SelectedPane);
+        Assert.Equal(4, settings.PaneStep);
+        settings.SmallerCommand.Execute(settings.SelectedPane);
+        Assert.Equal(110, _f.Settings.Current.ListTextSize);
+        Assert.Equal("110 %", settings.PaneSizeText);
+
+        settings.ResetTextSizesCommand.Execute(null);
+        Assert.Equal([100, 100, 100],
+            [_f.Settings.Current.FeedsTextSize, _f.Settings.Current.ListTextSize, _f.Settings.Current.ArticleTextSize]);
+    }
+
+    [Fact]
+    public void The_system_size_applies_on_top_only_while_followed()
+    {
+        var settings = _f.Shell.Settings;
+        _f.Settings.Update(s => s.FeedsTextSize = 120);
+        settings.SystemTextScale = 1.5;
+        Assert.Equal(1.8, settings.FeedsScale, 3);
+        Assert.Equal(24, settings.ArticleFontSize, 3);
+        settings.FollowSystemTextSize = false;
+        Assert.Equal(1.2, settings.FeedsScale, 3);
+        Assert.Equal(16, settings.ArticleFontSize, 3);
     }
 
     [Fact]

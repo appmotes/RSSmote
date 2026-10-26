@@ -131,6 +131,7 @@ Article body typography is CSS in the HTML template (D14), not a type role.
 | Filter bar | `FilterBar` (templated): starred · unread · all as icon segments in a track, the active one raised; looks in `Button.filter-segment` | `Border` + 3 buttons |
 | Filter box | Always visible under the list strip: search icon, placeholder "Filter", a ⌘F / Ctrl+F chip or a clear button; ⌘/Ctrl+F focuses it, Escape clears it and returns to the list | `TextBox.filter` with inner content |
 | Article | `ArticleHost`: `NativeWebView` with HTML template; falls back to `HtmlPanel` (A9) | WebView / HtmlRenderer |
+| Text size | Each row of a pane inside `Scaled`, which lays it out at the pane's factor; the factor set once on the list (D31) | `LayoutTransformControl` |
 | Empty states | `EmptyState` (templated): a soft box with title, subtitle and shortcut chips in the article card; `.compact` an icon tile, title and subtitle in an empty list | `Panel` + `StackPanel` |
 | Overlays | `PanelFrame` (templated): scrim that catches clicks + a sheet as tall as its content (`.narrow` for the Settings question, D30) | `ContentControl` over the window (A6) |
 | Grouped rows | Cards of rows on the canvas: `Border.settingsCard` with `Button.settingsRow` or `Grid.settingsRow`, fields as `TextBox.settingsField` inside a row (D30); `phone*` on the phone (D27) | `Border` + `Button` |
@@ -145,12 +146,15 @@ Article body typography is CSS in the HTML template (D14), not a type role.
 **D10 — Sidebar is a flattened `ListBox`, not a `TreeView`.** The rows need a custom indent, a
 chevron on the left for folders, a chevron on the right for sections, and filter-driven hiding; a flat list of
 row view-models with `Level` and `IsExpanded` gives that with one template per row type and keeps selection
-styling in one place. Collapsing a folder or section that hides the selected feed moves the selection to the
-folder, or to the top stream when the folder is hidden too. "Hide empty feeds" (on by default) lists only feeds with
+styling in one place. It opens with three stream rows, Unread, Starred and All Items, as on the phone (D24): each
+shows all feeds and chooses the filter it is named after, as ⌘/Ctrl+1/2/3 do; Unread counts the unread, Starred the
+starred, and All Items has no count. A folder or feed keeps the filter it finds, and the filter bar changes it there;
+with all feeds shown, the selected stream row is the one the filter names. Collapsing a folder or section that hides the selected feed moves the selection to the
+folder, or to the stream row the filter names when the folder is hidden too. "Hide empty feeds" (on by default) lists only feeds with
 articles under the filter (any article under All Items), plus the selected one, and only folders with such a feed;
 off, every folder and feed is listed under every filter. The selected one stays while its last article is read, so
 it does not vanish under the reader, but Mark All as Read lets it go at once, and the selection moves to its folder
-or to the top stream.
+or to the stream row the filter names.
 
 **D11 — One line of title, two of source and summary.** The title is one `TextBlock` with `MaxLines=1` and an
 ellipsis (the full title is its tooltip), so every title starts at the same place and the eye can run down the
@@ -195,6 +199,7 @@ Licence notice in `Assets/Icons/LICENSE-lucide.txt`.
 | Refresh interval, Keep read | `Icon.Clock`, `Icon.Archive` | clock, archive |
 | Picker | `Icon.ChevronsUpDown` | chevrons-up-down |
 | Import file | `Icon.FileText` | file-text |
+| Text size (D31) | `Icon.TextSize` | a-large-small |
 
 **D13 — Other assets.**
 - App icon: a spark, the mote, sending out two feed arcs, white on the Sand accent as a rounded square; the outer
@@ -213,10 +218,10 @@ Licence notice in `Assets/Icons/LICENSE-lucide.txt`.
 
 **D14 — Article typography is CSS.** The HTML template sets the date at 12.5 px with tabular figures, the title at
 28 px SemiBold, and the byline on one line, "Author · Source", with the source in the accent; the column is 620 px
-wide and the body 16 px / 1.58 by default. No `text-transform`: the fallback renderer cannot do it, and a byline in
+wide and the body 16 px / 1.58 at the Standard text size (D31). No `text-transform`: the fallback renderer cannot do it, and a byline in
 sentence case reads better. It reads the same colour values as D5: `Bg.Article`, `Ink.Primary`, `Ink.Secondary`,
 `Accent`, `Line.Separator` (rules), `Bg.Hover` (code) and `Selection.List` (selected text), written into the
-stylesheet as opaque hex (L10). The font family is user-selectable (System, Serif, Rounded, Mono).
+stylesheet as opaque hex (L10). The typeface is the system's; the reader sizes the text but does not choose a font (D31).
 
 ## Interaction
 
@@ -325,13 +330,12 @@ Star, Open in Browser, Previous and Next, icons only. Both bars step aside once 
 and come back on 24 pt up, a tap, near the top or on a new article, leaving a 3 pt reading-progress line
 (`Bg.Pill` track, `Accent` fill) under the status bar. They go without a slide: the article takes their room. Previous and next are
 buttons, never a horizontal swipe: a swipe from the edge is back (`NavigationPage`), and the two would fight. Aa opens
-a sheet with text size (11–32, `AppSettings`; a slider between a small and a large A, each a point), font (System,
-Serif, Rounded, Mono) and Automatic / Light / Dark as a shortcut to the same setting as Appearance. The two choices
-are segments on a `Bg.Pill` track, the chosen one raised on `Bg.Segment` in the `Accent`. The sheet closes like D29's,
-so it has no grabber; the native article hides while it is open (P29).
+the text sheet (D31) with Article chosen; the panes are segments on a `Bg.Pill` track, the chosen one raised on
+`Bg.Segment` in the `Accent`. The theme is chosen under Appearance only. The sheet closes like D29's, so it has no grabber; while it is open the native article ends where
+the sheet begins (P29).
 
 **D27 — Settings are plain pushed pages.** The Settings root lists Feeds (Add Feed, Manage Feeds, Import Feeds,
-Export Feeds), Display (Appearance), Articles (Read when opened, Newest first, Group by date, Hide empty feeds as
+Export Feeds), Display (Appearance, Text, D31), Articles (Read when opened, Newest first, Group by date, Hide empty feeds as
 switches) and Refresh (interval, after how many days unread articles are marked read, and how long read articles are
 kept, as pickers), then the version with the app icon (D13). Every row that opens a page has a
 chevron; pages have a back button and a centred title, no large title.
@@ -388,7 +392,7 @@ menus and the gear (`Icon.Settings`) in the sidebar's status bar turn the whole 
 place on both form factors, with the phone's pages and view-models (D27), and nothing floats over the article's
 native view (L9).
 - The left column is as wide as the sidebar, on the canvas, with a hairline on its right, and holds only the menu:
-  "Settings" (`largeTitle`), then Feeds (Add Feed, Manage Feeds, Import Feeds, Export Feeds), Display (Appearance) and
+  "Settings" (`largeTitle`), then Feeds (Add Feed, Manage Feeds, Import Feeds, Export Feeds), Display (Appearance, Text) and
   Reading (Articles & Refresh), 32 pt items with a 15 pt icon. The chosen item is raised like a selected sidebar row
   (`Selection.Sidebar`, `BoxShadows.Raised`). At the foot sit "‹ Back to Feeds" on the accent (40 pt, `Ink.OnAccent`)
   and the version with the app icon (D13). No feeds and no streams.
@@ -411,3 +415,32 @@ native view (L9).
   "Import Feeds…" and "Export Feeds…" (menus, ⌘/Ctrl+N) open Settings on their page.
 
 Looks live in `Styles/Settings.axaml` as `settings*` style classes; Settings have no tokens of their own.
+
+## Text size
+
+The screens are drawn as HTML recreations, not screenshots, on the design canvas
+(https://claude.ai/artifact/UvddfmFBreHNaoWHc3yiga): desktop at 1100 × 720 and the phones at 402 × 874, in Sand and
+Ember.
+
+**D31 — Each pane has its own text size, in steps.** Three sizes: Feeds (the sidebar on desktop, the Feeds root on
+the phone), the article list and the article, each one of `AppSettings.TextSizes`: 85, 92, 100, 110, 120, 135, 150
+and 175 %, with 100 as Standard. Steps rather than points, so one scale fits a 13 pt sidebar row and a 16 px article;
+a value reads "120 %", Standard "100 % · Standard". A step scales a pane's rows whole — text, line height, row height,
+favicon, thumbnail, icon and padding — so a row keeps its proportions: each row sits in `Scaled`, a
+`LayoutTransformControl` that takes the factor the list sets. Bars, strips, large titles and buttons keep their size.
+The article is CSS: its body is 16 px × the step. No platform offers a choice of typeface.
+- Settings ▸ Text, under Display after Appearance, on both form factors: Feeds, Article list and Article, each a
+  slider between a small and a large A that stops on the steps, Reset to Standard, and no preview. On the phone the
+  page starts with "Follow system text size" (on): the steps then apply on top of iOS Larger Text or Android's font
+  size, which the heads pass in (A15).
+- While reading on desktop: one Aa, left of the gear in the sidebar's status bar, opens a popover upward: "Text size"
+  and the value, Feeds | List | Article as segments, the slider, and Standard. No scrim, so the panes change as the
+  slider moves; it hangs over the sidebar and the list, never over the article column, so nothing covers the native
+  view (L9). ⌘/Ctrl + / − / 0 step the article, or the pane chosen while the popover is open; focus usually sits in
+  the list while reading, so following focus would size the wrong pane. No menu item: Aa and Settings cover it.
+- While reading on the phone, the same on iOS and Android: Aa on the Feeds root, the list and the article opens one
+  sheet with that page's pane chosen. No scrim, so the page above is the preview, and a tap on it closes the sheet.
+  The sheet sizes text only; the theme stays under Appearance. No pinch.
+- The slider: the accent up to the knob, `Ink.Secondary` at 30 % after it, which shows on a card and on a panel in
+  every palette where `Bg.Pill` vanishes on a dark panel. Segments as D26's.
+

@@ -29,6 +29,13 @@
         </Style>
     </Style>
 
+    <!-- An icon button whose popover is open (Aa, D31): washed, in the accent. -->
+    <Style Selector="Button.icon.on /template/ ContentPresenter#PART_ContentPresenter,
+                     Button.icon.on:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource Brush.Bg.Hover}" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Accent}" />
+    </Style>
+
     <!-- Segments of the FilterBar: 28 × 22 icons; the selected one is raised with an accent icon. -->
     <Style Selector="Button.filter-segment">
         <Setter Property="Background" Value="Transparent" />

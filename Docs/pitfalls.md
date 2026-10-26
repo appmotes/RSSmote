@@ -251,5 +251,11 @@ or at the start of the slide (`dumpsys activity top`: `WebView … 1080,252-2160
 the slide did not move it. `MobileShell` pushes an article without a transition when `ArticleHost` uses the native
 view; then the web view sits at `0,252-1080,2205`. Measured on the API 35 emulator (Release); iOS does the same
 (P16). Like an overlay panel
-on desktop (L9), a sheet over the article sets `IsObscured`, or the web view would cover it.
+on desktop (L9), a sheet over the article must keep clear of the web view: the text sheet ends the article above
+itself by a bottom margin on `ArticleHost` (D31); on a device that margin is not yet seen to move the view (N21).
+
+**L16 — A horizontal `StackPanel` measures its children with unlimited width, so `TextTrimming` never trims.** The
+sidebar's status text ("Today at 12:37 PM · 64 feeds") sat in one beside the status dot and ran on under Aa once Aa
+joined the gear (D31), with no ellipsis. Text that must stop short of its neighbours goes in a `Grid` with a `*`
+column. Seen in the running app on macOS.
 

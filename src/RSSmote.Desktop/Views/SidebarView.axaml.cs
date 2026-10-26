@@ -17,6 +17,18 @@ public partial class SidebarView : UserControl
         Rows.AddHandler(ContextRequestedEvent, OnRowContextRequested);
     }
 
+    /// <summary>While the Aa popover is open, ⌘/Ctrl + and − size its pane (D31).</summary>
+    private void OnTextSizeOpened(object? sender, EventArgs e) => SetTextSizeOpen(true);
+
+    private void OnTextSizeClosed(object? sender, EventArgs e) => SetTextSizeOpen(false);
+
+    private void SetTextSizeOpen(bool open)
+    {
+        if (DataContext is ShellViewModel shell)
+            shell.Settings.IsTextSizeOpen = open;
+        TextSizeButton.Classes.Set("on", open);
+    }
+
     /// <summary>The context menu last opened on a row; for tests.</summary>
     internal ContextMenu? OpenMenu { get; private set; }
 

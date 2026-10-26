@@ -60,16 +60,29 @@ public sealed class SettingsStoreTests : IDisposable
     }
 
     [Fact]
+    public void A_stored_article_size_in_points_becomes_the_nearest_step() // D31
+    {
+        Directory.CreateDirectory(_folder);
+        File.WriteAllText(SettingsPath, """{ "articleFontSize": 18, "articleFont": "Serif" }""");
+
+        var store = new SettingsStore(SettingsPath);
+        Assert.Equal(110, store.Current.ArticleTextSize);
+        Assert.Null(store.Current.ArticleFontSize);
+        store.Update(s => s.ListTextSize = 120);
+        Assert.DoesNotContain("articleFont", File.ReadAllText(SettingsPath));
+    }
+
+    [Fact]
     public void Out_of_range_values_are_normalised()
     {
         var store = new SettingsStore(SettingsPath);
         store.Update(s =>
         {
-            s.ArticleFontSize = 99;
+            s.ListTextSize = 99;
             s.RefreshIntervalMinutes = 7;
             s.KeepArchivedDays = -3;
         });
-        Assert.Equal(AppSettings.MaxFontSize, store.Current.ArticleFontSize);
+        Assert.Equal(100, store.Current.ListTextSize);
         Assert.Equal(30, store.Current.RefreshIntervalMinutes);
         Assert.Equal(0, store.Current.KeepArchivedDays);
     }

@@ -1,0 +1,39 @@
+<!-- The Aa popover (D31): which pane, and its size on a slider. The panes change as the slider moves. -->
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:RSSmote.App.ViewModels"
+             x:Class="RSSmote.Desktop.Views.TextSizePopover"
+             x:DataType="vm:SettingsViewModel"
+             Width="272">
+    <StackPanel Spacing="10">
+        <Grid ColumnDefinitions="*,Auto">
+            <TextBlock Text="Text size" FontSize="13" FontWeight="SemiBold" VerticalAlignment="Center"
+                       Foreground="{DynamicResource Brush.Ink.Primary}" />
+            <TextBlock Grid.Column="1" Classes="settingsValue" Text="{Binding PaneSizeText}" FontFeatures="+tnum" />
+        </Grid>
+        <Border Classes="textSegments">
+            <ItemsControl ItemsSource="{Binding Panes}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <UniformGrid Rows="1" />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate x:DataType="vm:ChoiceViewModel">
+                        <Button Classes="textSegment" Classes.on="{Binding IsChecked}" Content="{Binding Header}"
+                                Command="{Binding Command}" CommandParameter="{Binding Key}" />
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </Border>
+        <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="6">
+            <Button Classes="textStep" Content="A" FontSize="12" ToolTip.Tip="Smaller"
+                    Command="{Binding SmallerCommand}" CommandParameter="{Binding SelectedPane}" />
+            <Slider Grid.Column="1" Classes="textSize" Maximum="{Binding MaxTextStep}" Value="{Binding PaneStep}" />
+            <Button Grid.Column="2" Classes="textStep" Content="A" FontSize="18" ToolTip.Tip="Larger"
+                    Command="{Binding LargerCommand}" CommandParameter="{Binding SelectedPane}" />
+        </Grid>
+        <Button Classes="settingsLink small" Content="Standard" HorizontalAlignment="Right" Margin="0,-6,0,0"
+                Command="{Binding StandardSizeCommand}" CommandParameter="{Binding SelectedPane}" />
+    </StackPanel>
+</UserControl>

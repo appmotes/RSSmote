@@ -14,7 +14,7 @@ public sealed class ShellViewModelTests : IDisposable
     public void Unread_filter_lists_only_feeds_with_unread_items()
     {
         var titles = _f.Shell.Sidebar.Rows.Select(r => r.Title).ToList();
-        Assert.Equal(["Unread", "Folders", "Apple", "Feeds", "WIRED"], titles);
+        Assert.Equal(["Unread", "Starred", "All Items", "Folders", "Apple", "Feeds", "WIRED"], titles);
         Assert.Equal(4, _f.Row("Unread").Count);
         Assert.Equal(3, _f.Row("Apple").Count);
         Assert.DoesNotContain("Tech", titles);
@@ -30,6 +30,35 @@ public sealed class ShellViewModelTests : IDisposable
 
         _f.Shell.ShowFilterCommand.Execute(StreamFilter.Starred);
         Assert.Equal(StreamFilter.Starred, _f.Row("Starred").Filter);
+    }
+
+    /// <summary>A stream row picks all feeds with its filter; a folder keeps the filter, and the filter bar changes it (D10).</summary>
+    [Fact]
+    public void The_three_stream_rows_pick_all_feeds_with_their_filter_and_a_folder_keeps_it()
+    {
+        var sidebar = _f.Shell.Sidebar;
+        _f.Shell.Settings.HideEmptyFeeds = false;
+        sidebar.SelectedRow = _f.Row("Starred");
+        _f.Shell.FlushPendingReload();
+        Assert.Equal(StreamFilter.Starred, _f.Settings.Current.Filter);
+        Assert.Equal("Starred", sidebar.SelectedRow?.Title);
+        Assert.Equal(new ArticleStream.All(), sidebar.SelectedStream);
+        Assert.Equal(4, _f.Row("Unread").Count);
+
+        sidebar.SelectedRow = _f.Row("Apple");
+        _f.Shell.ShowFilterCommand.Execute(StreamFilter.All);
+        _f.Shell.FlushPendingReload();
+        Assert.Equal("Apple", sidebar.SelectedRow?.Title);
+        Assert.Equal(StreamFilter.All, _f.Settings.Current.Filter);
+        Assert.Equal(4, _f.Row("Unread").Count);
+
+        sidebar.SelectedRow = _f.Row("Unread");
+        _f.Shell.FlushPendingReload();
+        Assert.Equal(new ArticleStream.All(), sidebar.SelectedStream);
+        Assert.Equal(StreamFilter.Unread, _f.Settings.Current.Filter);
+        _f.Shell.ShowFilterCommand.Execute(StreamFilter.Starred);
+        _f.Shell.FlushPendingReload();
+        Assert.Equal("Starred", sidebar.SelectedRow?.Title);
     }
 
     [Fact]
@@ -69,7 +98,7 @@ public sealed class ShellViewModelTests : IDisposable
         _f.Store.AddFeed("https://empty.example/rss", "Empty Feed", null, null);
         _f.Shell.Settings.HideEmptyFeeds = false;
         _f.Shell.FlushPendingReload();
-        Assert.Equal(["Unread", "Folders", "Apple", "Tech", "Feeds", "Empty Feed", "Quiet Feed", "WIRED"],
+        Assert.Equal(["Unread", "Starred", "All Items", "Folders", "Apple", "Tech", "Feeds", "Empty Feed", "Quiet Feed", "WIRED"],
             _f.Shell.Sidebar.Rows.Select(r => r.Title));
         Assert.Equal(0, _f.Row("Quiet Feed").Count);
 
@@ -286,12 +315,22 @@ public sealed class ShellViewModelTests : IDisposable
     }
 
     [Fact]
-    public void Font_settings_reach_the_article()
+    public void The_size_keys_change_the_article_or_the_pane_chosen_in_the_open_popover()
     {
         _f.Shell.ChangeFontSizeCommand.Execute(2);
-        _f.Settings.Update(s => s.ArticleFont = ArticleFont.Serif);
-        Assert.Equal(AppSettings.DefaultFontSize + 2, _f.Shell.Article.FontSize);
-        Assert.Equal(ArticleFont.Serif, _f.Shell.Article.Font);
+        Assert.Equal(120, _f.Settings.Current.ArticleTextSize);
+        Assert.Equal(19.2, _f.Shell.Settings.ArticleFontSize, 3);
+
+        _f.Shell.Settings.SelectedPane = TextPane.List;
+        _f.Shell.Settings.IsTextSizeOpen = true;
+        _f.Shell.ChangeFontSizeCommand.Execute(1);
+        Assert.Equal(110, _f.Settings.Current.ListTextSize);
+        Assert.Equal(1.1, _f.Shell.Settings.ListScale, 3);
+
+        _f.Shell.Settings.IsTextSizeOpen = false;
+        _f.Shell.ChangeFontSizeCommand.Execute(0);
+        Assert.Equal(AppSettings.StandardTextSize, _f.Settings.Current.ArticleTextSize);
+        Assert.Equal(110, _f.Settings.Current.ListTextSize);
     }
 
     [Fact]

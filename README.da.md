@@ -57,7 +57,7 @@ Hele appen kan styres uden mus. Tasterne virker ikke, mens du skriver i et felt.
 | `⌘F` | Gå til filterfeltet; `esc` rydder det |
 | `⌘,` | Indstillinger: tilføj, ret og fjern feeds, import, eksport, udseende; `esc` går tilbage |
 | `⌘N` | Tilføj feed (i Indstillinger) |
-| `⌘+` `⌘−` `⌘0` | Større / mindre / normal tekst i artiklen |
+| `⌘+` `⌘−` `⌘0` | Større / mindre / standard tekst i artiklen, eller i den rude der er valgt under **Aa**, mens den er åben |
 
 Uden en artikel valgt viser højre side de vigtigste genveje:
 
@@ -88,8 +88,9 @@ indstillinger og samme ti temaer. Billederne herunder viser iPhone.
 
 - **Én stak:** Feeds → liste → artikel. Swipe fra kanten eller tryk tilbage for at gå tilbage. Indstillinger er den
   anden fane.
-- **Læsning:** forrige og næste er knapper i bundbjælken, ikke swipes. **Aa** sætter tekststørrelse, skrift og lyst
-  eller mørkt.
+- **Læsning:** forrige og næste er knapper i bundbjælken, ikke swipes. **Aa** på Feeds-siden, listen og artiklen
+  sætter sidens tekststørrelse. Indstillinger ▸ Text sætter alle tre og kan følge
+  systemets tekststørrelse.
 - **Feeds** tilføjes, rettes, fjernes, importeres og eksporteres under Indstillinger, som på skrivebordet. Fjern
   spørger i et ark nedefra.
 - **Opdatering:** træk ned på Feeds, eller kom tilbage til appen, når opdateringsintervallet er gået.

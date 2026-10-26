@@ -215,6 +215,44 @@ public class SettingsWindowTests
         window.Close();
     }
 
+    /// <summary>Aa beside the gear opens the popover; its slider sizes the chosen pane at once, and ⌘+ follows it (D31).</summary>
+    [AvaloniaTheory]
+    [InlineData("Sand")]
+    [InlineData("Ember")]
+    public void Aa_opens_the_text_size_popover_and_the_list_grows_as_its_slider_moves(string palette)
+    {
+        using var f = new ShellFixture();
+        var window = Show(f, palette);
+        var aa = window.GetVisualDescendants().OfType<Button>().Single(b => b.Name == "TextSizeButton");
+        f.Shell.Sidebar.StatusText = "Today at 12:37 PM · 64 feeds";
+        Settle();
+        var status = window.GetVisualDescendants().OfType<TextBlock>().Single(t => t.Text == f.Shell.Sidebar.StatusText);
+        Assert.True(status.TranslatePoint(new Point(status.Bounds.Width, 0), window)!.Value.X
+                    <= aa.TranslatePoint(default, window)!.Value.X, "the status text runs under Aa (L16)");
+        Click(window, aa);
+        Settle();
+        Assert.True(f.Shell.Settings.IsTextSizeOpen);
+        var popover = Assert.IsType<TextSizePopover>(((Flyout)aa.Flyout!).Content);
+        Assert.Same(f.Shell.Settings, popover.DataContext);
+
+        f.Shell.Settings.Panes[1].Command.Execute(TextPane.List);
+        f.Shell.Settings.PaneStep = 5;
+        Settle();
+        Assert.Equal(135, f.Settings.Current.ListTextSize);
+        var scaled = window.GetVisualDescendants().OfType<Scaled>()
+            .First(s => s.GetVisualDescendants().OfType<App.Controls.Templates.ArticleRow>().Any());
+        Assert.Equal(1.35, Scaled.GetFactor(scaled), 3);
+        ShellRenderTests.Save(window, $"text-size-list-{palette}");
+
+        f.Shell.ChangeFontSizeCommand.Execute(1);
+        Assert.Equal(150, f.Settings.Current.ListTextSize);
+        Assert.Equal(100, f.Settings.Current.ArticleTextSize);
+        ((Flyout)aa.Flyout!).Hide();
+        Settle();
+        Assert.False(f.Shell.Settings.IsTextSizeOpen);
+        window.Close();
+    }
+
     /// <summary>Every page of the design canvas, in Sand and Ember, into bin/…/snapshots (D19).</summary>
     [AvaloniaTheory]
     [InlineData("Sand")]
@@ -239,6 +277,10 @@ public class SettingsWindowTests
         mode.Show(SettingsSection.Appearance);
         Settle();
         ShellRenderTests.Save(window, $"settings-appearance-{palette}");
+
+        mode.Show(SettingsSection.Text);
+        Settle();
+        ShellRenderTests.Save(window, $"settings-text-{palette}");
 
         mode.Show(SettingsSection.ManageFeeds);
         Settle();

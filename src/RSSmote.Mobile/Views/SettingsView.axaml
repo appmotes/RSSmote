@@ -55,14 +55,27 @@
 
             <TextBlock Classes="phoneGroup" Text="Display" />
             <Border Classes="phoneCard">
-                <Button Classes="phoneRow" Click="OnAppearanceClick">
-                    <Grid ColumnDefinitions="Auto,*,Auto,Auto" ColumnSpacing="12">
-                        <c:Icon Classes="lead" Data="{StaticResource Icon.Palette}" />
-                        <TextBlock Grid.Column="1" Text="Appearance" VerticalAlignment="Center" />
-                        <TextBlock Grid.Column="2" Classes="phoneValue" Text="{Binding Settings.AppearanceText}" />
-                        <c:Icon Grid.Column="3" Classes="chevron" />
-                    </Grid>
-                </Button>
+                <StackPanel>
+                    <Border Classes="phoneRowLine">
+                        <Button Classes="phoneRow" Click="OnAppearanceClick">
+                            <Grid ColumnDefinitions="Auto,*,Auto,Auto" ColumnSpacing="12">
+                                <c:Icon Classes="lead" Data="{StaticResource Icon.Palette}" />
+                                <TextBlock Grid.Column="1" Text="Appearance" VerticalAlignment="Center" />
+                                <TextBlock Grid.Column="2" Classes="phoneValue" Text="{Binding Settings.AppearanceText}" />
+                                <c:Icon Grid.Column="3" Classes="chevron" />
+                            </Grid>
+                        </Button>
+                    </Border>
+                    <Border Classes="phoneRowLine last">
+                        <Button Classes="phoneRow" Click="OnTextClick">
+                            <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+                                <c:Icon Classes="lead" Data="{StaticResource Icon.TextSize}" />
+                                <TextBlock Grid.Column="1" Text="Text" VerticalAlignment="Center" />
+                                <c:Icon Grid.Column="2" Classes="chevron" />
+                            </Grid>
+                        </Button>
+                    </Border>
+                </StackPanel>
             </Border>
 
             <TextBlock Classes="phoneGroup" Text="Articles" />

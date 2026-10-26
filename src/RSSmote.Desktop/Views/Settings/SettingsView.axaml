@@ -72,6 +72,13 @@
                                 <TextBlock Text="Appearance" VerticalAlignment="Center" />
                             </StackPanel>
                         </Button>
+                        <Button Classes="settingsMenu" Command="{Binding ShowCommand}" CommandParameter="{x:Static vm:SettingsSection.Text}"
+                                Classes.selected="{Binding Section, Converter={x:Static s:SettingsConverters.SectionIs}, ConverterParameter=Text}">
+                            <StackPanel Orientation="Horizontal" Spacing="10">
+                                <c:Icon Data="{StaticResource Icon.TextSize}" />
+                                <TextBlock Text="Text" VerticalAlignment="Center" />
+                            </StackPanel>
+                        </Button>
 
                         <TextBlock Classes="settingsMenuSection" Text="Reading" />
                         <Button Classes="settingsMenu" Command="{Binding ShowCommand}" CommandParameter="{x:Static vm:SettingsSection.Reading}"
@@ -115,6 +122,9 @@
                         </DataTemplate>
                         <DataTemplate x:DataType="vm:AppearancePageViewModel">
                             <s:AppearanceView />
+                        </DataTemplate>
+                        <DataTemplate x:DataType="vm:TextPageViewModel">
+                            <s:TextView />
                         </DataTemplate>
                         <DataTemplate x:DataType="vm:AddFeedViewModel">
                             <s:AddFeedView />

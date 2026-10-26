@@ -59,7 +59,7 @@ The whole app can be driven without a mouse. The keys do nothing while you type 
 | `⌘F` | Go to the filter box; `esc` clears it |
 | `⌘,` | Settings: add, edit and remove feeds, import, export, appearance; `esc` goes back |
 | `⌘N` | Add a feed (in Settings) |
-| `⌘+` `⌘−` `⌘0` | Larger / smaller / normal text in the article |
+| `⌘+` `⌘−` `⌘0` | Larger / smaller / standard text in the article, or in the pane chosen under **Aa** while it is open |
 
 With no article selected, the right side shows the most important shortcuts:
 
@@ -89,8 +89,9 @@ settings and the same ten themes. The screens below show the iPhone.
 | Feeds: streams, folders and feeds with unread counts | The list: titles over three lines, thumbnails, the filter in the bottom bar | The article: the bars step aside while you scroll down | Settings: feeds, appearance, reading and refresh |
 
 - **One stack:** Feeds → list → article. Swipe from the edge or tap back to return. Settings is the second tab.
-- **Reading:** previous and next are buttons in the bottom bar, not swipes. **Aa** sets the text size, the typeface
-  and light or dark.
+- **Reading:** previous and next are buttons in the bottom bar, not swipes. **Aa** on the Feeds page, the list and the
+  article sets that page's text size. Settings ▸ Text sets all three and can
+  follow the system's text size.
 - **Feeds** are added, edited, removed, imported and exported under Settings, as on the desktop. Removing asks in a
   sheet from the bottom.
 - **Refresh:** pull down on Feeds, or come back to the app after the refresh interval has passed.

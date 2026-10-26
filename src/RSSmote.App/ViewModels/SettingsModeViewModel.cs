@@ -14,11 +14,15 @@ public enum SettingsSection
     ImportFeeds,
     ExportFeeds,
     Appearance,
+    Text,
     Reading,
 }
 
 /// <summary>Appearance: the mode, a palette per slot and the favicon switches.</summary>
 public sealed record AppearancePageViewModel(SettingsViewModel Settings);
+
+/// <summary>Text: a size for each pane (D31).</summary>
+public sealed record TextPageViewModel(SettingsViewModel Settings);
 
 /// <summary>Articles &amp; Refresh: the reading switches and the two refresh pickers.</summary>
 public sealed record ReadingPageViewModel(SettingsViewModel Settings);
@@ -60,6 +64,7 @@ public sealed partial class SettingsModeViewModel : ObservableObject, IDisposabl
         ImportFeedsViewModel => "Import Feeds",
         ExportFeedsViewModel => "Export Feeds",
         AppearancePageViewModel => "Appearance",
+        TextPageViewModel => "Text",
         _ => "Articles & Refresh",
     };
 
@@ -112,6 +117,7 @@ public sealed partial class SettingsModeViewModel : ObservableObject, IDisposabl
             SettingsSection.ImportFeeds => NewImportFeeds(),
             SettingsSection.ExportFeeds => _shell.CreateExportFeeds(),
             SettingsSection.Appearance => new AppearancePageViewModel(_shell.Settings),
+            SettingsSection.Text => new TextPageViewModel(_shell.Settings),
             _ => new ReadingPageViewModel(_shell.Settings),
         });
         OnPageChanged();

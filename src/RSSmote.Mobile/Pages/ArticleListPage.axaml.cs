@@ -4,6 +4,7 @@ using Avalonia.Interactivity;
 using Avalonia.VisualTree;
 using RSSmote.App.ViewModels;
 using RSSmote.Core.Models;
+using RSSmote.Mobile.Shell;
 
 namespace RSSmote.Mobile.Pages;
 
@@ -23,6 +24,8 @@ public partial class ArticleListPage : ContentPage
     }
 
     public ArticleListPage(ShellViewModel shell) : this() => DataContext = shell;
+
+    private void OnTextClick(object? sender, RoutedEventArgs e) => MobileShell.Of(this)?.ShowTextSheet(TextPane.List);
 
     private ShellViewModel? Shell => DataContext as ShellViewModel;
 

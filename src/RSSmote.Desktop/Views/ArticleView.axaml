@@ -109,8 +109,7 @@
                     </c:EmptyState>
                     <c:ArticleHost x:Name="Host" IsVisible="{Binding Article.HasArticle}"
                                    Document="{Binding Article.Document}"
-                                   ArticleFont="{Binding Article.Font}"
-                                   ArticleFontSize="{Binding Article.FontSize}"
+                                   ArticleFontSize="{Binding Settings.ArticleFontSize}"
                                    IsObscured="{Binding IsSettingsOpen}"
                                    LinkClicked="OnLinkClicked" />
                 </Panel>

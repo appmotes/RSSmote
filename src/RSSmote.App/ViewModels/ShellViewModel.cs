@@ -49,7 +49,6 @@ public sealed partial class ShellViewModel : ObservableObject, IDisposable
         Sidebar = new SidebarViewModel(store, settings, images, ui, layout);
         List = new ArticleListViewModel(store, settings, images, ui, clock, id => store.Feed(id));
         Article = new ArticleViewModel();
-        Article.ApplySettings(settings.Current);
         Settings = new SettingsViewModel(settings);
         _reload = new Debouncer(clock, ReloadDelay, ui, ReloadAll);
         _recount = new Debouncer(clock, ReloadDelay, ui, () => Sidebar.Reload());
@@ -165,7 +164,6 @@ public sealed partial class ShellViewModel : ObservableObject, IDisposable
         var previous = _lastSettings;
         _lastSettings = settings;
         Settings.Apply(settings);
-        Article.ApplySettings(settings);
         if (previous.Filter != settings.Filter || previous.SortNewestFirst != settings.SortNewestFirst
             || previous.GroupByDate != settings.GroupByDate || previous.DisplayFavicons != settings.DisplayFavicons
             || previous.GrayscaleFavicons != settings.GrayscaleFavicons || previous.HideEmptyFeeds != settings.HideEmptyFeeds
@@ -391,7 +389,7 @@ public sealed partial class ShellViewModel : ObservableObject, IDisposable
         Sidebar.Select(new ArticleStream.OfFeed(feed.Id));
     }
 
+    /// <summary>⌘/Ctrl + / − / 0: a step for the article, or for the pane chosen in the open Aa popover (D31).</summary>
     [RelayCommand]
-    private void ChangeFontSize(int delta) =>
-        _settings.Update(s => s.ArticleFontSize = delta == 0 ? AppSettings.DefaultFontSize : s.ArticleFontSize + delta);
+    private void ChangeFontSize(int delta) => Settings.ChangeTextSize(Settings.KeyPane, delta);
 }

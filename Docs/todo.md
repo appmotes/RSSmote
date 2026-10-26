@@ -61,3 +61,9 @@ signature with notarisation on macOS, and Authenticode on Windows, so the first-
 `Last-Modified` per feed (schema version 2, two nullable columns on `feeds`, A8), send `If-None-Match` and
 `If-Modified-Since`, and skip parsing on 304. Done when a test server sees both headers on the second refresh and a
 304 leaves the feed's items and `last_error` untouched.
+
+**N21 — Check text sizes by hand (D31).** On macOS, Windows and Linux, the iPhone simulator and the API 35 emulator:
+rows at 85 % and 175 % are sharp, not blurred by `Scaled`; on desktop the Aa popover opens above the gear over the
+list, and ⌘/Ctrl + changes its pane while the slider has the keyboard; on the phones the article's native view ends
+at the top of the text sheet instead of covering it (P29), and changing Larger Text (iOS) or the font size (Android)
+while RSSmote runs resizes the panes. Done when each is seen.

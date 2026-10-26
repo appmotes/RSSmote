@@ -14,8 +14,11 @@ public class AndroidApp : AvaloniaAndroidApplication<App.App>
     {
     }
 
+    /// <summary>The phone shell; <see cref="MainActivity"/> hands it the system's font size (D31).</summary>
+    internal MobileShellHost Host { get; } = new();
+
     protected override AppBuilder CreateAppBuilder() =>
-        AppBuilder.Configure(() => new App.App { Host = new MobileShellHost() }).UseAndroid();
+        AppBuilder.Configure(() => new App.App { Host = Host }).UseAndroid();
 
     protected override AppBuilder CustomizeAppBuilder(AppBuilder builder) => base.CustomizeAppBuilder(builder).WithInterFont();
 }

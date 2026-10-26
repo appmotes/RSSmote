@@ -15,6 +15,10 @@
                        Foreground="{DynamicResource Brush.Accent}" />
         </StackPanel>
     </NavigationPage.BackButtonContent>
+    <NavigationPage.TopCommandBar>
+        <Button x:Name="TextButton" Classes="phoneBarText" Content="Aa" FontWeight="SemiBold" Margin="0,0,6,0"
+                Click="OnTextClick" ToolTip.Tip="Text" />
+    </NavigationPage.TopCommandBar>
     <ContentPage.BottomCommandBar>
         <Border Padding="{Binding $parent[ContentPage].SafeAreaPadding, Converter={x:Static v:PhoneConverters.BottomInset}}" Background="{DynamicResource Brush.Bg.List}"
                 BorderBrush="{DynamicResource Brush.Line.Separator}" BorderThickness="0,1,0,0">
@@ -64,46 +68,50 @@
             <StackPanel>
                 <TextBlock Classes="phoneLargeTitle" Text="{Binding List.Title}" Margin="20,2,20,0" />
                 <TextBlock Classes="phoneSecondary" Text="{Binding List.PhoneSubtitle}" Margin="20,2,20,6" />
-                <ListBox x:Name="Rows" Classes="phoneList" ItemsSource="{Binding List.Rows}" AutoScrollToSelectedItem="False"
+                <ListBox x:Name="Rows" Classes="phoneList" c:Scaled.Factor="{Binding Settings.ListScale}" ItemsSource="{Binding List.Rows}" AutoScrollToSelectedItem="False"
                          ScrollViewer.VerticalScrollBarVisibility="Disabled"
                          SelectedItem="{Binding List.SelectedRow}" Background="Transparent">
                     <ListBox.DataTemplates>
                         <DataTemplate x:DataType="vm:DateHeaderViewModel">
-                            <Grid ColumnDefinitions="*,Auto" Margin="20,18,20,6">
-                                <TextBlock Classes="caps" Text="{Binding Title}" />
-                                <TextBlock Grid.Column="1" Classes="caps" Text="{Binding Count}" />
-                            </Grid>
+                            <c:Scaled>
+                                <Grid ColumnDefinitions="*,Auto" Margin="20,18,20,6">
+                                    <TextBlock Classes="caps" Text="{Binding Title}" />
+                                    <TextBlock Grid.Column="1" Classes="caps" Text="{Binding Count}" />
+                                </Grid>
+                            </c:Scaled>
                         </DataTemplate>
                         <DataTemplate x:DataType="vm:ArticleRowViewModel">
-                            <Border Classes="phoneRowLine">
-                                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="14" Margin="20,12,20,14">
-                                    <StackPanel Spacing="4">
-                                        <Grid ColumnDefinitions="Auto,*,Auto,Auto" ColumnSpacing="8">
-                                            <c:Favicon Size="16" Radius="4" VerticalAlignment="Center"
-                                                       Source="{Binding Favicon}" Title="{Binding FeedTitle}"
-                                                       IsGrayscale="{Binding IsFaviconGrayscale}"
-                                                       TileBrush="{DynamicResource Brush.Bg.FaviconTile}"
-                                                       LetterBrush="{DynamicResource Brush.Ink.OnTile}" />
-                                            <TextBlock Grid.Column="1" Classes="phoneMeta" Text="{Binding FeedTitle}"
-                                                       TextTrimming="CharacterEllipsis" />
-                                            <c:Icon Grid.Column="2" Data="{StaticResource Icon.Star}" Size="14" IsFilled="True"
-                                                    Foreground="{DynamicResource Brush.Accent}" IsVisible="{Binding IsStarred}"
-                                                    VerticalAlignment="Center" />
-                                            <TextBlock Grid.Column="3" Classes="phoneMeta" Text="{Binding TimeText}" />
-                                        </Grid>
-                                        <TextBlock Classes="phoneItemTitle" Classes.read="{Binding !IsUnread}"
-                                                   Text="{Binding Title}" />
-                                        <TextBlock Classes="phoneSecondary" Text="{Binding Summary}"
-                                                   MaxLines="1" TextTrimming="CharacterEllipsis" />
-                                    </StackPanel>
-                                    <Border Grid.Column="1" Width="{StaticResource Size.Phone.Thumb}"
-                                            Height="{StaticResource Size.Phone.Thumb}" CornerRadius="9" ClipToBounds="True"
-                                            VerticalAlignment="Top" Margin="0,22,0,0"
-                                            Background="{DynamicResource Brush.Bg.Pill}" IsVisible="{Binding HasThumbnail}">
-                                        <Image Source="{Binding Thumbnail}" Stretch="UniformToFill" />
-                                    </Border>
-                                </Grid>
-                            </Border>
+                            <c:Scaled>
+                                <Border Classes="phoneRowLine">
+                                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="14" Margin="20,12,20,14">
+                                        <StackPanel Spacing="4">
+                                            <Grid ColumnDefinitions="Auto,*,Auto,Auto" ColumnSpacing="8">
+                                                <c:Favicon Size="16" Radius="4" VerticalAlignment="Center"
+                                                           Source="{Binding Favicon}" Title="{Binding FeedTitle}"
+                                                           IsGrayscale="{Binding IsFaviconGrayscale}"
+                                                           TileBrush="{DynamicResource Brush.Bg.FaviconTile}"
+                                                           LetterBrush="{DynamicResource Brush.Ink.OnTile}" />
+                                                <TextBlock Grid.Column="1" Classes="phoneMeta" Text="{Binding FeedTitle}"
+                                                           TextTrimming="CharacterEllipsis" />
+                                                <c:Icon Grid.Column="2" Data="{StaticResource Icon.Star}" Size="14" IsFilled="True"
+                                                        Foreground="{DynamicResource Brush.Accent}" IsVisible="{Binding IsStarred}"
+                                                        VerticalAlignment="Center" />
+                                                <TextBlock Grid.Column="3" Classes="phoneMeta" Text="{Binding TimeText}" />
+                                            </Grid>
+                                            <TextBlock Classes="phoneItemTitle" Classes.read="{Binding !IsUnread}"
+                                                       Text="{Binding Title}" />
+                                            <TextBlock Classes="phoneSecondary" Text="{Binding Summary}"
+                                                       MaxLines="1" TextTrimming="CharacterEllipsis" />
+                                        </StackPanel>
+                                        <Border Grid.Column="1" Width="{StaticResource Size.Phone.Thumb}"
+                                                Height="{StaticResource Size.Phone.Thumb}" CornerRadius="9" ClipToBounds="True"
+                                                VerticalAlignment="Top" Margin="0,22,0,0"
+                                                Background="{DynamicResource Brush.Bg.Pill}" IsVisible="{Binding HasThumbnail}">
+                                            <Image Source="{Binding Thumbnail}" Stretch="UniformToFill" />
+                                        </Border>
+                                    </Grid>
+                                </Border>
+                            </c:Scaled>
                         </DataTemplate>
                     </ListBox.DataTemplates>
                 </ListBox>

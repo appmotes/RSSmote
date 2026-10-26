@@ -67,24 +67,28 @@
                                   Classes.searching="{Binding List.IsSearching}"
                                   Title="{Binding List.EmptyTitle}" Subtitle="{Binding List.EmptySubtitle}"
                                   IsVisible="{Binding List.IsEmpty}" />
-                    <ListBox x:Name="Rows" Classes="articles"
+                    <ListBox x:Name="Rows" Classes="articles" c:Scaled.Factor="{Binding Settings.ListScale}"
                              ItemsSource="{Binding List.Rows}"
                              SelectedItem="{Binding List.SelectedRow}">
                         <ListBox.DataTemplates>
                             <DataTemplate DataType="vm:DateHeaderViewModel">
                                 <!-- 10 + the 6 pt tile inset puts the heading on the 16 pt edge. -->
-                                <Grid Height="{StaticResource Size.DateHeader.Height}" Margin="10,0" ColumnDefinitions="*,Auto">
-                                    <TextBlock Classes="caps" Text="{Binding Title}" VerticalAlignment="Center" />
-                                    <TextBlock Grid.Column="1" Classes="caps" Text="{Binding Count}" VerticalAlignment="Center"
-                                               FontFeatures="+tnum" />
-                                </Grid>
+                                <c:Scaled>
+                                    <Grid Height="{StaticResource Size.DateHeader.Height}" Margin="10,0" ColumnDefinitions="*,Auto">
+                                        <TextBlock Classes="caps" Text="{Binding Title}" VerticalAlignment="Center" />
+                                        <TextBlock Grid.Column="1" Classes="caps" Text="{Binding Count}" VerticalAlignment="Center"
+                                                   FontFeatures="+tnum" />
+                                    </Grid>
+                                </c:Scaled>
                             </DataTemplate>
                             <DataTemplate DataType="vm:ArticleRowViewModel">
-                                <c:ArticleRow FeedTitle="{Binding FeedTitle}" TimeText="{Binding TimeText}"
-                                              Title="{Binding Title}" Summary="{Binding Summary}"
-                                              IsUnread="{Binding IsUnread}" IsStarred="{Binding IsStarred}"
-                                              Favicon="{Binding Favicon}" IsFaviconGrayscale="{Binding IsFaviconGrayscale}"
-                                              Thumbnail="{Binding Thumbnail}" HasThumbnail="{Binding HasThumbnail}" />
+                                <c:Scaled>
+                                    <c:ArticleRow FeedTitle="{Binding FeedTitle}" TimeText="{Binding TimeText}"
+                                                  Title="{Binding Title}" Summary="{Binding Summary}"
+                                                  IsUnread="{Binding IsUnread}" IsStarred="{Binding IsStarred}"
+                                                  Favicon="{Binding Favicon}" IsFaviconGrayscale="{Binding IsFaviconGrayscale}"
+                                                  Thumbnail="{Binding Thumbnail}" HasThumbnail="{Binding HasThumbnail}" />
+                                </c:Scaled>
                             </DataTemplate>
                         </ListBox.DataTemplates>
                     </ListBox>

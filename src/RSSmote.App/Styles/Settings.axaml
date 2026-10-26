@@ -392,4 +392,50 @@
         <Setter Property="TextWrapping" Value="Wrap" />
         <Setter Property="Foreground" Value="{DynamicResource Brush.Ink.Primary}" />
     </Style>
+
+    <!-- Text size (D31): the Aa popover beside the gear, and a segmented choice of pane in it and on the page. -->
+    <Style Selector="FlyoutPresenter.textSize">
+        <Setter Property="Background" Value="{DynamicResource Brush.Bg.Panel}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Line.Separator}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="{StaticResource CornerRadius.Card}" />
+        <Setter Property="Padding" Value="14,12,14,8" />
+        <Setter Property="MaxWidth" Value="320" />
+    </Style>
+    <Style Selector="Border.textSegments">
+        <Setter Property="Background" Value="{DynamicResource Brush.Bg.Pill}" />
+        <Setter Property="CornerRadius" Value="8" />
+        <Setter Property="Padding" Value="2" />
+    </Style>
+    <Style Selector="Button.textSegment">
+        <Setter Property="Height" Value="26" />
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+        <Setter Property="HorizontalContentAlignment" Value="Center" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="CornerRadius" Value="6" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="FontSize" Value="13" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Ink.Primary}" />
+        <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter, ^:pressed /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource Brush.Bg.Hover}" />
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Ink.Primary}" />
+        </Style>
+        <Style Selector="^:pressed">
+            <Setter Property="RenderTransform" Value="none" />
+        </Style>
+    </Style>
+    <Style Selector="Button.textSegment.on">
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Style Selector="^ /template/ ContentPresenter#PART_ContentPresenter, ^:pointerover /template/ ContentPresenter#PART_ContentPresenter, ^:pressed /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource Brush.Bg.Segment}" />
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Accent}" />
+            <Setter Property="BoxShadow" Value="{DynamicResource BoxShadows.Raised}" />
+        </Style>
+    </Style>
+    <!-- A slider row on the Text page: the pane and its size, then the slider between a small and a large A. -->
+    <Style Selector="StackPanel.settingsSliderRow">
+        <Setter Property="Margin" Value="14,10,14,8" />
+        <Setter Property="Spacing" Value="2" />
+    </Style>
 </Styles>

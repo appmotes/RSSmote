@@ -242,9 +242,46 @@ public class ReadingFlowTests
         var sheet = Assert.IsType<TextSheet>(shell.ModalStack[^1]);
         PhoneRender.Save(window, $"phone-m4-{palette}");
 
+        Assert.Equal(TextPane.Article, f.Shell.Settings.SelectedPane);
         var larger = sheet.GetVisualDescendants().OfType<Button>().Last(b => b.Content as string == "A");
         larger.Command!.Execute(larger.CommandParameter);
-        Assert.Equal(17, f.Settings.Current.ArticleFontSize);
+        Assert.Equal(110, f.Settings.Current.ArticleTextSize);
+        window.Close();
+        f.Dispose();
+    }
+
+    /// <summary>Aa on the Feeds root and on the list opens the sheet on that page's pane, and the rows grow (D31).</summary>
+    [AvaloniaTheory]
+    [InlineData("Sand")]
+    [InlineData("Ember")]
+    public void Aa_on_the_feeds_and_the_list_opens_the_sheet_on_their_pane(string palette)
+    {
+        var (f, shell, window) = Open(palette);
+        var feedsAa = shell.Root.GetVisualDescendants().OfType<Button>().First(b => b.Content as string == "Aa");
+        feedsAa.RaiseEvent(new Avalonia.Interactivity.RoutedEventArgs(Button.ClickEvent));
+        Settle();
+        var sheet = Assert.IsType<TextSheet>(shell.ModalStack[^1]);
+        Assert.Equal(TextPane.Feeds, f.Shell.Settings.SelectedPane);
+        f.Shell.Settings.PaneStep = 4;
+        Settle();
+        Assert.Equal(120, f.Settings.Current.FeedsTextSize);
+        PhoneRender.Save(window, $"phone-text-feeds-{palette}");
+        _ = shell.CloseSheetAsync();
+        Settle();
+
+        f.Shell.Sidebar.SelectedRow = f.Row("Unread");
+        Settle();
+        var list = Assert.IsType<ArticleListPage>(shell.NavigationStack[^1]);
+        shell.ShowTextSheet(TextPane.List);
+        Settle();
+        Assert.Equal(TextPane.List, f.Shell.Settings.SelectedPane);
+        var larger = shell.ModalStack[^1].GetVisualDescendants().OfType<Button>().Last(b => b.Content as string == "A");
+        larger.Command!.Execute(larger.CommandParameter);
+        Settle();
+        Assert.Equal(110, f.Settings.Current.ListTextSize);
+        var scaled = list.GetVisualDescendants().OfType<App.Controls.Headless.Scaled>().First();
+        Assert.Equal(1.1, App.Controls.Headless.Scaled.GetFactor(scaled), 3);
+        PhoneRender.Save(window, $"phone-text-list-{palette}");
         window.Close();
         f.Dispose();
     }

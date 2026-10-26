@@ -25,13 +25,8 @@ public static partial class ArticleTemplate
     [GeneratedRegex(@"(?is)<iframe\b[^>]*?\bsrc=""([^""]+)""[^>]*>.*?</iframe>")]
     private static partial Regex Frame();
 
-    public static string FontStack(ArticleFont font) => font switch
-    {
-        ArticleFont.Serif => "ui-serif, \"New York\", \"Iowan Old Style\", Charter, Georgia, Cambria, \"Noto Serif\", serif",
-        ArticleFont.Rounded => "ui-rounded, \"SF Pro Rounded\", system-ui, -apple-system, \"Segoe UI\", sans-serif",
-        ArticleFont.Mono => "ui-monospace, \"SF Mono\", Menlo, Consolas, \"DejaVu Sans Mono\", monospace",
-        _ => SystemFontStack,
-    };
+    /// <summary>The body's size in pixels at the Standard text size (D14).</summary>
+    public const double StandardFontSize = 16;
 
     private const string SystemFontStack =
         "system-ui, -apple-system, \"Segoe UI\", Ubuntu, Cantarell, \"Noto Sans\", \"Helvetica Neue\", sans-serif";
@@ -80,9 +75,9 @@ public static partial class ArticleTemplate
             ["rule"] = p.Rule,
             ["code-bg"] = p.CodeBackground,
             ["selection"] = p.Selection,
-            ["font"] = FontStack(style.Font),
+            ["font"] = SystemFontStack,
             ["ui-font"] = SystemFontStack,
-            ["font-size"] = style.FontSize.ToString(CultureInfo.InvariantCulture) + "px",
+            ["font-size"] = style.FontSize.ToString("0.##", CultureInfo.InvariantCulture) + "px",
         };
         return CssVariable().Replace(Css, m => values.TryGetValue(m.Groups[1].Value, out var value) ? value : m.Value);
     }

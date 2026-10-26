@@ -30,4 +30,46 @@
             <Setter Property="BorderThickness" Value="2" />
         </Style>
     </Style>
+
+    <!-- A text-size slider (D31): the accent up to the thumb, secondary ink at 30 % after it, a knob for the thumb. The
+         faint ink shows on a card and on a panel in every palette, where the pill would vanish on a dark panel. On a
+         phone the Fluent slider takes the platform's accent, so the parts are set here, as style triggers (P22, P27). -->
+    <Style Selector="Slider.textSize">
+        <Setter Property="Minimum" Value="0" />
+        <Setter Property="TickFrequency" Value="1" />
+        <Setter Property="IsSnapToTickEnabled" Value="True" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+    <Style Selector="Slider.textSize /template/ RepeatButton#PART_DecreaseButton:not(:disabled)">
+        <Setter Property="Background" Value="{DynamicResource Brush.Accent}" />
+    </Style>
+    <Style Selector="Slider.textSize /template/ RepeatButton#PART_IncreaseButton:not(:disabled)">
+        <Setter Property="Background" Value="{DynamicResource Brush.Ink.Secondary}" />
+        <Setter Property="Opacity" Value="0.3" />
+    </Style>
+    <Style Selector="Slider.textSize /template/ Thumb:not(:disabled)">
+        <Setter Property="Background" Value="{DynamicResource Brush.Bg.Knob}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Line.Separator}" />
+        <Setter Property="BorderThickness" Value="1" />
+    </Style>
+    <!-- The small and the large A either side of a text-size slider: one step down or up. -->
+    <Style Selector="Button.textStep">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Padding" Value="4,0" />
+        <Setter Property="MinWidth" Value="28" />
+        <Setter Property="MinHeight" Value="28" />
+        <Setter Property="HorizontalContentAlignment" Value="Center" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="FontWeight" Value="Medium" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Ink.Primary}" />
+        <Style Selector="^:pointerover /template/ ContentPresenter#PART_ContentPresenter, ^:pressed /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Ink.Primary}" />
+        </Style>
+        <Style Selector="^:pressed">
+            <Setter Property="RenderTransform" Value="none" />
+            <Setter Property="Opacity" Value="0.6" />
+        </Style>
+    </Style>
 </Styles>
