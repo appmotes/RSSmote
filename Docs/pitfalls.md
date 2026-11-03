@@ -219,3 +219,11 @@ and reload. A person typing fires both events.
 answers Ctrl in a browser on a Mac (measured: the empty state showed "Ctrl+N" with `navigator.platform` `MacIntel`),
 while ⌘ arrives as `KeyModifiers.Meta`. The browser head reads the platform in `interop.js` (`isApple`) and sets
 `App.AppleKeyboard`; every command shortcut and hint takes `App.CommandModifier` (A5).
+
+**P32 — A script run in the browser's web view must answer a string.** The iframe adapter's `InvokeScript` binds the
+result as `Task<string>` (decompiled `WebViewInterop.Eval`). With a script that answered a boolean
+(`rssmote.scrollPage(false)`) the scroll happened on space, then the app took no more clicks until the page was
+reloaded, as seen by the user. The cause is inferred, not measured: the boolean meets a string marshaller inside the
+runtime's promise handling, where nothing catches it. *(to confirm with the fix in a browser)* `ArticleTemplate.ScrollPageScript`
+wraps the call in `String(…)`; the native engines answer it the same way, quoted or not, which `ScrollPageAsync`
+trims.
