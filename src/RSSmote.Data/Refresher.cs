@@ -1,4 +1,5 @@
 using RSSmote.Core.Discovery;
+using RSSmote.Core.Library;
 using RSSmote.Core.Models;
 using RSSmote.Core.Parsing;
 
@@ -12,7 +13,7 @@ public sealed record RefreshSummary(int Feeds, int NewItems, int Failed, int Pru
 /// per-feed errors, marks old unread items read, prunes old items, and repeats on the interval from settings. A refresh requested while one is
 /// running joins the running one. Events are raised on background threads.
 /// </summary>
-public sealed class Refresher : IDisposable
+public sealed class Refresher : IRefresher, IDisposable
 {
     public const int MaxConcurrentFeeds = 6;
 
@@ -77,6 +78,8 @@ public sealed class Refresher : IDisposable
     }
 
     public Task<RefreshSummary> RefreshAllAsync() => RefreshAsync(_store.Feeds());
+
+    Task IRefresher.RefreshAllAsync() => RefreshAllAsync();
 
     /// <summary>Refreshes the given feeds, or joins the refresh that is already running.</summary>
     public Task<RefreshSummary> RefreshAsync(IReadOnlyList<Feed> feeds)

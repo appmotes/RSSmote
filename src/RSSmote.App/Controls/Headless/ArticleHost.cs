@@ -164,8 +164,8 @@ public sealed class ArticleHost : Decorator
     {
         ArticleRenderer.Native => true,
         ArticleRenderer.Fallback => false,
-        // Android ships its system web view, which the package drives without an adapter query.
-        _ => OperatingSystem.IsAndroid() || NativeAdapters.Any(IsAvailable),
+        // A browser shows the page in an iframe, which the package drives without an adapter query.
+        _ => OperatingSystem.IsBrowser() || NativeAdapters.Any(IsAvailable),
     };
 
     /// <summary>An adapter built for another OS throws from its type initializer when asked (P17).</summary>
@@ -324,7 +324,7 @@ public sealed class ArticleHost : Decorator
                     if (root.GetProperty("shift").GetBoolean())
                         modifiers |= KeyModifiers.Shift;
                     if (root.GetProperty("command").GetBoolean())
-                        modifiers |= OperatingSystem.IsMacOS() ? KeyModifiers.Meta : KeyModifiers.Control;
+                        modifiers |= App.CommandModifier;
                     RaiseEvent(new ArticleShortcutEventArgs(key, modifiers));
                     break;
             }

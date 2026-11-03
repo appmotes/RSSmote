@@ -1,8 +1,9 @@
 # RSSmote — working notes for Claude
 
-RSSmote is a cross-platform RSS reader (macOS, Windows, Linux) built with .NET 10 and Avalonia 12.
-It is distributed by direct download, possibly with full source, so every dependency must be free and
-permissively licensed (see `Docs/dependencies.md`), and no code may reference other products by name.
+RSSmote is a self-hosted RSS reader: an ASP.NET Core server (.NET 10) that keeps one library behind a single key,
+and an Avalonia 12 app that runs in the browser as WebAssembly, with desktop columns and a phone stack (A22).
+It is distributed as source, so every dependency must be free and permissively licensed (see
+`Docs/dependencies.md`), and no code may reference other products by name.
 
 ## Communication and Coding Do's and Dont's
 - Do not overdo abstractions when a simpler and more readable solution suffice

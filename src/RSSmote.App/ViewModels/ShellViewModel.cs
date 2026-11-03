@@ -5,7 +5,7 @@ using RSSmote.App.Services;
 using RSSmote.Core.Discovery;
 using RSSmote.Core.Rendering;
 using RSSmote.Core.Models;
-using RSSmote.Data;
+using RSSmote.Core.Library;
 
 namespace RSSmote.App.ViewModels;
 
@@ -18,11 +18,11 @@ public sealed partial class ShellViewModel : ObservableObject, IDisposable
 {
     private static readonly TimeSpan ReloadDelay = TimeSpan.FromMilliseconds(300);
 
-    private readonly Store _store;
-    private readonly SettingsStore _settings;
-    private readonly Refresher? _refresher;
+    private readonly ILibrary _store;
+    private readonly ISettingsStore _settings;
+    private readonly IRefresher? _refresher;
     private readonly ILauncher _launcher;
-    private readonly FeedFinder _finder;
+    private readonly IFeedFinder _finder;
     private readonly IFilePicker _files;
     private readonly IUiDispatcher _ui;
     private readonly IImageLoader _images;
@@ -31,7 +31,7 @@ public sealed partial class ShellViewModel : ObservableObject, IDisposable
     private readonly Debouncer _recount;
     private AppSettings _lastSettings;
 
-    public ShellViewModel(Store store, SettingsStore settings, Refresher? refresher, FeedFinder finder, IFilePicker files,
+    public ShellViewModel(ILibrary store, ISettingsStore settings, IRefresher? refresher, IFeedFinder finder, IFilePicker files,
                           IImageLoader images, ILauncher launcher, IUiDispatcher ui, TimeProvider clock,
                           SidebarLayout layout = SidebarLayout.Desktop)
     {
@@ -60,12 +60,26 @@ public sealed partial class ShellViewModel : ObservableObject, IDisposable
         if (refresher is not null)
             refresher.StateChanged += OnRefreshStateChanged;
 
-        // The phone opens on the Feeds root: its list is built when a stream is picked (A16).
-        if (layout == SidebarLayout.Phone)
-            List.Hide();
-        else
-            ShowStream(Sidebar.SelectedStream);
+        UseLayout(layout);
         UpdateRefreshState();
+    }
+
+    /// <summary>
+    /// Desktop columns or the phone stack (A22). The phone opens on the Feeds root, where its list is built only once a
+    /// stream is picked (A16), and has no Settings mode.
+    /// </summary>
+    public void UseLayout(SidebarLayout layout)
+    {
+        Sidebar.Layout = layout;
+        if (layout == SidebarLayout.Phone)
+        {
+            CloseSettings();
+            List.Hide();
+        }
+        else
+        {
+            ShowStream(Sidebar.SelectedStream);
+        }
     }
 
     public SidebarViewModel Sidebar { get; }
@@ -115,7 +129,16 @@ public sealed partial class ShellViewModel : ObservableObject, IDisposable
         if (row is not null && row.IsUnread && _settings.Current.MarkAsReadOnSelect)
             _store.SetUnread([row.Id], false);
         Article.Item = row is null ? null : _store.Item(row.Id) ?? row.Item;
+        if (Article.Item is { } item && Article.Document is null)
+            _ = LoadArticleAsync(item.Id);
         UpdateEmptyState();
+    }
+
+    /// <summary>The library's item may come without its content; the article shows once it is here.</summary>
+    private async Task LoadArticleAsync(long id)
+    {
+        if (await _store.LoadItemAsync(id) is { } full)
+            _ui.Post(() => Article.ShowContent(full));
     }
 
     private void ReloadAll()
@@ -145,7 +168,7 @@ public sealed partial class ShellViewModel : ObservableObject, IDisposable
         Article.IsFaviconGrayscale = selected?.IsFaviconGrayscale ?? true;
     }
 
-    private void OnStoreChanged(object? sender, StoreChangedEventArgs e) => _ui.Post(() =>
+    private void OnStoreChanged(object? sender, LibraryChangedEventArgs e) => _ui.Post(() =>
     {
         if (e.ItemIds is { } ids)
         {
@@ -319,8 +342,7 @@ public sealed partial class ShellViewModel : ObservableObject, IDisposable
 
     // The desktop shows these in its Settings mode (A6); the phone pushes a page for each (A16).
 
-    public AddFeedViewModel CreateAddFeed() =>
-        new(_store, (input, ct) => _finder.FindAllAsync(input, ct), SaveFeed);
+    public AddFeedViewModel CreateAddFeed() => new(_store, _finder.FindAllAsync, _store.AddFeedAsync);
 
     /// <summary>Null when the feed is gone.</summary>
     public EditFeedViewModel? CreateEditFeed(Feed feed) =>
@@ -345,14 +367,14 @@ public sealed partial class ShellViewModel : ObservableObject, IDisposable
         $"Delete “{folder.Title}”?",
         "The folder is deleted. Its feeds stay and move out of the folder.",
         "Delete Folder",
-        () => _store.DeleteFolder(folder.Id, deleteFeeds: false));
+        () => _store.DeleteFolderAsync(folder.Id, deleteFeeds: false));
 
     /// <summary>Deletes the feed and all its articles, starred ones too, for good (A14).</summary>
     public ConfirmViewModel ConfirmRemoveFeed(Feed feed) => new(
         $"Remove “{feed.Title}”?",
         "The feed and all its articles, starred ones included, are deleted for good.",
         "Remove Feed",
-        () => _store.DeleteFeed(feed.Id));
+        () => _store.DeleteFeedAsync(feed.Id));
 
     [RelayCommand]
     private void OpenSite(Feed feed)
@@ -365,15 +387,6 @@ public sealed partial class ShellViewModel : ObservableObject, IDisposable
 
     [RelayCommand]
     private void ReloadIcon(Feed feed) => Sidebar.ReloadFavicon(feed);
-
-    private Feed SaveFeed(FoundFeed found, long? folderId)
-    {
-        if (_refresher is not null)
-            return _refresher.AddFeed(found, folderId);
-        var feed = _store.AddFeed(found.Url.AbsoluteUri, found.Feed.Title ?? found.Url.Host, found.Feed.SiteUrl, folderId);
-        _store.Upsert(feed.Id, found.Feed.Items);
-        return feed;
-    }
 
     /// <summary>Selects a feed just added, with its folder open and a filter that shows its articles.</summary>
     internal void ShowNewFeed(Feed feed, long? folderId)

@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk.WebAssembly">
+  <PropertyGroup>
+    <TargetFramework>net10.0-browser</TargetFramework>
+    <OutputType>Exe</OutputType>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <!-- Dates and numbers format the same in every browser, and no ICU data is downloaded (A23). -->
+    <InvariantGlobalization>true</InvariantGlobalization>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\RSSmote.App\RSSmote.App.csproj" />
+    <PackageReference Include="Avalonia.Browser" />
+  </ItemGroup>
+  <ItemGroup>
+    <!-- The splash runs before any assembly loads, so it takes the icon from here; one source of truth. -->
+    <Content Include="..\RSSmote.App\Assets\AppIcon\AppIcon.png" Link="wwwroot\icon.png" />
+  </ItemGroup>
+</Project>

@@ -79,7 +79,7 @@ public class ElevationTests
     {
         Application.Current!.RequestedThemeVariant = ThemeCatalogue.ContrastDark;
         using var f = new ShellFixture();
-        var window = new Window { Width = 1045, Height = 660, Content = new RSSmote.Desktop.Views.ShellView(), DataContext = f.Shell };
+        var window = new Window { Width = 1045, Height = 660, Content = new RSSmote.App.Views.Desktop.ShellView(), DataContext = f.Shell };
         window.Show();
         AvaloniaHeadlessPlatform.ForceRenderTimerTick();
         using var frame = window.CaptureRenderedFrame()!;

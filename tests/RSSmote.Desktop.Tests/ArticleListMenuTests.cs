@@ -5,7 +5,7 @@ using Avalonia.Headless.XUnit;
 using Avalonia.Input;
 using Avalonia.VisualTree;
 using RSSmote.App.Controls.Templates;
-using RSSmote.Desktop.Views;
+using RSSmote.App.Views.Desktop;
 
 namespace RSSmote.Desktop.Tests;
 

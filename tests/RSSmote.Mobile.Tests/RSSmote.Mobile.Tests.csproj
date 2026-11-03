@@ -5,7 +5,8 @@
     <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\src\RSSmote.Mobile\RSSmote.Mobile.csproj" />
+    <ProjectReference Include="..\..\src\RSSmote.App\RSSmote.App.csproj" />
+    <ProjectReference Include="..\..\src\RSSmote.Data\RSSmote.Data.csproj" />
     <PackageReference Include="Avalonia.Headless.XUnit" />
     <PackageReference Include="Avalonia.Skia" />
     <PackageReference Include="xunit.v3" />

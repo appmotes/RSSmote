@@ -4,7 +4,7 @@ using CommunityToolkit.Mvvm.Input;
 using RSSmote.App.Formatting;
 using RSSmote.Core.Discovery;
 using RSSmote.Core.Models;
-using RSSmote.Data;
+using RSSmote.Core.Library;
 
 namespace RSSmote.App.ViewModels;
 
@@ -30,13 +30,13 @@ public sealed partial class FoundFeedRowViewModel(FoundFeed found, bool saved) :
 /// </summary>
 public sealed partial class AddFeedViewModel : PanelViewModel
 {
-    private readonly Store _store;
+    private readonly ILibrary _store;
     private readonly Func<string, CancellationToken, Task<IReadOnlyList<FoundFeed>>> _find;
-    private readonly Func<FoundFeed, long?, Feed> _save;
+    private readonly Func<FoundFeed, long?, Task<Feed>> _save;
     private CancellationTokenSource? _search;
 
-    public AddFeedViewModel(Store store, Func<string, CancellationToken, Task<IReadOnlyList<FoundFeed>>> find,
-                              Func<FoundFeed, long?, Feed> save)
+    public AddFeedViewModel(ILibrary store, Func<string, CancellationToken, Task<IReadOnlyList<FoundFeed>>> find,
+                              Func<FoundFeed, long?, Task<Feed>> save)
     {
         _store = store;
         _find = find;
@@ -159,11 +159,11 @@ public sealed partial class AddFeedViewModel : PanelViewModel
     }
 
     [RelayCommand(CanExecute = nameof(CanSave))]
-    private void Save()
+    private async Task Save()
     {
         Feed? last = null;
-        foreach (var row in Results.Where(r => r.IsOn && !r.IsSaved))
-            last = _save(row.Found, Picker.Selected?.Id);
+        foreach (var row in Results.Where(r => r.IsOn && !r.IsSaved).ToList())
+            last = await _save(row.Found, Picker.Selected?.Id);
         if (last is not null)
             Saved?.Invoke(this, (last, Picker.Selected?.Id));
         Close();

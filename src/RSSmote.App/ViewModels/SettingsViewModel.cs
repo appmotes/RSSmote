@@ -4,7 +4,7 @@ using CommunityToolkit.Mvvm.Input;
 using RSSmote.App.Theming;
 using RSSmote.Core.Models;
 using RSSmote.Core.Rendering;
-using RSSmote.Data;
+using RSSmote.Core.Library;
 
 namespace RSSmote.App.ViewModels;
 
@@ -22,10 +22,10 @@ public enum TextPane
 /// </summary>
 public sealed partial class SettingsViewModel : ObservableObject
 {
-    private readonly SettingsStore _settings;
+    private readonly ISettingsStore _settings;
     private bool _applying;
 
-    public SettingsViewModel(SettingsStore settings)
+    public SettingsViewModel(ISettingsStore settings)
     {
         _settings = settings;
         Appearances =

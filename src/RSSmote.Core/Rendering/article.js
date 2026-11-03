@@ -1,9 +1,11 @@
 // Article page behaviour: tidy the feed's markup, hand links and shortcuts to the app, scroll by pages.
 (function () {
+    // invokeCSharpAction in a native web view; in a browser the page is an iframe and posts to the app around it.
     function post(message) {
-        if (typeof invokeCSharpAction !== 'function') { return false; }
-        invokeCSharpAction(JSON.stringify(message));
-        return true;
+        var text = JSON.stringify(message);
+        if (typeof invokeCSharpAction === 'function') { invokeCSharpAction(text); return true; }
+        if (window.parent !== window) { window.parent.postMessage(text, '*'); return true; }
+        return false;
     }
 
     document.querySelectorAll('.content img').forEach(function (img) {

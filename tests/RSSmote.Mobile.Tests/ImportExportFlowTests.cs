@@ -4,8 +4,8 @@ using Avalonia.Headless.XUnit;
 using Avalonia.Threading;
 using Avalonia.VisualTree;
 using RSSmote.App.ViewModels;
-using RSSmote.Mobile.Pages;
-using RSSmote.Mobile.Shell;
+using RSSmote.App.Views.Phone.Pages;
+using RSSmote.App.Views.Phone.Shell;
 
 namespace RSSmote.Mobile.Tests;
 

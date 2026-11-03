@@ -6,8 +6,8 @@ using Avalonia.VisualTree;
 using RSSmote.App.ViewModels;
 using RSSmote.Core.Models;
 using RSSmote.Core.Parsing;
-using RSSmote.Mobile.Pages;
-using RSSmote.Mobile.Shell;
+using RSSmote.App.Views.Phone.Pages;
+using RSSmote.App.Views.Phone.Shell;
 
 namespace RSSmote.Mobile.Tests;
 

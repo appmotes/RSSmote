@@ -1,5 +1,6 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using RSSmote.Core.Library;
 using RSSmote.Core.Models;
 
 namespace RSSmote.Data;
@@ -14,7 +15,7 @@ internal sealed partial class SettingsJsonContext : JsonSerializerContext;
 /// <see cref="Update"/> applies a change, normalises it, writes the file atomically and raises <see cref="Changed"/>.
 /// A missing or unreadable file starts from the defaults.
 /// </summary>
-public sealed class SettingsStore
+public sealed class SettingsStore : ISettingsStore
 {
     private readonly string _path;
     private readonly Lock _gate = new();

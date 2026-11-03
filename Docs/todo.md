@@ -2,68 +2,51 @@
 
 `N` = need to have, `W` = nice to have. Ids are append-only (see CLAUDE.md).
 
-**N1 — Check `ArticleHost` by hand on each OS.** The fallback is covered by tests (A9); the native path is not.
-Confirm on macOS, Windows 11 (WebView2) and a Linux VM with WPE or
-WebKitGTK and with neither (fallback): page background before first paint, links to the browser, shortcuts
-forwarded from the page (L9), space scrolling, YouTube embeds, and http images in the packaged `.app`, which allows
-them in web content (A2).
-
-**N2 — Spike: title bar on Windows and Linux.** Measure the caption-button width on Windows (P3) and decide the
-Linux strip layout (P2).
-
-**N5 — Try the packages by hand (A2).** `build/package-*.sh` make them. The macOS arm64 app, unpacked from its zip
-without a download mark, opened with its window, its Dock icon and an article with a web image. Still to see: a
-downloaded copy opening after Gatekeeper's prompt, the x64 app on an Intel Mac, and an article with an http image.
-On Windows 11 (x64, arm64): `RSSmote.exe` starts after SmartScreen and shows its icon in the taskbar. On Linux (x64,
-with WebKitGTK 4.1): the tarball in `/opt` starts from the desktop entry. Done when each is seen.
+**N1 — Check `ArticleHost` by hand in each browser.** The fallback is covered by tests (A9); the iframe is not
+(A23). In Safari on macOS and iOS, Chrome and Firefox: page background before first paint, links to a new tab,
+shortcuts forwarded from the page (L9), space scrolling, YouTube embeds, and an article with an http image on an
+https server, which the browser blocks or upgrades (A19 covers favicons and thumbnails, not the article's own images).
+Seen so far in the in-app browser (Chromium): the page renders in an `<iframe srcdoc>`, `j` inside the page moves to
+the next article.
 
 **W1 — Sync services** (Feedbin, Fever, …). Deliberately out of scope for now.
 
-**N12 — Check Automatic theme switching on each OS.** Switch the OS between light and dark while RSSmote runs, with
-Automatic and with non-default palettes in both slots: the window repaints, and the macOS menu and the Windows/Linux
-menu button show the checked items.
+**N12 — Check Automatic theme switching in each browser.** Switch the OS between light and dark while RSSmote runs,
+with Automatic and with non-default palettes in both slots: the page repaints, and the menu button shows the checked
+items.
 
-**N13 — Look at the cards and panels on each OS.** On macOS, Windows 11 and Linux: the article's web view sits inside
-the card with its rounded corners intact; the 8 pt band above the cards and the card strips drag the window; on
-Windows the caption buttons clear the article card's actions (P3, N2); the Settings question shows its shadow and
-scrim; and the ten palettes switch from the menus.
+**W3 — Tablet layout.** Below 900 wide `MainView` shows the phone stack (A22), so a tablet in portrait gets the
+phone's layout at a larger size, and from 900 the three desktop columns. A tablet needs its own answer between the
+two (list and article side by side). Done when it is drawn and recorded as a D entry.
 
-
-**W3 — Tablet layout.** The mobile design covers the phone only (D23–D28). A tablet in landscape needs its own
-answer (list and article side by side, or three columns as on desktop). Done when it is drawn and recorded as a
-D entry.
-
-**N18 — An Android Debug build stalls its UI thread during the first refresh.** On a freshly booted API 35 emulator
-(`-memory 4096`, host load ~10) a Debug build (`-t:Install`) takes 17.6 s to start and then blocks the main thread
-for 22 s and 6 s while the startup refresh runs (`Choreographer: Skipped 1307 frames`); input in that window ends in
-an ANR, and the dialog returns after every Wait. Offline there is no long stall; Release on the same emulator starts
-in 2.0 s and skips at most 42 frames. Stack samples show the main thread in Mono's type loader and interpreted code,
-not waiting on the store's lock. Find which refresh work runs on the UI thread (the store-change handlers and their
-reloads, A16) and whether Debug runs interpreted. Done when a Debug start on a fresh emulator skips under 120 frames
-during the first refresh.
-
-**W4 — Check refresh on resume on a device.** `ShellViewModel.RefreshIfStale` runs when the app comes back from the
-background and the last pass is older than the interval; it is tested headless only. The list keeping its top row
-across a refresh (P25) was seen on the iPhone 17 Pro simulator, not yet on the API 35 emulator. Done when a resume
-after the interval starts a refresh on both, and the list keeps its place on Android.
-
-**N20 — Check desktop Settings on each OS (D30).** On macOS: "Settings…" with ⌘, sits in the application menu and
-opens Settings (the item is added from code after the window is built, which the headless tests cannot see exported;
-L13), and the traffic lights clear the Settings title. On Windows: the caption buttons clear New Folder and Save
-(P3). On all three: the settings sidebar's strip and the band above the bar drag the window, the article's native
-view stays hidden while Settings show (L9), and Import and Export open the system's file dialogs. Done when each is
-seen.
-
-**W6 — Installers and updates.** Velopack (MIT) for an installer and updates on all three OSes, a Developer ID
-signature with notarisation on macOS, and Authenticode on Windows, so the first-start warnings go (A2).
+**W4 — Check the phone stack on a phone.** Served with `build/run-local.sh --lan` and opened in Safari on an iPhone:
+safe-area insets (P15) and the home-screen icon, the back gesture and the browser's own back (P18), the list keeping
+its top row across a refresh (P25), the article page's bars hiding on scroll (D26), and the event stream coming back
+after the phone sleeps (A20). Done when each is seen.
 
 **W7 — Conditional GET on refresh.** `Refresher` downloads every feed in full on each pass. Store `ETag` and
 `Last-Modified` per feed (schema version 2, two nullable columns on `feeds`, A8), send `If-None-Match` and
 `If-Modified-Since`, and skip parsing on 304. Done when a test server sees both headers on the second refresh and a
 304 leaves the feed's items and `last_error` untouched.
 
-**N21 — Check text sizes by hand (D31).** On macOS, Windows and Linux, the iPhone simulator and the API 35 emulator:
-rows at 85 % and 175 % are sharp, not blurred by `Scaled`; on desktop the Aa popover opens above the gear over the
-list, and ⌘/Ctrl + changes its pane while the slider has the keyboard; on the phones the article's native view ends
-at the top of the text sheet instead of covering it (P29), and changing Larger Text (iOS) or the font size (Android)
-while RSSmote runs resizes the panes. Done when each is seen.
+**N21 — Check text sizes by hand (D31).** In each browser: rows at 85 % and 175 % are sharp, not blurred by
+`Scaled`; on the desktop columns the Aa popover opens above the gear over the list, and ⌘/Ctrl + changes its pane
+while the slider has the keyboard; on the phone stack the article's iframe ends at the top of the text sheet instead
+of covering it (P29). Done when each is seen.
+
+**N22 — Sign in by hand in each browser.** The sign-in field could not be typed into by the test driver (P30); signing
+in was checked through `fetch('api/login')`, and a wrong key through events dispatched by hand. In Safari (macOS,
+iOS), Chrome and Firefox: type the key, Enter signs in, a wrong key says so, and the password manager does not offer
+to save a site password it cannot use. Done when each is seen.
+
+**N23 — Build and run the Docker image.** The Dockerfile is written but not built: the Docker daemon was not running.
+Done when `docker build -t rssmote .` succeeds, `docker run -p 8080:8080 -e RSSMOTE_KEY=… -v rssmote:/data rssmote`
+serves the app, and the library survives a container restart.
+
+**N24 — Import and Export in Safari and Firefox.** `StorageFilePicker` uses Avalonia's browser storage provider, which
+builds on the File System Access API that only Chromium has. Check that Import opens a file and Export saves one in
+Safari and Firefox; if not, Export can link to `GET /api/opml` (A17) and Import take a plain file input. Done when
+both work in all three.
+
+**W8 — Install as an app.** A web manifest and a service worker would let the phone keep RSSmote on its home screen
+as a standalone app, with its own icon sizes. Today `index.html` names `icon.png` as the touch icon only.

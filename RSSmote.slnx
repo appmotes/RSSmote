@@ -2,13 +2,15 @@
   <Folder Name="/src/">
     <Project Path="src/RSSmote.Core/RSSmote.Core.csproj" />
     <Project Path="src/RSSmote.Data/RSSmote.Data.csproj" />
+    <Project Path="src/RSSmote.Server/RSSmote.Server.csproj" />
+    <Project Path="src/RSSmote.Client/RSSmote.Client.csproj" />
     <Project Path="src/RSSmote.App/RSSmote.App.csproj" />
-    <Project Path="src/RSSmote.Desktop/RSSmote.Desktop.csproj" />
-    <Project Path="src/RSSmote.Mobile/RSSmote.Mobile.csproj" />
+    <Project Path="src/RSSmote.Browser/RSSmote.Browser.csproj" />
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/RSSmote.Core.Tests/RSSmote.Core.Tests.csproj" />
     <Project Path="tests/RSSmote.Data.Tests/RSSmote.Data.Tests.csproj" />
+    <Project Path="tests/RSSmote.Server.Tests/RSSmote.Server.Tests.csproj" />
     <Project Path="tests/RSSmote.App.Tests/RSSmote.App.Tests.csproj" />
     <Project Path="tests/RSSmote.Desktop.Tests/RSSmote.Desktop.Tests.csproj" />
     <Project Path="tests/RSSmote.Mobile.Tests/RSSmote.Mobile.Tests.csproj" />

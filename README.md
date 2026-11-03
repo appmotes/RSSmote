@@ -4,8 +4,8 @@
 
 **English** · [Dansk](README.da.md)
 
-An RSS reader for macOS, Windows and Linux, and for iPhone and Android. Three columns on the desktop, keyboard first,
-and everything stored locally.
+An RSS reader you host yourself and read in the browser: on the desktop, the tablet and the phone. Three columns on a
+wide screen, one stack on a phone, keyboard first, and one library on your own server that every device shares.
 
 **This app was written by a machine intelligence.** All the code, the comments, the design, the ten colour themes, the
 app icon, the tests, the documentation and this README were made by Claude Opus 5.5 (Anthropic, with *reasoning
@@ -15,10 +15,11 @@ effort* set to high) from a human's description. No human has reviewed the code 
 ![RSSmote with an article open, light theme](Docs/images/reading-light.png)
 
 On the left are your feeds, gathered in folders. In the middle are the articles, grouped by day. On the right is the
-article you are reading. There is no account, no sync and no cloud: your feeds and articles live in one SQLite file on
-your own machine.
+article you are reading. A small server keeps your feeds and articles in one SQLite file, refreshes them, and serves the
+app to your browser. There is one key and no accounts: whoever has the key reads the library, from as many devices as
+they like, and what is read on one is read on all of them.
 
-Built with .NET 10 and [Avalonia](https://avaloniaui.net) 12. Only free components with MIT or similar licences; see
+Built with .NET 10, ASP.NET Core and [Avalonia](https://avaloniaui.net) 12, which runs in the browser as WebAssembly. Only free components with MIT or similar licences; see
 [Docs/dependencies.md](Docs/dependencies.md).
 
 ## What it does
@@ -30,11 +31,12 @@ Built with .NET 10 and [Avalonia](https://avaloniaui.net) 12. Only free componen
 - **Folders** that fold in and out, with unread counts on every folder and feed.
 - **Filters**: Starred, Unread and All, plus a filter box above the list that searches titles, summaries and feed
   names.
-- **Articles in the OS's own web engine** (WebKit on macOS, WebView2 on Windows, WebKitGTK on Linux) with the app's
-  own typography. Scripts, forms and inline styles are removed before the page is shown. Where there is no web engine,
-  a built-in HTML renderer shows the same page.
+- **Articles in the browser's own engine**, with the app's own typography. Scripts, forms and inline styles are
+  removed before the page is shown.
+- **One library, every device.** Read, starred, folders and feeds follow you from the desktop to the phone at once;
+  each device keeps its own theme and text sizes.
 - **OPML import and export**, so you can move your feeds in and out.
-- **Refresh** every half hour in the background, and with `r` whenever you like. Read, unstarred articles are cleared
+- **Refresh** every half hour on the server, also while no device is open, and with `r` whenever you like. Read, unstarred articles are cleared
   after 30 days.
 - **Ten colour themes**, five light and five dark. See [Themes](#themes).
 
@@ -55,7 +57,7 @@ The whole app can be driven without a mouse. The keys do nothing while you type 
 | `r` | Refresh all feeds |
 | `a` | Mark everything in the list as read |
 | `.` or `esc` | Close the article |
-| `⌘1` `⌘2` `⌘3` | Starred / Unread / All (`Ctrl` on Windows and Linux) |
+| `⌘1` `⌘2` `⌘3` | Starred / Unread / All (`Ctrl` instead of `⌘` off a Mac) |
 | `⌘F` | Go to the filter box; `esc` clears it |
 | `⌘,` | Settings: add, edit and remove feeds, import, export, appearance; `esc` goes back |
 | `⌘N` | Add a feed (in Settings) |
@@ -76,12 +78,13 @@ With no article selected, the right side shows the most important shortcuts:
 
 Every screenshot is taken by the app itself, without a screen, over a made-up demo library: the feeds, articles,
 favicons and images are invented for the purpose (see `ReadmeCaptureTests.cs` in `tests/RSSmote.Desktop.Tests` and
-`tests/RSSmote.Mobile.Tests`).
+`tests/RSSmote.Mobile.Tests`). They are drawn with the built-in HTML renderer, so an article looks slightly different
+from the browser's.
 
 ## On the phone
 
-RSSmote also runs on iPhone and Android, built from the same code as the desktop app: the same library, the same
-settings and the same ten themes. The screens below show the iPhone.
+Open the same address on the phone. Below 900 pixels wide RSSmote is one stack instead of three columns, and a
+desktop window narrowed that far turns into the same. The screens below show an iPhone-sized window.
 
 | | | | |
 | --- | --- | --- | --- |
@@ -94,18 +97,16 @@ settings and the same ten themes. The screens below show the iPhone.
   follow the system's text size.
 - **Feeds** are added, edited, removed, imported and exported under Settings, as on the desktop. Removing asks in a
   sheet from the bottom.
-- **Refresh:** pull down on Feeds, or come back to the app after the refresh interval has passed.
-- **No sync.** The phone keeps its own library. Move your feeds between devices with OPML export and import.
+- **Refresh:** the server refreshes on its own; pull down on Feeds for a refresh now.
+- **The same library** as on the desktop: what you read on the phone is read everywhere.
 
-Articles are shown in the phone's own web engine (WebKit on iOS, the system WebView on Android), with images and
-video. The screenshots are drawn without a screen at iPhone 17 Pro size (402 × 874 pt), with the built-in HTML
-renderer, so they have no status bar.
+The screenshots are drawn without a screen at iPhone 17 Pro size (402 × 874 pt), so they have no status bar.
 
 ## Themes
 
-You choose one light and one dark theme under **View ▸ Theme**. Picking a theme switches the app to it at once. Under
-**Appearance** you can set it to follow the system; it then switches by itself between your light and your dark theme
-when macOS, Windows or Linux goes from light to dark.
+You choose one light and one dark theme in the menu (**Theme**) or under Settings ▸ Appearance. Picking a theme
+switches the app to it at once. You can set it to follow the system; it then switches by itself between your light and
+your dark theme when the device goes from light to dark. Each device keeps its own choice.
 
 | Light | Dark |
 | --- | --- |
@@ -117,92 +118,74 @@ when macOS, Windows or Linux goes from light to dark.
 
 Each theme is only a palette: sizes, type and spacing are the same everywhere. All ten must meet the same contrast
 requirements (WCAG 2) for text, links and buttons, and a test measures them directly in the theme files. The typeface
-is [Inter](https://rsms.me/inter/) on all three operating systems, and the icons are [Lucide](https://lucide.dev).
+is [Inter](https://rsms.me/inter/) in every browser, and the icons are [Lucide](https://lucide.dev).
 
-## Build and run
+## Run it
 
-Requires the [.NET 10 SDK](https://dotnet.microsoft.com/download).
+Requires the [.NET 10 SDK](https://dotnet.microsoft.com/download). Pick a key of at least 12 characters: it is the only
+thing that signs a device in.
+
+**On this machine:**
 
 ```bash
-dotnet build RSSmote.slnx
+RSSMOTE_KEY='a long key of your own' build/run-local.sh
+```
+
+Open <http://localhost:5000> and enter the key. With `--lan` the server listens on every address, so a phone on the
+same network can open `http://<this machine>:5000`.
+
+**On a server**, with Docker:
+
+```bash
+docker build -t rssmote .
 ```
 
 ```bash
-dotnet run --project src/RSSmote.Desktop
+docker run -d -p 8080:8080 -e RSSMOTE_KEY='a long key of your own' -v rssmote:/data rssmote
 ```
 
-Run the tests:
+Or without Docker: `build/publish.sh` writes the server with the app beside it to `artifacts/server`
+(`build/publish.sh linux-x64` brings its own .NET runtime). Run it with `RSSMOTE_KEY` set.
+
+Put it behind a reverse proxy with HTTPS (Caddy, nginx, Traefik) before it is reachable from the internet, and set
+`ASPNETCORE_FORWARDEDHEADERS_ENABLED=true` so the server sees the reader's address. Sign-in attempts are limited to
+five a minute per address. A new key signs every device out.
+
+**Tests:**
 
 ```bash
 dotnet test RSSmote.slnx
 ```
 
 The tests start the real app without a screen (Avalonia's headless platform) and draw it with Skia, so they also catch
-mistakes in layout, themes and contrast.
-
-### Packages
-
-`build/` makes a package per OS and architecture in `artifacts/packages/`, each with its own .NET runtime:
-
-```bash
-build/package-macos.sh
-```
-
-```bash
-build/package-windows.sh
-```
-
-```bash
-build/package-linux.sh
-```
-
-The macOS script needs a Mac; the other two run on macOS or Linux. None of the packages are signed by a known
-developer, so the first start asks:
-
-- **macOS** (14 or later): unzip, move `RSSmote.app` to Applications, then right-click it and choose Open. Or clear the
-  download mark with `xattr -dr com.apple.quarantine /Applications/RSSmote.app`.
-- **Windows:** unzip and run `RSSmote\RSSmote.exe`; SmartScreen asks once (More info ▸ Run anyway). Articles need the
-  WebView2 runtime, which Windows 11 has.
-- **Linux:** unpack to `/opt` (`sudo tar -xzf RSSmote-…-linux-x64.tar.gz -C /opt`) and copy `/opt/RSSmote/rssmote.desktop`
-  to `~/.local/share/applications/`. Unpacked elsewhere, change the two paths in that file.
-
-**iPhone and Android:** the phone apps live in `RSSmote.Mobile.slnx` and need the `ios` or `android` workload
-(`dotnet workload install ios android`). iOS also needs the Xcode version the workload names; Android needs the API 36
-platform and JDK 17 or later. `RSSmote.slnx` builds without any of that.
-
-```bash
-dotnet build src/RSSmote.iOS/RSSmote.iOS.csproj -r iossimulator-arm64
-```
-
-```bash
-dotnet build src/RSSmote.Android/RSSmote.Android.csproj
-```
-
-**Linux:** articles are shown in WebKitGTK 4.1 with libsoup 3. Without them the app uses the built-in HTML renderer
-instead, which cannot show video.
+mistakes in layout, themes and contrast. The server's tests run it in process and let two devices sync through it.
 
 ### Where your data lives
 
-The library is called `rssmote.sqlite` and the preferences `settings.json`. They sit side by side:
+On the server: the library is called `rssmote.sqlite`, the library's settings `settings.json`, and the sign-in keys
+sit in `keys/`, side by side:
 
 | System | Folder |
 | --- | --- |
+| Docker | the `/data` volume |
 | macOS | `~/Library/Application Support/com.ahrentlov.rssmote/` |
 | Windows | `%LOCALAPPDATA%\RSSmote\` |
 | Linux | `$XDG_DATA_HOME/rssmote/` (otherwise `~/.local/share/rssmote/`) |
-| iOS | `<app container>/Library/Application Support/` |
-| Android | The app's private files folder (`/data/user/0/com.ahrentlov.rssmote/files/`) |
 
-Set the environment variable `RSSMOTE_DATA_DIR` to use another folder, for example for a test library.
+Set `RSSMOTE_DATA_DIR` to use another folder. A library from the earlier desktop app can be copied in as it is. Each
+device keeps its theme and text sizes in the browser's own storage.
 
 ## What the app fetches from the network
+
+The server fetches:
 
 - **Your feeds**, from the addresses you have added.
 - **Favicons**, through Google's favicon service (`google.com/s2/favicons`), with the site's domain as a parameter.
   Google can therefore see which domains you follow, but not what you read.
-- **Images in articles**, when you open them, from the servers the article points to.
+- **Thumbnails** in the list, on behalf of the browser.
 
-There are no analytics, no tracking and no account. Links open in your browser, not in the app.
+The browser fetches **images in articles** when you open them, from the servers the article points to. There are no
+analytics and no tracking. Links open in a new tab.
 
 ## Documentation
 
@@ -220,9 +203,10 @@ The project is described in `Docs/`, with an id on every rule, so code and docum
 ## Disclaimer
 
 **Written by a machine.** The whole project was generated by Claude Opus 5.5, a language model from Anthropic, with
-*reasoning effort* set to high. The code is exercised by about 240 automated tests that run the app without a screen,
-but it has not been reviewed line by line by a human, nor audited by anyone with security expertise. The native article
-view has not yet been tried by hand on Windows and Linux (see [Docs/todo.md](Docs/todo.md)).
+*reasoning effort* set to high. The code is exercised by about 280 automated tests that run the app without a screen,
+but it has not been reviewed line by line by a human, nor audited by anyone with security expertise. That matters more
+now that it is a server: keep the key long, and keep the server behind HTTPS. It has not yet been tried by hand in
+every browser (see [Docs/todo.md](Docs/todo.md)).
 
 **No warranty.** The app is provided as is, without warranty of any kind. Use it at your own risk. Neither the author,
 Anthropic nor anyone else is liable for lost data or anything else that may follow from using it.
@@ -232,9 +216,6 @@ The app asks first, but keeps no copy. Export your feeds as OPML if you want a b
 
 **The content belongs to others.** Articles belong to those who wrote them. RSSmote fetches feeds as they are
 published and shows them to you; it passes nothing on.
-
-**Not signed.** There are no signed or notarised packages. If you build it yourself, macOS and Windows may warn the
-first time the app is opened.
 
 The app is made for private use and is not affiliated with any company or product.
 

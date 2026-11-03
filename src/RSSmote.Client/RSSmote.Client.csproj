@@ -1,0 +1,5 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <ProjectReference Include="..\RSSmote.Core\RSSmote.Core.csproj" />
+  </ItemGroup>
+</Project>

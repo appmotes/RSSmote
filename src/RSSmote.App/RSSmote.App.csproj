@@ -7,7 +7,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\RSSmote.Core\RSSmote.Core.csproj" />
-    <ProjectReference Include="..\RSSmote.Data\RSSmote.Data.csproj" />
+    <ProjectReference Include="..\RSSmote.Client\RSSmote.Client.csproj" />
     <PackageReference Include="Avalonia" />
     <PackageReference Include="Avalonia.Themes.Fluent" />
     <PackageReference Include="Avalonia.Fonts.Inter" />
@@ -17,5 +17,7 @@
   </ItemGroup>
   <ItemGroup>
     <InternalsVisibleTo Include="RSSmote.App.Tests" />
+    <InternalsVisibleTo Include="RSSmote.Desktop.Tests" />
+    <InternalsVisibleTo Include="RSSmote.Mobile.Tests" />
   </ItemGroup>
 </Project>

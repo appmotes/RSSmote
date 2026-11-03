@@ -1,9 +1,12 @@
+using System.Text.Json.Serialization;
+
 namespace RSSmote.Core.Models;
 
 public sealed record Folder(long Id, string Title);
 
 public sealed record Feed(long Id, string Title, string Url, string? SiteUrl, long? FolderId, string? LastError)
 {
+    [JsonIgnore]
     public string? Host => Uri.TryCreate(SiteUrl ?? Url, UriKind.Absolute, out var uri) ? uri.Host : null;
 }
 
@@ -31,6 +34,10 @@ public enum StreamFilter
 }
 
 /// <summary>A selectable source in the sidebar.</summary>
+[JsonPolymorphic(TypeDiscriminatorPropertyName = "kind")]
+[JsonDerivedType(typeof(All), "all")]
+[JsonDerivedType(typeof(InFolder), "folder")]
+[JsonDerivedType(typeof(OfFeed), "feed")]
 public abstract record ArticleStream
 {
     public sealed record All : ArticleStream;

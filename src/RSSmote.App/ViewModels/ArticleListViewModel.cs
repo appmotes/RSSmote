@@ -4,7 +4,7 @@ using CommunityToolkit.Mvvm.Input;
 using RSSmote.App.Formatting;
 using RSSmote.App.Services;
 using RSSmote.Core.Models;
-using RSSmote.Data;
+using RSSmote.Core.Library;
 
 namespace RSSmote.App.ViewModels;
 
@@ -16,8 +16,8 @@ public sealed partial class ArticleListViewModel : ObservableObject
 {
     public const int ThumbnailDecodeWidth = 122;
 
-    private readonly Store _store;
-    private readonly SettingsStore _settings;
+    private readonly ILibrary _store;
+    private readonly ISettingsStore _settings;
     private readonly IImageLoader _images;
     private readonly IUiDispatcher _ui;
     private readonly TimeProvider _clock;
@@ -25,7 +25,7 @@ public sealed partial class ArticleListViewModel : ObservableObject
     private bool _reloading;
     private AppSettings? _builtWith;
 
-    public ArticleListViewModel(Store store, SettingsStore settings, IImageLoader images, IUiDispatcher ui,
+    public ArticleListViewModel(ILibrary store, ISettingsStore settings, IImageLoader images, IUiDispatcher ui,
                                 TimeProvider clock, Func<long, Feed?> feedLookup)
     {
         _store = store;

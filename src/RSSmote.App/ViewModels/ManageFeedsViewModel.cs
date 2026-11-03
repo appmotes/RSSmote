@@ -3,7 +3,7 @@ using Avalonia.Media.Imaging;
 using CommunityToolkit.Mvvm.ComponentModel;
 using RSSmote.App.Services;
 using RSSmote.Core.Models;
-using RSSmote.Data;
+using RSSmote.Core.Library;
 
 namespace RSSmote.App.ViewModels;
 
@@ -36,14 +36,14 @@ public sealed partial class ManageFeedsViewModel : ObservableObject, IDisposable
     /// <summary>The favicon service's own size; the Edit Feed page shows it larger.</summary>
     public const int FaviconDecodeWidth = 64;
 
-    private readonly Store _store;
-    private readonly SettingsStore _settings;
+    private readonly ILibrary _store;
+    private readonly ISettingsStore _settings;
     private readonly IImageLoader _images;
     private readonly IUiDispatcher _ui;
     private readonly Dictionary<long, Bitmap?> _favicons = [];
     private (IReadOnlyList<Folder> Folders, IReadOnlyList<Feed> Feeds, string Filter)? _shown;
 
-    public ManageFeedsViewModel(Store store, SettingsStore settings, IImageLoader images, IUiDispatcher ui)
+    public ManageFeedsViewModel(ILibrary store, ISettingsStore settings, IImageLoader images, IUiDispatcher ui)
     {
         _store = store;
         _settings = settings;
@@ -62,7 +62,7 @@ public sealed partial class ManageFeedsViewModel : ObservableObject, IDisposable
 
     public void Dispose() => _store.Changed -= OnStoreChanged;
 
-    private void OnStoreChanged(object? sender, StoreChangedEventArgs e)
+    private void OnStoreChanged(object? sender, LibraryChangedEventArgs e)
     {
         if (e.ItemIds is null)
             _ui.Post(Reload);

@@ -1,0 +1,104 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:c="urn:RSSmote.App.Controls"
+             xmlns:vm="using:RSSmote.App.ViewModels"
+             xmlns:v="using:RSSmote.App.Views.Desktop"
+             xmlns:m="using:RSSmote.Core.Models"
+             x:Class="RSSmote.App.Views.Desktop.SidebarView"
+             x:DataType="vm:ShellViewModel">
+    <Border Background="{DynamicResource Brush.Bg.Sidebar}">
+        <DockPanel>
+            <c:TitleStrip DockPanel.Dock="Top" Padding="{x:Static v:Chrome.SidebarStripPadding}">
+                <c:TitleStrip.Trailing>
+                    <StackPanel Orientation="Horizontal">
+                        <Button Classes="icon" ToolTip.Tip="Refresh (R)" Command="{Binding RefreshCommand}">
+                            <c:Icon Data="{StaticResource Icon.Refresh}" />
+                        </Button>
+                        <Button Classes="icon" ToolTip.Tip="Menu">
+                            <c:Icon Data="{StaticResource Icon.Menu}" />
+                            <Button.Flyout>
+                                <MenuFlyout Placement="BottomEdgeAlignedRight">
+                                    <MenuItem Header="Settings…" InputGesture="Ctrl+OemComma" Command="{Binding OpenSettingsCommand}" />
+                                    <MenuItem Header="Add Feed…" InputGesture="Ctrl+N" Command="{Binding OpenSettingsCommand}"
+                                              CommandParameter="{x:Static vm:SettingsSection.AddFeed}" />
+                                    <MenuItem Header="Import Feeds…" Command="{Binding OpenSettingsCommand}"
+                                              CommandParameter="{x:Static vm:SettingsSection.ImportFeeds}" />
+                                    <MenuItem Header="Export Feeds…" Command="{Binding OpenSettingsCommand}"
+                                              CommandParameter="{x:Static vm:SettingsSection.ExportFeeds}" />
+                                    <Separator />
+                                    <MenuItem Header="Refresh" InputGesture="R" Command="{Binding RefreshCommand}" />
+                                    <MenuItem Header="Mark All as Read" InputGesture="A" Command="{Binding MarkAllReadCommand}" />
+                                    <Separator />
+                                    <MenuItem Header="Starred Items" InputGesture="Ctrl+1" Command="{Binding ShowFilterCommand}" CommandParameter="{x:Static m:StreamFilter.Starred}" />
+                                    <MenuItem Header="Unread Items" InputGesture="Ctrl+2" Command="{Binding ShowFilterCommand}" CommandParameter="{x:Static m:StreamFilter.Unread}" />
+                                    <MenuItem Header="All Items" InputGesture="Ctrl+3" Command="{Binding ShowFilterCommand}" CommandParameter="{x:Static m:StreamFilter.All}" />
+                                    <Separator />
+                                    <MenuItem Header="Theme">
+                                        <MenuItem Header="Appearance" Classes="choices" ItemsSource="{Binding Settings.Appearances}" />
+                                        <MenuItem Header="Light Theme" Classes="choices" ItemsSource="{Binding Settings.LightThemes}" />
+                                        <MenuItem Header="Dark Theme" Classes="choices" ItemsSource="{Binding Settings.DarkThemes}" />
+                                        <Separator />
+                                        <MenuItem Header="Grayscale Favicons" Command="{Binding Settings.ToggleGrayscaleFaviconsCommand}" />
+                                    </MenuItem>
+                                    <MenuItem Header="Sort Unread Items">
+                                        <MenuItem Header="Newest First" Command="{Binding Settings.SetSortNewestFirstCommand}" CommandParameter="{x:True}" />
+                                        <MenuItem Header="Oldest First" Command="{Binding Settings.SetSortNewestFirstCommand}" CommandParameter="{x:False}" />
+                                    </MenuItem>
+                                    <MenuItem Header="Group Items">
+                                        <MenuItem Header="By Date" Command="{Binding Settings.SetGroupByDateCommand}" CommandParameter="{x:True}" />
+                                        <MenuItem Header="None" Command="{Binding Settings.SetGroupByDateCommand}" CommandParameter="{x:False}" />
+                                    </MenuItem>
+                                </MenuFlyout>
+                            </Button.Flyout>
+                        </Button>
+                    </StackPanel>
+                </c:TitleStrip.Trailing>
+            </c:TitleStrip>
+
+            <c:StatusBar DockPanel.Dock="Bottom" Classes="canvas" Margin="0,0,0,6">
+                <c:StatusBar.Leading>
+                    <!-- A Grid, not a StackPanel, so the text ends in an ellipsis before Aa (L16). -->
+                    <Grid ColumnDefinitions="Auto,*" ColumnSpacing="8">
+                        <Ellipse Classes="statusDot" Classes.updating="{Binding IsRefreshing}"
+                                 Classes.failed="{Binding Sidebar.HasFailures}" />
+                        <TextBlock Grid.Column="1" Text="{Binding Sidebar.StatusText}" TextTrimming="CharacterEllipsis"
+                                   FontFeatures="+tnum" VerticalAlignment="Center" ToolTip.Tip="{Binding Sidebar.StatusText}" />
+                    </Grid>
+                </c:StatusBar.Leading>
+                <c:StatusBar.Trailing>
+                    <StackPanel Orientation="Horizontal">
+                        <!-- Aa opens the text-size popover above it, over the sidebar and the list (D31). -->
+                        <Button x:Name="TextSizeButton" Classes="icon" ToolTip.Tip="Text Size">
+                            <TextBlock Text="Aa" FontSize="12.5" FontWeight="SemiBold" />
+                            <Button.Flyout>
+                                <Flyout Placement="TopEdgeAlignedLeft" FlyoutPresenterClasses="textSize"
+                                        Opened="OnTextSizeOpened" Closed="OnTextSizeClosed">
+                                    <v:TextSizePopover DataContext="{Binding Settings}" />
+                                </Flyout>
+                            </Button.Flyout>
+                        </Button>
+                        <Button x:Name="SettingsButton" Classes="icon" ToolTip.Tip="{x:Static v:Chrome.SettingsTip}"
+                                Command="{Binding OpenSettingsCommand}">
+                            <c:Icon Data="{StaticResource Icon.Settings}" />
+                        </Button>
+                    </StackPanel>
+                </c:StatusBar.Trailing>
+            </c:StatusBar>
+
+            <ListBox x:Name="Rows" Classes="sidebar" c:Scaled.Factor="{Binding Settings.FeedsScale}"
+                     ItemsSource="{Binding Sidebar.Rows}"
+                     SelectedItem="{Binding Sidebar.SelectedRow}">
+                <ListBox.ItemTemplate>
+                    <DataTemplate x:DataType="vm:SidebarRowViewModel">
+                        <c:Scaled>
+                            <c:SidebarRow Kind="{Binding Kind}" Title="{Binding Title}" Count="{Binding Count}"
+                                          Favicon="{Binding Favicon}" IsFaviconGrayscale="{Binding IsFaviconGrayscale}"
+                                          IsExpanded="{Binding IsExpanded}" IsExpandable="{Binding IsExpandable}"
+                                          HasError="{Binding HasError}" Filter="{Binding Filter}" />
+                        </c:Scaled>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </DockPanel>
+    </Border>
+</UserControl>

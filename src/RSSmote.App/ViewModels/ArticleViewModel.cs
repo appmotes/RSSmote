@@ -49,10 +49,17 @@ public sealed partial class ArticleViewModel : ObservableObject
 
     partial void OnItemChanged(Item? oldValue, Item? newValue)
     {
-        if (newValue is null)
+        if (newValue is null || oldValue?.Id != newValue.Id)
             Document = null;
-        else if (oldValue?.Id != newValue.Id || Document is null)
-            Document = ArticleDocument.Create(newValue, DateText(newValue.Published));
+        if (newValue is not null && Document is null && newValue.Content.Length > 0)
+            ShowContent(newValue);
+    }
+
+    /// <summary>Renders <paramref name="full"/> when it is still the article shown.</summary>
+    public void ShowContent(Item full)
+    {
+        if (Item?.Id == full.Id)
+            Document = ArticleDocument.Create(full, DateText(full.Published));
     }
 
     public static string DateText(DateTimeOffset published)

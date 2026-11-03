@@ -13,8 +13,12 @@ public interface IImageLoader
     void Forget(string url);
 }
 
-public sealed class ImageCache(HttpClient http) : IImageLoader
+/// <param name="route">Turns an image's address into the one to fetch; the address itself when null.</param>
+public sealed class ImageCache(HttpClient http, Func<string, string>? route = null) : IImageLoader
 {
+    /// <summary>Through the server's image endpoint (A19): the browser may not fetch another site's image itself.</summary>
+    public static string ThroughServer(string url) => "api/image?url=" + Uri.EscapeDataString(url);
+
     private readonly ConcurrentDictionary<string, Task<Bitmap?>> _cache = new();
 
     /// <summary>Fetches on the thread pool, so no part of a request runs on the caller's (UI) thread (A11).</summary>
@@ -31,7 +35,7 @@ public sealed class ImageCache(HttpClient http) : IImageLoader
     {
         try
         {
-            var data = await http.GetByteArrayAsync(url).ConfigureAwait(false);
+            var data = await http.GetByteArrayAsync(route is null ? url : route(url)).ConfigureAwait(false);
             using var stream = new MemoryStream(data);
             return Bitmap.DecodeToWidth(stream, decodeWidth, BitmapInterpolationMode.HighQuality);
         }

@@ -5,7 +5,7 @@ using RSSmote.App.Controls.Templates;
 using RSSmote.App.Formatting;
 using RSSmote.App.Services;
 using RSSmote.Core.Models;
-using RSSmote.Data;
+using RSSmote.Core.Library;
 
 namespace RSSmote.App.ViewModels;
 
@@ -31,15 +31,15 @@ public sealed partial class SidebarViewModel : ObservableObject
     public const string FoldersSection = "Folders";
     public const string FeedsSection = "Feeds";
 
-    private readonly Store _store;
-    private readonly SettingsStore _settings;
+    private readonly ILibrary _store;
+    private readonly ISettingsStore _settings;
     private readonly IImageLoader _images;
     private readonly IUiDispatcher _ui;
     private readonly Dictionary<long, Bitmap?> _favicons = new();
     private bool _reloading;
     private string _refreshText = "";
 
-    public SidebarViewModel(Store store, SettingsStore settings, IImageLoader images, IUiDispatcher ui,
+    public SidebarViewModel(ILibrary store, ISettingsStore settings, IImageLoader images, IUiDispatcher ui,
                             SidebarLayout layout = SidebarLayout.Desktop)
     {
         _store = store;

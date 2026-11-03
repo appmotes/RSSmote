@@ -4,9 +4,9 @@ using Avalonia.Headless.XUnit;
 using Avalonia.Threading;
 using Avalonia.VisualTree;
 using RSSmote.App.ViewModels;
-using RSSmote.Mobile.Pages;
-using RSSmote.Mobile.Shell;
-using RSSmote.Mobile.Views;
+using RSSmote.App.Views.Phone.Pages;
+using RSSmote.App.Views.Phone.Shell;
+using RSSmote.App.Views.Phone;
 
 namespace RSSmote.Mobile.Tests;
 
@@ -107,7 +107,7 @@ public class SettingsFlowTests
             </channel></rss>
             """;
         Click(shell, "Add Feed");
-        var page = Assert.IsType<Pages.AddFeedPage>(shell.NavigationStack[^1]);
+        var page = Assert.IsType<RSSmote.App.Views.Phone.Pages.AddFeedPage>(shell.NavigationStack[^1]);
         var add = Assert.IsType<AddFeedViewModel>(page.DataContext);
         add.Address = "https://blog.example/feed.xml";
         await add.SearchCommand.ExecuteAsync(null);

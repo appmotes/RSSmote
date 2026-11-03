@@ -8,7 +8,7 @@ using Avalonia.Threading;
 using RSSmote.App.Services;
 using RSSmote.App.Theming;
 using RSSmote.App.ViewModels;
-using RSSmote.Desktop.Views;
+using RSSmote.App.Views.Desktop;
 using RSSmote.Core.Discovery;
 using RSSmote.Core.Models;
 using RSSmote.Data;

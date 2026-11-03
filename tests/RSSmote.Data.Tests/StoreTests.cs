@@ -1,4 +1,5 @@
 using Microsoft.Data.Sqlite;
+using RSSmote.Core.Library;
 using RSSmote.Core.Models;
 using RSSmote.Core.Opml;
 using RSSmote.Core.Parsing;
@@ -140,7 +141,7 @@ public sealed class StoreTests : IDisposable
     {
         var a = _store.AddFeed("https://a.example/feed", "A", null, null);
         _store.Upsert(a.Id, [Item("old", published: Now.AddDays(-6)), Item("new", published: Now.AddDays(-1))]);
-        var changed = new List<StoreChangedEventArgs>();
+        var changed = new List<LibraryChangedEventArgs>();
         _store.Changed += (_, e) => changed.Add(e);
 
         Assert.Equal(1, _store.MarkReadBefore(Now.AddDays(-5)));
@@ -195,7 +196,7 @@ public sealed class StoreTests : IDisposable
     [Fact]
     public void Changed_reports_item_ids_only_for_flag_changes()
     {
-        var events = new List<StoreChangedEventArgs>();
+        var events = new List<LibraryChangedEventArgs>();
         _store.Changed += (_, e) => events.Add(e);
         var a = _store.AddFeed("https://a.example/feed", "A", null, null);
         _store.Upsert(a.Id, [Item("1")]);

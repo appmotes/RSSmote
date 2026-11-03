@@ -20,11 +20,17 @@ public sealed class FeedException(FeedError error, string message, HttpStatusCod
     public HttpStatusCode? Status { get; } = status;
 }
 
+/// <summary>Finds the feeds an address offers; never empty (throws <see cref="FeedException"/> instead).</summary>
+public interface IFeedFinder
+{
+    Task<IReadOnlyList<FoundFeed>> FindAllAsync(string input, CancellationToken ct = default);
+}
+
 /// <summary>
 /// Turns what the user typed into feeds (A10): the address itself if it is a feed, otherwise every
 /// <c>&lt;link rel="alternate"&gt;</c> it advertises, otherwise the first common feed path that answers.
 /// </summary>
-public sealed partial class FeedFinder(HttpClient http)
+public sealed partial class FeedFinder(HttpClient http) : IFeedFinder
 {
     private static readonly string[] FeedTypes =
         ["application/rss+xml", "application/atom+xml", "application/feed+json", "application/json", "text/xml", "application/xml"];

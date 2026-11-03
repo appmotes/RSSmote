@@ -1,22 +1,17 @@
 using Microsoft.Data.Sqlite;
+using RSSmote.Core.Discovery;
+using RSSmote.Core.Library;
 using RSSmote.Core.Models;
 using RSSmote.Core.Opml;
 using RSSmote.Core.Parsing;
 
 namespace RSSmote.Data;
 
-/// <summary>Raised after every write. <see cref="ItemIds"/> is set when only read/starred flags changed.</summary>
-public sealed class StoreChangedEventArgs(IReadOnlyList<long>? itemIds) : EventArgs
-{
-    public IReadOnlyList<long>? ItemIds { get; } = itemIds;
-    public bool FlagsOnly => ItemIds is not null;
-}
-
 /// <summary>
 /// The local library in one SQLite file (A8): folders, feeds and items. One connection behind a lock, so it is
 /// safe to call from any thread; <see cref="Changed"/> is raised on the calling thread after the lock is released.
 /// </summary>
-public sealed class Store : IDisposable
+public sealed class Store : ILibrary, IDisposable
 {
     /// <summary>Schema version written to <c>PRAGMA user_version</c>. Version 1 matches the macOS app's tables.</summary>
     public const int SchemaVersion = 1;
@@ -31,7 +26,7 @@ public sealed class Store : IDisposable
     private readonly TimeProvider _clock;
     private SqliteTransaction? _tx;
 
-    public event EventHandler<StoreChangedEventArgs>? Changed;
+    public event EventHandler<LibraryChangedEventArgs>? Changed;
 
     public Store(string path, TimeProvider? clock = null)
     {
@@ -321,6 +316,17 @@ public sealed class Store : IDisposable
                 .ToDictionary(p => p.Item1, p => p.Item2);
     }
 
+    /// <summary>The read and starred flags of the items still stored among <paramref name="ids"/>.</summary>
+    public IReadOnlyList<(long Id, bool Unread, bool Starred)> Flags(IReadOnlyCollection<long> ids)
+    {
+        var result = new List<(long, bool, bool)>(ids.Count);
+        lock (_gate)
+            foreach (var chunk in ids.Chunk(500))
+                result.AddRange(Query($"SELECT id, unread, starred FROM items WHERE id IN ({string.Join(',', chunk)})", [],
+                    r => (r.GetInt64(0), r.GetInt64(1) != 0, r.GetInt64(2) != 0)));
+        return result;
+    }
+
     public void SetUnread(IReadOnlyCollection<long> ids, bool unread) => SetFlag("unread", ids, unread);
 
     public void SetStarred(IReadOnlyCollection<long> ids, bool starred) => SetFlag("starred", ids, starred);
@@ -413,9 +419,49 @@ public sealed class Store : IDisposable
         DateTimeOffset.FromUnixTimeMilliseconds((long)Math.Round(r.GetDouble(9) * 1000)),
         r.GetInt64(10) != 0, r.GetInt64(11) != 0, r.GetString(12));
 
+    // MARK: ILibrary's tasks, which finish before they return
+
+    Task<Item?> ILibrary.LoadItemAsync(long id) => Task.FromResult(Item(id));
+
+    Task<Folder> ILibrary.AddFolderAsync(string title) => Task.FromResult(AddFolder(title));
+
+    Task ILibrary.RenameFolderAsync(long id, string title)
+    {
+        RenameFolder(id, title);
+        return Task.CompletedTask;
+    }
+
+    Task ILibrary.DeleteFolderAsync(long id, bool deleteFeeds)
+    {
+        DeleteFolder(id, deleteFeeds);
+        return Task.CompletedTask;
+    }
+
+    /// <summary>Without retention: the refresher's own <c>AddFeed</c> skips items older than it keeps.</summary>
+    Task<Feed> ILibrary.AddFeedAsync(FoundFeed found, long? folderId)
+    {
+        var feed = AddFeed(found.Url.AbsoluteUri, found.Feed.Title ?? found.Url.Host, found.Feed.SiteUrl, folderId);
+        Upsert(feed.Id, found.Feed.Items);
+        return Task.FromResult(feed);
+    }
+
+    Task ILibrary.UpdateFeedAsync(Feed feed)
+    {
+        UpdateFeed(feed);
+        return Task.CompletedTask;
+    }
+
+    Task ILibrary.DeleteFeedAsync(long id)
+    {
+        DeleteFeed(id);
+        return Task.CompletedTask;
+    }
+
+    Task<int> ILibrary.ImportOpmlAsync(IReadOnlyList<OpmlOutline> outlines) => Task.FromResult(ImportOpml(outlines));
+
     // MARK: SQLite helpers (call with the lock held)
 
-    private void Notify(IReadOnlyList<long>? ids = null) => Changed?.Invoke(this, new StoreChangedEventArgs(ids));
+    private void Notify(IReadOnlyList<long>? ids = null) => Changed?.Invoke(this, new LibraryChangedEventArgs(ids));
 
     private void InTransaction(Action body)
     {
