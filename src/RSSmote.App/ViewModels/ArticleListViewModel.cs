@@ -10,7 +10,8 @@ namespace RSSmote.App.ViewModels;
 
 /// <summary>
 /// The article list (D18): day headings and article rows for the selected stream under the current filter, sort
-/// and search. The article being read stays listed after it stops matching the filter (e.g. once read).
+/// and search. The article being read stays listed after it stops matching the filter (e.g. once read), until the
+/// reader picks another filter.
 /// </summary>
 public sealed partial class ArticleListViewModel : ObservableObject
 {
@@ -169,10 +170,13 @@ public sealed partial class ArticleListViewModel : ObservableObject
     {
         if (!IsShown)
             return;
+        var filterChanged = _builtWith is { } built && built.Filter != _settings.Current.Filter;
         var settings = _builtWith = _settings.Current;
         Filter = settings.Filter;
         var selected = keepSelection ? SelectedArticle : null;
         var items = _store.Items(Stream, settings.Filter, SearchText, settings.SortNewestFirst).ToList();
+        if (selected is not null && filterChanged && items.All(i => i.Id != selected.Id))
+            selected = null;
         if (selected is not null && items.All(i => i.Id != selected.Id))
         {
             var at = items.FindIndex(i => settings.SortNewestFirst ? i.Published < selected.Item.Published : i.Published > selected.Item.Published);
