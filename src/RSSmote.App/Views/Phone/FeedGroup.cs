@@ -23,7 +23,10 @@ public sealed record FeedGroup(SidebarRowViewModel? Header, IReadOnlyList<FeedGr
         void Close()
         {
             if (header is not null || current.Count > 0)
+            {
                 result.Add(new FeedGroup(header, [.. current.Select((r, i) => new FeedGroupRow(r, i == current.Count - 1))]));
+            }
+
             current = [];
         }
 
@@ -43,6 +46,8 @@ public sealed record FeedGroup(SidebarRowViewModel? Header, IReadOnlyList<FeedGr
 
         groups.Clear();
         foreach (var group in result)
+        {
             groups.Add(group);
+        }
     }
 }

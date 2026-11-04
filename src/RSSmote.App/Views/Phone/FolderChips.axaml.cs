@@ -19,7 +19,9 @@ public partial class FolderChips : UserControl
         NewName.KeyDown += (_, e) =>
         {
             if (e.Key == Key.Enter && _picker?.AddFolderCommand.CanExecute(null) == true)
+            {
                 _picker.AddFolderCommand.Execute(null);
+            }
         };
     }
 
@@ -45,7 +47,10 @@ public partial class FolderChips : UserControl
     private void OnPickerChanged(object? sender, PropertyChangedEventArgs e)
     {
         if (e.PropertyName != nameof(FolderPickerViewModel.Selected))
+        {
             return;
+        }
+
         NewRow.IsVisible = false;
         Rebuild();
     }
@@ -54,16 +59,24 @@ public partial class FolderChips : UserControl
     {
         Chips.Children.Clear();
         if (_picker is not { } picker)
+        {
             return;
+        }
+
         Chips.Children.Add(Chip("None", picker.Selected is null, () => picker.SelectNoneCommand.Execute(null)));
         foreach (var choice in picker.Folders)
+        {
             Chips.Children.Add(Chip(choice.Folder.Title, choice.Folder.Id == picker.Selected?.Id,
                 () => picker.ToggleCommand.Execute(choice)));
+        }
+
         var add = Chip("New", false, () =>
         {
             NewRow.IsVisible = !NewRow.IsVisible;
             if (NewRow.IsVisible)
+            {
                 NewName.Focus();
+            }
         });
         add.Classes.Add("add");
         add.Content = new StackPanel
@@ -74,7 +87,11 @@ public partial class FolderChips : UserControl
             {
                 new Icon { Data = Avalonia.Application.Current?.FindResource("Icon.Plus") as Geometry, Size = 16,
                            VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center },
-                new TextBlock { Text = "New", VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center },
+                new TextBlock
+                {
+                    Text = "New",
+                    VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center,
+                },
             },
         };
         Chips.Children.Add(add);
@@ -82,7 +99,11 @@ public partial class FolderChips : UserControl
 
     private static Button Chip(string title, bool on, Action click)
     {
-        var chip = new Button { Content = title, Classes = { "phoneChip" } };
+        var chip = new Button
+        {
+            Content = title,
+            Classes = { "phoneChip" },
+        };
         chip.Classes.Set("on", on);
         chip.Click += (_, _) => click();
         return chip;

@@ -26,7 +26,11 @@ public class ThemeCatalogueTests
     [Fact]
     public void Automatic_shows_the_slot_the_os_asks_for()
     {
-        var settings = new AppSettings { Theme = AppTheme.Automatic, DarkTheme = AppSettings.BlackTheme };
+        var settings = new AppSettings
+        {
+            Theme = AppTheme.Automatic,
+            DarkTheme = AppSettings.BlackTheme,
+        };
         Assert.Equal(ThemeVariant.Light, ThemeCatalogue.VariantFor(settings, osPrefersDark: false));
         Assert.Equal(ThemeCatalogue.Black, ThemeCatalogue.VariantFor(settings, osPrefersDark: true));
     }
@@ -34,8 +38,14 @@ public class ThemeCatalogueTests
     [Fact]
     public void Light_and_dark_ignore_the_os()
     {
-        var light = new AppSettings { Theme = AppTheme.Light };
-        var dark = new AppSettings { Theme = AppTheme.Dark };
+        var light = new AppSettings
+        {
+            Theme = AppTheme.Light,
+        };
+        var dark = new AppSettings
+        {
+            Theme = AppTheme.Dark,
+        };
         Assert.Equal(ThemeVariant.Light, ThemeCatalogue.VariantFor(light, osPrefersDark: true));
         Assert.Equal(ThemeVariant.Dark, ThemeCatalogue.VariantFor(dark, osPrefersDark: false));
     }

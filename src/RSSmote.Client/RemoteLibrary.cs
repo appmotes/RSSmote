@@ -36,7 +36,10 @@ public sealed class RemoteLibrary(ApiClient api) : ILibrary
         lock (_gate)
         {
             if (ticket < _applied)
+            {
                 return;
+            }
+
             _applied = ticket;
             _folders = snapshot.Folders;
             _feeds = snapshot.Feeds;
@@ -51,6 +54,7 @@ public sealed class RemoteLibrary(ApiClient api) : ILibrary
     {
         var changed = new List<long>();
         lock (_gate)
+        {
             foreach (var f in flags)
             {
                 if (_items.TryGetValue(f.Id, out var item) && (item.Unread != f.Unread || item.Starred != f.Starred))
@@ -59,8 +63,12 @@ public sealed class RemoteLibrary(ApiClient api) : ILibrary
                     changed.Add(f.Id);
                 }
             }
+        }
+
         if (changed.Count > 0)
+        {
             Changed?.Invoke(this, new LibraryChangedEventArgs(changed));
+        }
     }
 
     // MARK: Reads
@@ -68,7 +76,9 @@ public sealed class RemoteLibrary(ApiClient api) : ILibrary
     public IReadOnlyList<Folder> Folders()
     {
         lock (_gate)
+        {
             return _folders;
+        }
     }
 
     public Folder? FolderNamed(string title) =>
@@ -77,7 +87,9 @@ public sealed class RemoteLibrary(ApiClient api) : ILibrary
     public IReadOnlyList<Feed> Feeds()
     {
         lock (_gate)
+        {
             return _feeds;
+        }
     }
 
     public Feed? Feed(long id) => Feeds().FirstOrDefault(f => f.Id == id);
@@ -97,26 +109,34 @@ public sealed class RemoteLibrary(ApiClient api) : ILibrary
     public Item? Item(long id)
     {
         lock (_gate)
+        {
             return _items.GetValueOrDefault(id);
+        }
     }
 
     public int Count(ArticleStream stream, StreamFilter filter)
     {
         lock (_gate)
+        {
             return Matching(stream, filter, "").Count();
+        }
     }
 
     public IReadOnlyDictionary<long, int> Counts(StreamFilter filter)
     {
         lock (_gate)
+        {
             return _items.Values.Where(i => filter == StreamFilter.Starred ? i.Starred : i.Unread)
                 .GroupBy(i => i.FeedId).ToDictionary(g => g.Key, g => g.Count());
+        }
     }
 
     public IReadOnlyDictionary<long, int> TotalCounts()
     {
         lock (_gate)
+        {
             return _items.Values.GroupBy(i => i.FeedId).ToDictionary(g => g.Key, g => g.Count());
+        }
     }
 
     /// <summary>The same rule as the store's: search matches title, summary or feed title, ignoring case.</summary>
@@ -159,7 +179,10 @@ public sealed class RemoteLibrary(ApiClient api) : ILibrary
     {
         var ids = Items(stream, StreamFilter.Unread, limit: int.MaxValue).Select(i => i.Id).ToList();
         if (ids.Count == 0)
+        {
             return;
+        }
+
         Apply(ids, i => i with { Unread = false });
         _ = WriteAsync(() => api.SendAsync(HttpMethod.Post, "api/items/read-all", stream, ApiJsonContext.Default.ArticleStream));
     }
@@ -167,7 +190,10 @@ public sealed class RemoteLibrary(ApiClient api) : ILibrary
     private void SetFlags(IReadOnlyCollection<long> ids, Func<Item, Item> change, string path, bool value)
     {
         if (ids.Count == 0)
+        {
             return;
+        }
+
         Apply(ids, change);
         _ = WriteAsync(() => api.SendAsync(HttpMethod.Post, path, new FlagRequest([.. ids], value), ApiJsonContext.Default.FlagRequest));
     }
@@ -175,9 +201,16 @@ public sealed class RemoteLibrary(ApiClient api) : ILibrary
     private void Apply(IReadOnlyCollection<long> ids, Func<Item, Item> change)
     {
         lock (_gate)
+        {
             foreach (var id in ids)
+            {
                 if (_items.TryGetValue(id, out var item))
+                {
                     _items[id] = change(item);
+                }
+            }
+        }
+
         Changed?.Invoke(this, new LibraryChangedEventArgs([.. ids]));
     }
 
@@ -191,7 +224,10 @@ public sealed class RemoteLibrary(ApiClient api) : ILibrary
         catch (Exception e) when (e is HttpRequestException or SignedOutException or TaskCanceledException)
         {
             if (e is SignedOutException)
+            {
                 return;
+            }
+
             try
             {
                 await ReloadAsync();
@@ -208,15 +244,26 @@ public sealed class RemoteLibrary(ApiClient api) : ILibrary
     public async Task<Item?> LoadItemAsync(long id)
     {
         if (Item(id) is not { } item)
+        {
             return null;
+        }
+
         lock (_gate)
+        {
             if (_content.TryGetValue(id, out var cached))
+            {
                 return item with { Content = cached };
+            }
+        }
+
         var full = await api.GetAsync($"api/items/{id}", ApiJsonContext.Default.Item);
         lock (_gate)
         {
             if (_content.Count >= ContentCacheSize)
+            {
                 _content.Clear();
+            }
+
             _content[id] = full.Content;
         }
         return full;

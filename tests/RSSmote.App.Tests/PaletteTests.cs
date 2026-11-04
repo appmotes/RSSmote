@@ -10,7 +10,10 @@ public class PaletteTests
     {
         var dir = new DirectoryInfo(AppContext.BaseDirectory);
         while (dir is not null && !File.Exists(Path.Combine(dir.FullName, "RSSmote.slnx")))
+        {
             dir = dir.Parent;
+        }
+
         Assert.NotNull(dir);
         return Path.Combine(dir!.FullName, "src", "RSSmote.App", "Assets", "Themes");
     }
@@ -25,7 +28,9 @@ public class PaletteTests
         var sand = Keys("Sand");
         Assert.NotEmpty(sand);
         foreach (var palette in Directory.GetFiles(ThemesFolder(), "*.axaml").Select(Path.GetFileNameWithoutExtension))
+        {
             Assert.True(sand.SequenceEqual(Keys(palette!)), $"{palette} differs from Sand");
+        }
     }
 
     [Fact]
@@ -33,6 +38,8 @@ public class PaletteTests
     {
         var files = Directory.GetFiles(ThemesFolder(), "*.axaml").Select(Path.GetFileNameWithoutExtension).ToHashSet();
         foreach (var theme in RSSmote.App.Theming.ThemeCatalogue.All)
+        {
             Assert.Contains(theme.Name, files);
+        }
     }
 }

@@ -148,7 +148,10 @@ public sealed class StoreTests : IDisposable
         Assert.Equal(["new"], _store.Items(new ArticleStream.All(), StreamFilter.Unread).Select(i => i.Guid));
         Assert.True(Assert.Single(changed).FlagsOnly);
         Assert.Equal(0, _store.MarkReadBefore(Now.AddDays(-5)));
-        Assert.Equal(new Dictionary<long, int> { [a.Id] = 2 }, _store.TotalCounts());
+        Assert.Equal(new Dictionary<long, int>
+        {
+            [a.Id] = 2,
+        }, _store.TotalCounts());
     }
 
     [Fact]
@@ -251,6 +254,8 @@ public sealed class StoreTests : IDisposable
             Assert.Equal(DateTimeOffset.FromUnixTimeMilliseconds(1759743000500), item.Published);
         }
         using (var reopened = new Store(path))
+        {
             Assert.Single(reopened.Feeds());
+        }
     }
 }

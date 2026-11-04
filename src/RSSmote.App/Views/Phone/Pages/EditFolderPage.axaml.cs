@@ -13,18 +13,25 @@ public partial class EditFolderPage : PhonePage
     public static void Open(MobileShell shell, long folderId)
     {
         if (shell.ViewModel is not { } vm)
+        {
             return;
+        }
+
         var page = new EditFolderPage();
         var edit = vm.CreateEditFolder(folderId,
             feed => EditFeedPage.Open(shell, feed, vm.Sidebar.FaviconFor(feed.Id), "Folder"),
             folder => _ = shell.ConfirmAsync(vm.ConfirmDeleteFolder(folder), () => shell.Close(page)));
         if (edit is not null)
+        {
             _ = shell.PushPanelAsync(page, edit);
+        }
     }
 
     private void OnFeedClick(object? sender, RoutedEventArgs e)
     {
         if ((sender as Control)?.Tag is FolderFeedRow row && DataContext is EditFolderViewModel edit)
+        {
             edit.EditFeedCommand.Execute(row);
+        }
     }
 }

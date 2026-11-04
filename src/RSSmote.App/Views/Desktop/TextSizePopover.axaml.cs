@@ -17,7 +17,10 @@ public partial class TextSizePopover : UserControl
         base.OnKeyDown(e);
         var command = Chrome.CommandModifier;
         if (e.Handled || e.KeyModifiers != command || DataContext is not SettingsViewModel settings)
+        {
             return;
+        }
+
         int? delta = e.Key switch
         {
             Key.OemPlus or Key.Add => 1,

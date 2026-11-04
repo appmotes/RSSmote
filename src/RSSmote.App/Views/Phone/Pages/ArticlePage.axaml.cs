@@ -55,11 +55,17 @@ public partial class ArticlePage : ContentPage
         }
         _travel = Math.Sign(delta) == Math.Sign(_travel) ? _travel + delta : delta;
         if (e.Offset < Threshold)
+        {
             ShowBars(true);
+        }
         else if (_travel > Threshold)
+        {
             ShowBars(false);
+        }
         else if (_travel < -Threshold)
+        {
             ShowBars(true);
+        }
     }
 
     /// <summary>
@@ -69,7 +75,10 @@ public partial class ArticlePage : ContentPage
     private void ShowBars(bool shown)
     {
         if (BarsShown == shown)
+        {
             return;
+        }
+
         _settledAt = DateTime.UtcNow + Settle;
         NavigationPage.SetHasNavigationBar(this, shown);
         BottomBar.IsVisible = shown;
@@ -84,7 +93,10 @@ public partial class ArticlePage : ContentPage
     private void OnTextClick(object? sender, RoutedEventArgs e)
     {
         if (MobileShell.Of(this) is not { } shell || shell.ShowTextSheet(TextPane.Article) is not { } sheet)
+        {
             return;
+        }
+
         void Fit(object? s, SizeChangedEventArgs args) =>
             Host.Margin = new Thickness(0, 0, 0, Math.Max(0, args.NewSize.Height - BottomBar.Bounds.Height));
         void Closed(object? s, EventArgs args)

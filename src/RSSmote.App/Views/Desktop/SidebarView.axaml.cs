@@ -25,7 +25,10 @@ public partial class SidebarView : UserControl
     private void SetTextSizeOpen(bool open)
     {
         if (DataContext is ShellViewModel shell)
+        {
             shell.Settings.IsTextSizeOpen = open;
+        }
+
         TextSizeButton.Classes.Set("on", open);
     }
 
@@ -35,7 +38,9 @@ public partial class SidebarView : UserControl
     private void OnRowPointerPressed(object? sender, PointerPressedEventArgs e)
     {
         if (e.Source is not Control source || DataContext is not ShellViewModel shell)
+        {
             return;
+        }
         // A right click opens the row's menu without selecting the row.
         if (e.GetCurrentPoint(this).Properties.IsRightButtonPressed)
         {
@@ -45,7 +50,10 @@ public partial class SidebarView : UserControl
         var disclosure = source.GetSelfAndVisualAncestors().TakeWhile(v => v is not SidebarRow)
             .OfType<Control>().FirstOrDefault(c => c.Name == "PART_Disclosure");
         if (disclosure?.DataContext is not SidebarRowViewModel row)
+        {
             return;
+        }
+
         shell.Sidebar.Toggle(row);
         e.Handled = true;
     }
@@ -54,11 +62,20 @@ public partial class SidebarView : UserControl
     {
         if (e.Source is not Control source || DataContext is not ShellViewModel shell
             || source.FindAncestorOfType<ListBoxItem>(includeSelf: true) is not { DataContext: SidebarRowViewModel row } item)
+        {
             return;
+        }
+
         var items = MenuItems(shell, row);
         if (items.Count == 0)
+        {
             return;
-        OpenMenu = new ContextMenu { ItemsSource = items };
+        }
+
+        OpenMenu = new ContextMenu
+        {
+            ItemsSource = items,
+        };
         OpenMenu.Open(item);
         e.Handled = true;
     }
@@ -67,7 +84,12 @@ public partial class SidebarView : UserControl
     internal static List<Control> MenuItems(ShellViewModel shell, SidebarRowViewModel row)
     {
         static MenuItem Item(string header, System.Windows.Input.ICommand command, object? parameter) =>
-            new() { Header = header, Command = command, CommandParameter = parameter };
+            new()
+            {
+                Header = header,
+                Command = command,
+                CommandParameter = parameter,
+            };
 
         if (row.Feed is { } feed)
         {

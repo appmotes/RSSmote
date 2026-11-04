@@ -51,7 +51,10 @@ public sealed class SyncTests : IAsyncLifetime
     public ValueTask DisposeAsync()
     {
         foreach (var session in _sessions)
+        {
             session.Dispose();
+        }
+
         _host.Dispose();
         SqliteConnection.ClearAllPools();
         Directory.Delete(_folder, recursive: true);

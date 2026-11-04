@@ -107,25 +107,35 @@ public sealed partial class AddFeedViewModel : PanelViewModel
         {
             var found = await _find(Address.Trim(), search.Token);
             if (search.IsCancellationRequested)
+            {
                 return;
+            }
+
             ShowResults(found);
         }
         catch (Exception e) when (e is FeedException or HttpRequestException or TaskCanceledException or IOException)
         {
             if (!search.IsCancellationRequested)
+            {
                 Error = e is TaskCanceledException ? "The server did not respond in time." : e.Message;
+            }
         }
         finally
         {
             if (ReferenceEquals(_search, search))
+            {
                 IsSearching = false;
+            }
         }
     }
 
     private void ShowResults(IReadOnlyList<FoundFeed> found)
     {
         foreach (var row in Results)
+        {
             row.PropertyChanged -= OnResultChanged;
+        }
+
         Results.Clear();
         var saved = _store.Feeds().Select(f => f.Url).ToHashSet(StringComparer.OrdinalIgnoreCase);
         foreach (var feed in found)
@@ -136,7 +146,10 @@ public sealed partial class AddFeedViewModel : PanelViewModel
         }
         // Only the first new feed is picked, as an address often lists comment or category feeds too.
         if (Results.FirstOrDefault(r => !r.IsSaved) is { } first)
+        {
             first.IsOn = true;
+        }
+
         OnPropertyChanged(nameof(CanSave));
         OnPropertyChanged(nameof(FoundText));
         OnPropertyChanged(nameof(HasResults));
@@ -153,9 +166,14 @@ public sealed partial class AddFeedViewModel : PanelViewModel
     private void PickResult(FoundFeedRowViewModel row)
     {
         if (row.IsSaved)
+        {
             return;
+        }
+
         foreach (var other in Results)
+        {
             other.IsOn = ReferenceEquals(other, row);
+        }
     }
 
     [RelayCommand(CanExecute = nameof(CanSave))]
@@ -163,9 +181,15 @@ public sealed partial class AddFeedViewModel : PanelViewModel
     {
         Feed? last = null;
         foreach (var row in Results.Where(r => r.IsOn && !r.IsSaved).ToList())
+        {
             last = await _save(row.Found, Picker.Selected?.Id);
+        }
+
         if (last is not null)
+        {
             Saved?.Invoke(this, (last, Picker.Selected?.Id));
+        }
+
         Close();
     }
 }

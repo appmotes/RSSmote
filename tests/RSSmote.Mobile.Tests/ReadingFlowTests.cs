@@ -26,7 +26,11 @@ public class ReadingFlowTests
     private static (ShellFixture Fixture, MobileShell Shell, Avalonia.Controls.Window Window) Open(string palette)
     {
         var f = new ShellFixture(s => s.ExpandedFolders = [1]);
-        var shell = new MobileShell(f.Shell) { PageTransition = null, ModalTransition = null };
+        var shell = new MobileShell(f.Shell)
+        {
+            PageTransition = null,
+            ModalTransition = null,
+        };
         var window = PhoneRender.Show(shell, palette);
         Settle();
         return (f, shell, window);
@@ -342,9 +346,15 @@ public class ReadingFlowTests
         public Task Start(Visual? from, Visual? to, bool forward, CancellationToken cancellationToken)
         {
             if (layOutFirst)
+            {
                 LaidOutPageSlide.LayOutInPlace(to);
+            }
+
             if (to is not null)
+            {
                 to.RenderTransform = new Avalonia.Media.TranslateTransform(width, 0);
+            }
+
             return Task.Delay(Timeout.Infinite, cancellationToken);
         }
     }

@@ -41,7 +41,10 @@ public partial class FolderChips : UserControl
     private void OnPickerChanged(object? sender, PropertyChangedEventArgs e)
     {
         if (e.PropertyName != nameof(FolderPickerViewModel.Selected))
+        {
             return;
+        }
+
         NewRow.IsVisible = false;
         Rebuild();
     }
@@ -50,16 +53,24 @@ public partial class FolderChips : UserControl
     {
         Chips.Children.Clear();
         if (_picker is not { } picker)
+        {
             return;
+        }
+
         Chips.Children.Add(Chip("None", picker.Selected is null, () => picker.SelectNoneCommand.Execute(null)));
         foreach (var choice in picker.Folders)
+        {
             Chips.Children.Add(Chip(choice.Folder.Title, choice.Folder.Id == picker.Selected?.Id,
                 () => picker.ToggleCommand.Execute(choice)));
+        }
+
         var add = Chip("New", false, () =>
         {
             NewRow.IsVisible = !NewRow.IsVisible;
             if (NewRow.IsVisible)
+            {
                 NewName.Focus();
+            }
         });
         add.Classes.Add("add");
         add.Content = new StackPanel
@@ -68,8 +79,17 @@ public partial class FolderChips : UserControl
             Spacing = 4,
             Children =
             {
-                new Icon { Data = this.FindResource("Icon.Plus") as Geometry, Size = 13, VerticalAlignment = VerticalAlignment.Center },
-                new TextBlock { Text = "New", VerticalAlignment = VerticalAlignment.Center },
+                new Icon
+                {
+                    Data = this.FindResource("Icon.Plus") as Geometry,
+                    Size = 13,
+                    VerticalAlignment = VerticalAlignment.Center,
+                },
+                new TextBlock
+                {
+                    Text = "New",
+                    VerticalAlignment = VerticalAlignment.Center,
+                },
             },
         };
         Chips.Children.Add(add);
@@ -77,7 +97,11 @@ public partial class FolderChips : UserControl
 
     private static Button Chip(string title, bool on, Action click)
     {
-        var chip = new Button { Content = title, Classes = { "chip" } };
+        var chip = new Button
+        {
+            Content = title,
+            Classes = { "chip" },
+        };
         chip.Classes.Set("on", on);
         chip.Click += (_, _) => click();
         return chip;

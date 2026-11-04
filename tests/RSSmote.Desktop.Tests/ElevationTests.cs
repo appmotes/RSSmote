@@ -25,9 +25,18 @@ public class ElevationTests
     public void Shadow_keys_reach_a_border_in_every_theme(string theme)
     {
         Application.Current!.RequestedThemeVariant = Variant(theme);
-        var card = new Border { Width = 100, Height = 60 };
+        var card = new Border
+        {
+            Width = 100,
+            Height = 60,
+        };
         card[!Border.BoxShadowProperty] = card.GetResourceObservable("BoxShadows.Card").ToBinding();
-        var window = new Window { Width = 200, Height = 120, Content = card };
+        var window = new Window
+        {
+            Width = 200,
+            Height = 120,
+            Content = card,
+        };
         window.Show();
         AvaloniaHeadlessPlatform.ForceRenderTimerTick();
 
@@ -36,7 +45,10 @@ public class ElevationTests
         Assert.True(first.Blur > 0 || first.Spread > 0);
 
         foreach (var key in new[] { "BoxShadows.Raised", "BoxShadows.Panel" })
+        {
             Assert.True(card.TryFindResource(key, card.ActualThemeVariant, out var value) && value is BoxShadows);
+        }
+
         window.Close();
     }
 
@@ -44,11 +56,22 @@ public class ElevationTests
     {
         var card = new Border
         {
-            Width = 100, Height = 60, Background = Brushes.White, CornerRadius = new CornerRadius(12),
-            BoxShadow = BoxShadows.Parse("0 0 0 6 #FF000000"), ClipToBounds = clip,
-            HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center,
+            Width = 100,
+            Height = 60,
+            Background = Brushes.White,
+            CornerRadius = new CornerRadius(12),
+            BoxShadow = BoxShadows.Parse("0 0 0 6 #FF000000"),
+            ClipToBounds = clip,
+            HorizontalAlignment = HorizontalAlignment.Center,
+            VerticalAlignment = VerticalAlignment.Center,
         };
-        var window = new Window { Width = 200, Height = 120, Background = Brushes.White, Content = card };
+        var window = new Window
+        {
+            Width = 200,
+            Height = 120,
+            Background = Brushes.White,
+            Content = card,
+        };
         window.Show();
         AvaloniaHeadlessPlatform.ForceRenderTimerTick();
         using var frame = window.CaptureRenderedFrame()!;
@@ -79,7 +102,13 @@ public class ElevationTests
     {
         Application.Current!.RequestedThemeVariant = ThemeCatalogue.ContrastDark;
         using var f = new ShellFixture();
-        var window = new Window { Width = 1045, Height = 660, Content = new RSSmote.App.Views.Desktop.ShellView(), DataContext = f.Shell };
+        var window = new Window
+        {
+            Width = 1045,
+            Height = 660,
+            Content = new RSSmote.App.Views.Desktop.ShellView(),
+            DataContext = f.Shell,
+        };
         window.Show();
         AvaloniaHeadlessPlatform.ForceRenderTimerTick();
         using var frame = window.CaptureRenderedFrame()!;

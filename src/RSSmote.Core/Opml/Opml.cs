@@ -25,7 +25,10 @@ public static class OpmlDocument
         var body = doc.Root?.Elements().FirstOrDefault(e => e.Name.LocalName == "body");
         var result = new List<OpmlOutline>();
         if (body is not null)
+        {
             Walk(body, null, result);
+        }
+
         return result;
     }
 
@@ -61,8 +64,11 @@ public static class OpmlDocument
 
         var body = new XElement("body");
         foreach (var folder in folders)
+        {
             body.Add(new XElement("outline", new XAttribute("text", folder.Title), new XAttribute("title", folder.Title),
                 feedList.Where(f => f.FolderId == folder.Id).Select(Outline)));
+        }
+
         body.Add(feedList.Where(f => f.FolderId is null).Select(Outline));
 
         var doc = new XDocument(new XDeclaration("1.0", "UTF-8", null),

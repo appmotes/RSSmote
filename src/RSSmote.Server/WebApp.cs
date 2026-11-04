@@ -28,9 +28,15 @@ public static partial class WebApp
         {
             var path = http.Request.Path.Value ?? "/";
             if (path.StartsWith("/api/", StringComparison.Ordinal))
+            {
                 return next();
+            }
+
             if (path == "/")
+            {
                 http.Request.Path = path = "/index.html";
+            }
+
             http.Response.Headers.Vary = "Accept-Encoding";
             if (http.Request.Headers.AcceptEncoding.ToString().Contains("br", StringComparison.Ordinal)
                 && files.GetFileInfo(path + Compressed).Exists)
@@ -48,7 +54,10 @@ public static partial class WebApp
             {
                 var path = c.Context.Request.Path.Value!;
                 if (path.EndsWith(Compressed, StringComparison.Ordinal))
+                {
                     path = path[..^Compressed.Length];
+                }
+
                 c.Context.Response.Headers.CacheControl = Fingerprinted().IsMatch(path) ? "public, max-age=31536000, immutable" : "no-cache";
                 c.Context.Response.Headers.XContentTypeOptions = "nosniff";
             },

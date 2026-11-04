@@ -50,15 +50,23 @@ public partial class ArticleListView : UserControl
     private void OnRowPointerPressed(object? sender, PointerPressedEventArgs e)
     {
         if (e.GetCurrentPoint(this).Properties.IsRightButtonPressed)
+        {
             e.Handled = true;
+        }
     }
 
     private void OnRowContextRequested(object? sender, ContextRequestedEventArgs e)
     {
         if (e.Source is not Control source || DataContext is not ShellViewModel shell
             || source.FindAncestorOfType<ListBoxItem>(includeSelf: true) is not { DataContext: ArticleRowViewModel row } item)
+        {
             return;
-        OpenMenu = new ContextMenu { ItemsSource = MenuItems(shell, row) };
+        }
+
+        OpenMenu = new ContextMenu
+        {
+            ItemsSource = MenuItems(shell, row),
+        };
         OpenMenu.Open(item);
         e.Handled = true;
     }
@@ -67,7 +75,13 @@ public partial class ArticleListView : UserControl
     internal static List<Control> MenuItems(ShellViewModel shell, ArticleRowViewModel row)
     {
         static MenuItem Item(string header, System.Windows.Input.ICommand command, ArticleRowViewModel row, Key? key = null) =>
-            new() { Header = header, Command = command, CommandParameter = row, InputGesture = key is { } k ? new KeyGesture(k) : null };
+            new()
+            {
+                Header = header,
+                Command = command,
+                CommandParameter = row,
+                InputGesture = key is { } k ? new KeyGesture(k) : null,
+            };
 
         var above = Item("Mark Above as Read", shell.MarkAboveReadCommand, row);
         above.IsEnabled = shell.List.UnreadBeside(row, below: false).Count > 0;
@@ -91,6 +105,8 @@ public partial class ArticleListView : UserControl
         e.Container.Classes.Set("header", header);
         e.Container.Focusable = !header;
         if (e.Container.DataContext is ArticleRowViewModel row && DataContext is ShellViewModel shell)
+        {
             shell.List.RequestImages(row);
+        }
     }
 }

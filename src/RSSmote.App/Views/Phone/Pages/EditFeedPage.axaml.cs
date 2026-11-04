@@ -14,8 +14,14 @@ public partial class EditFeedPage : PhonePage
     public static void Open(MobileShell shell, Feed feed, Bitmap? favicon, string backTitle)
     {
         if (shell.ViewModel?.CreateEditFeed(feed) is not { } edit)
+        {
             return;
-        var page = new EditFeedPage { BackTitle = backTitle };
+        }
+
+        var page = new EditFeedPage
+        {
+            BackTitle = backTitle,
+        };
         page.FeedIcon.Source = favicon;
         _ = shell.PushPanelAsync(page, edit);
     }
@@ -27,19 +33,25 @@ public partial class EditFeedPage : PhonePage
     private void OnOpenSiteClick(object? sender, RoutedEventArgs e)
     {
         if (Edit is { } edit)
+        {
             Shell?.ViewModel?.OpenSiteCommand.Execute(edit.Feed);
+        }
     }
 
     private void OnReloadIconClick(object? sender, RoutedEventArgs e)
     {
         if (Edit is { } edit)
+        {
             Shell?.ViewModel?.ReloadIconCommand.Execute(edit.Feed);
+        }
     }
 
     /// <summary>Asks first; once the feed is gone, so is its page.</summary>
     private void OnRemoveClick(object? sender, RoutedEventArgs e)
     {
         if (Edit is { } edit && Shell is { ViewModel: { } vm } shell)
+        {
             _ = shell.ConfirmAsync(vm.ConfirmRemoveFeed(edit.Feed), () => shell.Close(this));
+        }
     }
 }

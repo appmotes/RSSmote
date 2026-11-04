@@ -45,7 +45,10 @@ public partial class App : Application
             ApplyTheme();
             _settings.Changed += OnSettingsChanged;
             if (PlatformSettings is { } platform)
+            {
                 platform.ColorValuesChanged += OnColorValuesChanged;
+            }
+
             single.MainView = new SessionView(api, _settings, http);
         }
         base.OnFrameworkInitializationCompleted();
@@ -59,7 +62,10 @@ public partial class App : Application
     private void ApplyTheme()
     {
         if (_settings is null)
+        {
             return;
+        }
+
         var prefersDark = PlatformSettings?.GetColorValues().ThemeVariant == PlatformThemeVariant.Dark;
         RequestedThemeVariant = ThemeCatalogue.VariantFor(_settings.Current, prefersDark);
     }

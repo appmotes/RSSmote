@@ -20,18 +20,24 @@ public partial class ManageFeedsPage : PhonePage, IDisposable
     private void OnFeedClick(object? sender, RoutedEventArgs e)
     {
         if ((sender as Control)?.Tag is ManagedFeedViewModel row && Shell is { } shell)
+        {
             EditFeedPage.Open(shell, row.Feed, row.Favicon, "Feeds");
+        }
     }
 
     private void OnEditFolderClick(object? sender, RoutedEventArgs e)
     {
         if ((sender as Control)?.Tag is Folder folder && Shell is { } shell)
+        {
             EditFolderPage.Open(shell, folder.Id);
+        }
     }
 
     private void OnNewFolderClick(object? sender, RoutedEventArgs e)
     {
         if (Shell is { ViewModel: { } vm } shell)
+        {
             _ = shell.PushPanelAsync(new NewFolderPage(), vm.CreateNewFolder());
+        }
     }
 }

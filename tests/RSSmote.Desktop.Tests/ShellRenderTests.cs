@@ -20,7 +20,13 @@ public class ShellRenderTests
         using var f = new ShellFixture(s => s.ExpandedFolders = [1]);
         f.Shell.List.SelectedRow = f.Shell.List.Articles.Skip(1).First();
 
-        var window = new Window { Width = 1045, Height = 660, Content = new ShellView(), DataContext = f.Shell };
+        var window = new Window
+        {
+            Width = 1045,
+            Height = 660,
+            Content = new ShellView(),
+            DataContext = f.Shell,
+        };
         window.Show();
         AvaloniaHeadlessPlatform.ForceRenderTimerTick();
         var frame = window.CaptureRenderedFrame();

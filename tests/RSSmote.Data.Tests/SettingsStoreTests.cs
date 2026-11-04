@@ -11,7 +11,9 @@ public sealed class SettingsStoreTests : IDisposable
     public void Dispose()
     {
         if (Directory.Exists(_folder))
+        {
             Directory.Delete(_folder, recursive: true);
+        }
     }
 
     [Fact]

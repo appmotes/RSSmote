@@ -22,15 +22,24 @@ public sealed class StorageFilePicker(Func<TopLevel?> topLevel) : IFilePicker
     public async Task<PickedText?> OpenTextAsync(string title, string fileTypeName, IReadOnlyList<string> patterns)
     {
         if (topLevel()?.StorageProvider is not { CanOpen: true } storage)
+        {
             return null;
+        }
+
         var files = await storage.OpenFilePickerAsync(new FilePickerOpenOptions
         {
             Title = title,
             AllowMultiple = false,
-            FileTypeFilter = [new FilePickerFileType(fileTypeName) { Patterns = patterns }, FilePickerFileTypes.All],
+            FileTypeFilter = [new FilePickerFileType(fileTypeName)
+            {
+                Patterns = patterns,
+            }, FilePickerFileTypes.All],
         });
         if (files.Count == 0)
+        {
             return null;
+        }
+
         await using var stream = await files[0].OpenReadAsync();
         using var reader = new StreamReader(stream);
         return new PickedText(files[0].Name, await reader.ReadToEndAsync());
@@ -39,10 +48,20 @@ public sealed class StorageFilePicker(Func<TopLevel?> topLevel) : IFilePicker
     public async Task<bool> SaveTextAsync(string title, string suggestedName, string text)
     {
         if (topLevel()?.StorageProvider is not { CanSave: true } storage)
+        {
             return false;
-        var file = await storage.SaveFilePickerAsync(new FilePickerSaveOptions { Title = title, SuggestedFileName = suggestedName });
+        }
+
+        var file = await storage.SaveFilePickerAsync(new FilePickerSaveOptions
+        {
+            Title = title,
+            SuggestedFileName = suggestedName,
+        });
         if (file is null)
+        {
             return false;
+        }
+
         await using var stream = await file.OpenWriteAsync();
         await using var writer = new StreamWriter(stream);
         await writer.WriteAsync(text);

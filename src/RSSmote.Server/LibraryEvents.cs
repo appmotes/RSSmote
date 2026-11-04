@@ -60,9 +60,15 @@ public sealed class LibraryEvents : IDisposable
     /// <summary>Events from now on, with a ping first and every <see cref="Heartbeat"/> so proxies keep the line open.</summary>
     public async IAsyncEnumerable<SseItem<string>> Subscribe([EnumeratorCancellation] CancellationToken ct)
     {
-        var channel = Channel.CreateBounded<SseItem<string>>(new BoundedChannelOptions(256) { FullMode = BoundedChannelFullMode.DropOldest });
+        var channel = Channel.CreateBounded<SseItem<string>>(new BoundedChannelOptions(256)
+        {
+            FullMode = BoundedChannelFullMode.DropOldest,
+        });
         lock (_gate)
+        {
             _subscribers.Add(channel);
+        }
+
         try
         {
             yield return Ping;
@@ -74,13 +80,17 @@ public sealed class LibraryEvents : IDisposable
                     continue;
                 }
                 while (channel.Reader.TryRead(out var item))
+                {
                     yield return item;
+                }
             }
         }
         finally
         {
             lock (_gate)
+            {
                 _subscribers.Remove(channel);
+            }
         }
     }
 
@@ -107,7 +117,10 @@ public sealed class LibraryEvents : IDisposable
             lock (_gate)
             {
                 if (_pending)
+                {
                     return;
+                }
+
                 _pending = true;
                 _timer.Change(Coalesce, Timeout.InfiniteTimeSpan);
             }
@@ -120,7 +133,10 @@ public sealed class LibraryEvents : IDisposable
     private void PublishLibrary()
     {
         lock (_gate)
+        {
             _pending = false;
+        }
+
         Publish(ApiNames.LibraryEvent, "");
     }
 
@@ -133,7 +149,11 @@ public sealed class LibraryEvents : IDisposable
     private void Publish(string type, string data)
     {
         lock (_gate)
+        {
             foreach (var subscriber in _subscribers)
+            {
                 subscriber.Writer.TryWrite(new SseItem<string>(data, type));
+            }
+        }
     }
 }

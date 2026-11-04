@@ -30,10 +30,15 @@ public class PanelFrame : ContentControl
     {
         base.OnApplyTemplate(e);
         if (_backdrop is not null)
+        {
             _backdrop.PointerPressed -= OnBackdropPressed;
+        }
+
         _backdrop = e.NameScope.Find<Border>("PART_Backdrop");
         if (_backdrop is not null)
+        {
             _backdrop.PointerPressed += OnBackdropPressed;
+        }
     }
 
     protected override void OnKeyDown(KeyEventArgs e)

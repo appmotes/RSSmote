@@ -58,7 +58,9 @@ public sealed partial class ShellViewModel : ObservableObject, IDisposable
         store.Changed += OnStoreChanged;
         settings.Changed += OnSettingsChanged;
         if (refresher is not null)
+        {
             refresher.StateChanged += OnRefreshStateChanged;
+        }
 
         UseLayout(layout);
         UpdateRefreshState();
@@ -113,7 +115,9 @@ public sealed partial class ShellViewModel : ObservableObject, IDisposable
         _store.Changed -= OnStoreChanged;
         _settings.Changed -= OnSettingsChanged;
         if (_refresher is not null)
+        {
             _refresher.StateChanged -= OnRefreshStateChanged;
+        }
     }
 
     // MARK: Flow
@@ -127,10 +131,16 @@ public sealed partial class ShellViewModel : ObservableObject, IDisposable
     private void OnArticleSelected(ArticleRowViewModel? row)
     {
         if (row is not null && row.IsUnread && _settings.Current.MarkAsReadOnSelect)
+        {
             _store.SetUnread([row.Id], false);
+        }
+
         Article.Item = row is null ? null : _store.Item(row.Id) ?? row.Item;
         if (Article.Item is { } item && Article.Document is null)
+        {
             _ = LoadArticleAsync(item.Id);
+        }
+
         UpdateEmptyState();
     }
 
@@ -138,7 +148,9 @@ public sealed partial class ShellViewModel : ObservableObject, IDisposable
     private async Task LoadArticleAsync(long id)
     {
         if (await _store.LoadItemAsync(id) is { } full)
+        {
             _ui.Post(() => Article.ShowContent(full));
+        }
     }
 
     private void ReloadAll()
@@ -174,7 +186,10 @@ public sealed partial class ShellViewModel : ObservableObject, IDisposable
         {
             List.ApplyFlags(ids);
             if (Article.Item is { } current && ids.Contains(current.Id))
+            {
                 Article.Item = _store.Item(current.Id);
+            }
+
             UpdateEmptyState();
             _recount.Trigger(); // counts only: rows that were just read stay listed
             return;
@@ -229,7 +244,10 @@ public sealed partial class ShellViewModel : ObservableObject, IDisposable
         var settings = _settings.Current;
         if (IsRefreshing || settings.RefreshIntervalMinutes <= 0
             || settings.LastRefresh is { } last && _clock.GetUtcNow() - last < TimeSpan.FromMinutes(settings.RefreshIntervalMinutes))
+        {
             return false;
+        }
+
         _ = RefreshAsync();
         return true;
     }
@@ -249,7 +267,9 @@ public sealed partial class ShellViewModel : ObservableObject, IDisposable
     private void NextArticle()
     {
         if (!List.SelectAdjacent(1))
+        {
             Sidebar.SelectAdjacent(1);
+        }
     }
 
     [RelayCommand]
@@ -265,21 +285,27 @@ public sealed partial class ShellViewModel : ObservableObject, IDisposable
     private void ToggleRead()
     {
         if (Article.Item is { } item)
+        {
             _store.SetUnread([item.Id], !item.Unread);
+        }
     }
 
     [RelayCommand]
     private void ToggleStarred()
     {
         if (Article.Item is { } item)
+        {
             _store.SetStarred([item.Id], !item.Starred);
+        }
     }
 
     [RelayCommand]
     private void OpenInBrowser()
     {
         if (Article.Link is { } link)
+        {
             _launcher.Open(link, _settings.Current.OpenLinksInBackground);
+        }
     }
 
     // MARK: The article list's context menu (A6); a row there is not the article being read.
@@ -300,7 +326,9 @@ public sealed partial class ShellViewModel : ObservableObject, IDisposable
     private void OpenRowInBrowser(ArticleRowViewModel row)
     {
         if (ArticleSanitizer.Resolve(row.Item.Url, null) is { } link)
+        {
             _launcher.Open(link, _settings.Current.OpenLinksInBackground);
+        }
     }
 
     /// <summary>A link clicked inside the article.</summary>
@@ -323,7 +351,10 @@ public sealed partial class ShellViewModel : ObservableObject, IDisposable
         if (SettingsMode is { } open)
         {
             if (section is { } wanted)
+            {
                 open.Show(wanted);
+            }
+
             return;
         }
         SettingsMode = new SettingsModeViewModel(this, section ?? SettingsSection.Reading);
@@ -382,7 +413,9 @@ public sealed partial class ShellViewModel : ObservableObject, IDisposable
         var url = ArticleSanitizer.Resolve(feed.SiteUrl, null)
                   ?? ArticleSanitizer.Resolve(feed.Host is { } host ? "https://" + host : null, null);
         if (url is not null)
+        {
             _launcher.Open(url, _settings.Current.OpenLinksInBackground);
+        }
     }
 
     [RelayCommand]
@@ -394,10 +427,14 @@ public sealed partial class ShellViewModel : ObservableObject, IDisposable
         _settings.Update(s =>
         {
             if (folderId is { } id && !s.ExpandedFolders.Contains(id))
+            {
                 s.ExpandedFolders = [.. s.ExpandedFolders, id];
+            }
             // The new feed's items may all be read or old; show them anyway.
             if (s.Filter == StreamFilter.Starred)
+            {
                 s.Filter = StreamFilter.Unread;
+            }
         });
         Sidebar.Select(new ArticleStream.OfFeed(feed.Id));
     }

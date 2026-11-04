@@ -42,7 +42,9 @@ public sealed class RemoteSettings : ISettingsStore
         get
         {
             lock (_gate)
+            {
                 return _current;
+            }
         }
     }
 
@@ -56,13 +58,19 @@ public sealed class RemoteSettings : ISettingsStore
             change(draft);
             next = draft.Normalized();
             if (next == _current)
+            {
                 return _current;
+            }
+
             _current = next;
         }
         _storage.Write(StorageKey, JsonSerializer.Serialize(next, ApiJsonContext.Default.AppSettings));
         var library = LibrarySettings.From(next);
         if (library with { LastRefresh = null } != LibrarySettings.From(previous) with { LastRefresh = null })
+        {
             _ = SaveAsync(library);
+        }
+
         Changed?.Invoke(this, next);
         return next;
     }
@@ -74,7 +82,10 @@ public sealed class RemoteSettings : ISettingsStore
         lock (_gate)
         {
             if (LibrarySettings.From(_current) == library)
+            {
                 return;
+            }
+
             var draft = _current with { };
             library.ApplyTo(draft);
             next = _current = draft.Normalized();

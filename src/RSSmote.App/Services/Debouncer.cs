@@ -14,7 +14,9 @@ public sealed class Debouncer(TimeProvider clock, TimeSpan delay, IUiDispatcher 
         get
         {
             lock (_gate)
+            {
                 return _timer is not null;
+            }
         }
     }
 
@@ -31,7 +33,9 @@ public sealed class Debouncer(TimeProvider clock, TimeSpan delay, IUiDispatcher 
     public void Flush()
     {
         if (Cancel())
+        {
             action();
+        }
     }
 
     public void Dispose() => Cancel();
@@ -39,7 +43,9 @@ public sealed class Debouncer(TimeProvider clock, TimeSpan delay, IUiDispatcher 
     private void Fire()
     {
         if (Cancel())
+        {
             ui.Post(action);
+        }
     }
 
     private bool Cancel()
@@ -47,7 +53,10 @@ public sealed class Debouncer(TimeProvider clock, TimeSpan delay, IUiDispatcher 
         lock (_gate)
         {
             if (_timer is null)
+            {
                 return false;
+            }
+
             _timer.Dispose();
             _timer = null;
             return true;

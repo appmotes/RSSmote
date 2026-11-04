@@ -28,14 +28,21 @@ public class ImportExportFlowTests
                 || b.GetVisualDescendants().OfType<TextBlock>().Any(t => t.Text == text)));
         button.RaiseEvent(new Avalonia.Interactivity.RoutedEventArgs(Button.ClickEvent));
         if (button.Command?.CanExecute(button.CommandParameter) == true)
+        {
             button.Command.Execute(button.CommandParameter);
+        }
+
         Settle();
     }
 
     private static (ShellFixture Fixture, MobileShell Shell, Window Window) Open(string palette)
     {
         var f = new ShellFixture();
-        var shell = new MobileShell(f.Shell) { PageTransition = null, ModalTransition = null };
+        var shell = new MobileShell(f.Shell)
+        {
+            PageTransition = null,
+            ModalTransition = null,
+        };
         var window = PhoneRender.Show(shell, palette);
         shell.Root.Show(RootTab.Settings);
         Settle();

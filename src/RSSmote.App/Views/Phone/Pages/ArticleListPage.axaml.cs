@@ -58,13 +58,17 @@ public partial class ArticleListPage : ContentPage
     private void OnRebuilding(object? sender, EventArgs e)
     {
         if (this.IsAttachedToVisualTree())
+        {
             _anchor = TopRow() ?? _anchor;
+        }
     }
 
     private void OnRebuilt(object? sender, EventArgs e)
     {
         if (this.IsAttachedToVisualTree())
+        {
             KeepPlace();
+        }
     }
 
     private (long Id, double Y)? TopRow() =>
@@ -80,7 +84,10 @@ public partial class ArticleListPage : ContentPage
     private void KeepPlace()
     {
         if (_anchor is not { } anchor || _list?.Articles.FirstOrDefault(a => a.Id == anchor.Id) is not { } row)
+        {
             return;
+        }
+
         var index = _list.Rows.IndexOf(row);
         UpdateLayout();
         for (var pass = 0; pass < 4; pass++)
@@ -92,7 +99,10 @@ public partial class ArticleListPage : ContentPage
                 continue;
             }
             if (container.TranslatePoint(default, Scroller)?.Y is not { } y || Math.Abs(y - anchor.Y) < 0.5)
+            {
                 return;
+            }
+
             Scroller.Offset = Scroller.Offset.WithY(Math.Max(0, Scroller.Offset.Y + y - anchor.Y));
             UpdateLayout();
         }
@@ -104,13 +114,17 @@ public partial class ArticleListPage : ContentPage
         e.Container.Classes.Set("header", header);
         e.Container.IsHitTestVisible = !header;
         if (e.Container.DataContext is ArticleRowViewModel row)
+        {
             Shell?.List.RequestImages(row);
+        }
     }
 
     private void OnFilterClick(object? sender, RoutedEventArgs e)
     {
         if ((sender as Control)?.Tag is string name && Enum.TryParse<StreamFilter>(name, out var filter))
+        {
             Shell?.ShowFilterCommand.Execute(filter);
+        }
     }
 
     /// <summary>The filter box shows on demand; hiding it clears the search.</summary>
@@ -118,8 +132,12 @@ public partial class ArticleListPage : ContentPage
     {
         Search.IsVisible = !Search.IsVisible;
         if (Search.IsVisible)
+        {
             Search.Focus();
+        }
         else
+        {
             Shell?.List.EndSearch();
+        }
     }
 }

@@ -42,7 +42,10 @@ public sealed class RefresherTests : IDisposable
         {
             Requests.Enqueue(request.RequestUri!.AbsoluteUri);
             if (Gate is { } gate)
+            {
                 await gate.Task.WaitAsync(ct);
+            }
+
             var found = Pages.TryGetValue(request.RequestUri.AbsoluteUri, out var body);
             return new HttpResponseMessage(found ? HttpStatusCode.OK : HttpStatusCode.NotFound)
             {

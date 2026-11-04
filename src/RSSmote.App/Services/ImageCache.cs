@@ -28,7 +28,9 @@ public sealed class ImageCache(HttpClient http, Func<string, string>? route = nu
     public void Forget(string url)
     {
         foreach (var key in _cache.Keys.Where(k => k.EndsWith("|" + url, StringComparison.Ordinal)))
+        {
             _cache.TryRemove(key, out _);
+        }
     }
 
     private async Task<Bitmap?> FetchAsync(string url, int decodeWidth)

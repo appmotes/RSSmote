@@ -17,7 +17,10 @@ internal sealed class DemoImages : IImageLoader
     public Task<Bitmap?> LoadAsync(string url, int decodeWidth)
     {
         if (!_drawn.TryGetValue(url, out var bitmap))
+        {
             _drawn[url] = bitmap = url.Contains("favicons", StringComparison.Ordinal) ? Favicon(url) : Thumbnail(url);
+        }
+
         return Task.FromResult<Bitmap?>(bitmap);
     }
 
@@ -66,11 +69,16 @@ internal static class DemoLibrary
 
     private static readonly Dictionary<string, (Color Color, string Letter)> Icons = new()
     {
-        ["nightsky.example"] = (Color.Parse("#1F3A6B"), "N"), ["fieldnotes.example"] = (Color.Parse("#4F7A2E"), "F"),
-        ["osdigest.example"] = (Color.Parse("#B4541A"), "O"), ["bytepixel.example"] = (Color.Parse("#6B3FA0"), "B"),
-        ["quietweb.example"] = (Color.Parse("#2F6F73"), "Q"), ["smallkitchen.example"] = (Color.Parse("#C0392B"), "S"),
-        ["slowgarden.example"] = (Color.Parse("#3E7D4F"), "G"), ["harbourgazette.example"] = (Color.Parse("#1D5C8C"), "H"),
-        ["longreads.example"] = (Color.Parse("#2B2B2B"), "L"), ["weatherdesk.example"] = (Color.Parse("#2E86C1"), "W"),
+        ["nightsky.example"] = (Color.Parse("#1F3A6B"), "N"),
+        ["fieldnotes.example"] = (Color.Parse("#4F7A2E"), "F"),
+        ["osdigest.example"] = (Color.Parse("#B4541A"), "O"),
+        ["bytepixel.example"] = (Color.Parse("#6B3FA0"), "B"),
+        ["quietweb.example"] = (Color.Parse("#2F6F73"), "Q"),
+        ["smallkitchen.example"] = (Color.Parse("#C0392B"), "S"),
+        ["slowgarden.example"] = (Color.Parse("#3E7D4F"), "G"),
+        ["harbourgazette.example"] = (Color.Parse("#1D5C8C"), "H"),
+        ["longreads.example"] = (Color.Parse("#2B2B2B"), "L"),
+        ["weatherdesk.example"] = (Color.Parse("#2E86C1"), "W"),
     };
 
     public static (Color, string) FaviconFor(string host) =>

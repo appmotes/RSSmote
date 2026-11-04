@@ -13,7 +13,10 @@ public class FaviconTests
     {
         var bitmap = new WriteableBitmap(new PixelSize(1, 1), new Vector(96, 96), format, AlphaFormat.Premul);
         using (var buffer = bitmap.Lock())
+        {
             Marshal.Copy(new byte[] { c0, c1, c2, 255 }, 0, buffer.Address, 4);
+        }
+
         var grey = Favicon.Grayscale(bitmap);
         var pixel = new byte[4];
         var handle = GCHandle.Alloc(pixel, GCHandleType.Pinned);

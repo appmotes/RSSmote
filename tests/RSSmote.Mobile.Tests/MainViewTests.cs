@@ -23,8 +23,16 @@ public sealed class MainViewTests
     public void A_narrow_window_shows_the_phone_stack_and_a_wide_one_the_columns()
     {
         using var f = new ShellFixture();
-        var view = new MainView { DataContext = f.Shell };
-        var window = new Window { Width = 1100, Height = 720, Content = view };
+        var view = new MainView
+        {
+            DataContext = f.Shell,
+        };
+        var window = new Window
+        {
+            Width = 1100,
+            Height = 720,
+            Content = view,
+        };
         window.Show();
         Settle();
         Assert.IsType<ShellView>(view.Content);
@@ -48,8 +56,16 @@ public sealed class MainViewTests
     public void A_phone_stack_left_behind_no_longer_follows_the_shell()
     {
         using var f = new ShellFixture();
-        var view = new MainView { DataContext = f.Shell };
-        var window = new Window { Width = PhoneRender.Width, Height = PhoneRender.Height, Content = view };
+        var view = new MainView
+        {
+            DataContext = f.Shell,
+        };
+        var window = new Window
+        {
+            Width = PhoneRender.Width,
+            Height = PhoneRender.Height,
+            Content = view,
+        };
         window.Show();
         Settle();
         var phone = Assert.IsType<MobileShell>(view.Content);

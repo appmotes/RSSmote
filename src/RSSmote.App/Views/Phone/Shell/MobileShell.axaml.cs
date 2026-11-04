@@ -40,7 +40,9 @@ public partial class MobileShell : NavigationPage
     private void OnActivated(object? sender, Avalonia.Controls.ApplicationLifetimes.ActivatedEventArgs e)
     {
         if (e.Kind == Avalonia.Controls.ApplicationLifetimes.ActivationKind.Background)
+        {
             _shell?.RefreshIfStale();
+        }
     }
 
     public RootPage Root => (RootPage)Content!;
@@ -66,11 +68,18 @@ public partial class MobileShell : NavigationPage
     public void Close(Page page)
     {
         if (!NavigationStack.Contains(page))
+        {
             return;
+        }
+
         if (ReferenceEquals(Top, page))
+        {
             _ = PopAsync();
+        }
         else
+        {
             RemovePage(page);
+        }
     }
 
     /// <summary>
@@ -79,15 +88,23 @@ public partial class MobileShell : NavigationPage
     /// </summary>
     public Task ConfirmAsync(ConfirmViewModel confirm, Action? confirmed = null)
     {
-        var sheet = new ConfirmSheet { DataContext = confirm };
+        var sheet = new ConfirmSheet
+        {
+            DataContext = confirm,
+        };
         var ran = false;
         confirm.Confirmed += (_, _) => ran = true;
         confirm.Closed += async (_, _) =>
         {
             if (ModalStack.Contains(sheet))
+            {
                 await PopModalAsync();
+            }
+
             if (ran)
+            {
                 confirmed?.Invoke();
+            }
         };
         return PushModalAsync(sheet);
     }
@@ -101,9 +118,15 @@ public partial class MobileShell : NavigationPage
     public TextSheet? ShowTextSheet(TextPane pane)
     {
         if (_shell is null)
+        {
             return null;
+        }
+
         _shell.Settings.SelectedPane = pane;
-        var sheet = new TextSheet { DataContext = _shell.Settings };
+        var sheet = new TextSheet
+        {
+            DataContext = _shell.Settings,
+        };
         _ = ShowSheetAsync(sheet);
         return sheet;
     }
@@ -111,7 +134,10 @@ public partial class MobileShell : NavigationPage
     private void ReleasePanel(Page page)
     {
         if (_panels.Remove(page, out var panel))
+        {
             panel.Dispose();
+        }
+
         (page as IDisposable)?.Dispose();
     }
 
@@ -130,10 +156,16 @@ public partial class MobileShell : NavigationPage
             _shell.List.ArticleSelected += OnArticleSelected;
         }
         if (Lifetime is { } lifetime)
+        {
             lifetime.Activated += OnActivated;
+        }
+
         _topLevel = TopLevel.GetTopLevel(this);
         if (_topLevel is not null)
+        {
             _topLevel.BackRequested += OnBackRequested;
+        }
+
         if (_topLevel?.InsetsManager is { } insets)
         {
             SafeAreaPadding = insets.SafeAreaPadding;
@@ -147,7 +179,9 @@ public partial class MobileShell : NavigationPage
     private void OnSafeAreaChanged(object? sender, EventArgs e) => Avalonia.Threading.Dispatcher.UIThread.Post(() =>
     {
         if (_topLevel?.InsetsManager is { } insets)
+        {
             SafeAreaPadding = insets.SafeAreaPadding;
+        }
     }, Avalonia.Threading.DispatcherPriority.Background);
 
     protected override void OnPropertyChanged(Avalonia.AvaloniaPropertyChangedEventArgs change)
@@ -155,7 +189,9 @@ public partial class MobileShell : NavigationPage
         base.OnPropertyChanged(change);
         if (change.Property == PageTransitionProperty && change.NewValue is Avalonia.Animation.PageSlide slide
             and not LaidOutPageSlide)
+        {
             PageTransition = new LaidOutPageSlide(slide);
+        }
     }
 
     protected override void OnDetachedFromVisualTree(Avalonia.VisualTreeAttachmentEventArgs e)
@@ -167,11 +203,20 @@ public partial class MobileShell : NavigationPage
             _shell.List.ArticleSelected -= OnArticleSelected;
         }
         if (Lifetime is { } lifetime)
+        {
             lifetime.Activated -= OnActivated;
+        }
+
         if (_topLevel is not null)
+        {
             _topLevel.BackRequested -= OnBackRequested;
+        }
+
         if (_topLevel?.InsetsManager is { } insets)
+        {
             insets.SafeAreaChanged -= OnSafeAreaChanged;
+        }
+
         _topLevel = null;
     }
 
@@ -179,7 +224,10 @@ public partial class MobileShell : NavigationPage
     private void OnBackRequested(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
         if (e.Handled)
+        {
             return;
+        }
+
         if (ModalStack.Count > 0)
         {
             _ = PopModalAsync();
@@ -196,17 +244,23 @@ public partial class MobileShell : NavigationPage
     private async void OnStreamSelected(object? sender, ArticleStream stream)
     {
         if (_shell is not null && Top is RootPage)
+        {
             await (_listPush = PushAsync(new ArticleListPage(_shell)));
+        }
     }
 
     private async void OnArticleSelected(object? sender, ArticleRowViewModel? row)
     {
         if (_shell is null || row is null)
+        {
             return;
+        }
         // A pick while the list still slides in would be ignored (P24); it opens once the slide ends.
         await _listPush;
         if (!ReferenceEquals(_shell.List.SelectedRow, row) || Top is not ArticleListPage)
+        {
             return;
+        }
         // A native web view takes the page's place when it attaches, partway through a slide, and stays there (P16, P29):
         // an article shown in one appears in place.
         await PushAsync(new ArticlePage(_shell), ArticleHost.UsesNative(ArticleHost.DefaultRenderer) ? null : PageTransition);
@@ -216,9 +270,15 @@ public partial class MobileShell : NavigationPage
     {
         ReleasePanel(e.Page);
         if (e.Page is ArticlePage && _shell is not null)
+        {
             _shell.List.SelectedRow = null;
+        }
+
         if (Top is RootPage)
+        {
             _shell?.List.Hide();
+        }
+
         MatchBackground();
     }
 
@@ -226,6 +286,8 @@ public partial class MobileShell : NavigationPage
     private void MatchBackground()
     {
         if (Top is { } page)
+        {
             this[!BackgroundProperty] = page[!BackgroundProperty];
+        }
     }
 }

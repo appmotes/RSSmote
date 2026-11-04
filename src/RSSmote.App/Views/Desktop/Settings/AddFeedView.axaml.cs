@@ -22,7 +22,9 @@ public partial class AddFeedView : UserControl
     {
         base.OnDataContextChanged(e);
         if (TopLevel.GetTopLevel(this) is not null)
+        {
             FocusAddress();
+        }
     }
 
     private void FocusAddress() => Dispatcher.UIThread.Post(() => AddressBox.Focus(), DispatcherPriority.Loaded);

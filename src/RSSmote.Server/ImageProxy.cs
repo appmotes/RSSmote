@@ -11,14 +11,20 @@ public sealed class ImageProxy(HttpClient http)
     public async Task<IResult> GetAsync(string? url, HttpResponse answer, CancellationToken ct)
     {
         if (!Uri.TryCreate(url, UriKind.Absolute, out var uri) || uri.Scheme is not ("http" or "https"))
+        {
             return Results.BadRequest();
+        }
+
         try
         {
             using var response = await http.GetAsync(uri, HttpCompletionOption.ResponseHeadersRead, ct);
             var type = response.Content.Headers.ContentType?.MediaType;
             if (!response.IsSuccessStatusCode || type is null || !type.StartsWith("image/", StringComparison.OrdinalIgnoreCase)
                 || response.Content.Headers.ContentLength > MaxBytes)
+            {
                 return Results.NotFound();
+            }
+
             await using var source = await response.Content.ReadAsStreamAsync(ct);
             using var buffer = new MemoryStream();
             var chunk = new byte[81920];
@@ -26,7 +32,10 @@ public sealed class ImageProxy(HttpClient http)
             while ((read = await source.ReadAsync(chunk, ct)) > 0)
             {
                 if (buffer.Length + read > MaxBytes)
+                {
                     return Results.NotFound();
+                }
+
                 buffer.Write(chunk, 0, read);
             }
             answer.Headers.CacheControl = "private, max-age=604800";

@@ -32,7 +32,10 @@ public sealed class Store : ILibrary, IDisposable
     {
         _clock = clock ?? TimeProvider.System;
         if (Path.GetDirectoryName(Path.GetFullPath(path)) is { } folder)
+        {
             Directory.CreateDirectory(folder);
+        }
+
         var connection = new SqliteConnectionStringBuilder
         {
             DataSource = path,
@@ -51,14 +54,18 @@ public sealed class Store : ILibrary, IDisposable
         get
         {
             lock (_gate)
+            {
                 return Convert.ToInt32(Scalar("PRAGMA user_version"));
+            }
         }
     }
 
     public void Dispose()
     {
         lock (_gate)
+        {
             _db.Dispose();
+        }
     }
 
     // MARK: Schema
@@ -69,6 +76,7 @@ public sealed class Store : ILibrary, IDisposable
         {
             var version = Convert.ToInt32(Scalar("PRAGMA user_version"));
             if (version < 1)
+            {
                 InTransaction(() =>
                 {
                     // IF NOT EXISTS: a library written by the macOS app already has these tables at version 0.
@@ -109,6 +117,7 @@ public sealed class Store : ILibrary, IDisposable
                     Exec("CREATE INDEX IF NOT EXISTS items_feed_unread ON items(feed_id, unread)");
                     Exec("PRAGMA user_version = 1");
                 });
+            }
         }
     }
 
@@ -117,15 +126,20 @@ public sealed class Store : ILibrary, IDisposable
     public IReadOnlyList<Folder> Folders()
     {
         lock (_gate)
+        {
             return Query("SELECT id, title FROM folders ORDER BY title COLLATE NOCASE", [],
                 r => new Folder(r.GetInt64(0), r.GetString(1)));
+        }
     }
 
     public Folder AddFolder(string title)
     {
         Folder folder;
         lock (_gate)
+        {
             folder = AddFolderCore(title);
+        }
+
         Notify();
         return folder;
     }
@@ -136,7 +150,10 @@ public sealed class Store : ILibrary, IDisposable
     public void RenameFolder(long id, string title)
     {
         lock (_gate)
+        {
             Run("UPDATE folders SET title=? WHERE id=?", title, id);
+        }
+
         Notify();
     }
 
@@ -144,12 +161,18 @@ public sealed class Store : ILibrary, IDisposable
     public void DeleteFolder(long id, bool deleteFeeds)
     {
         lock (_gate)
+        {
             InTransaction(() =>
             {
                 if (deleteFeeds)
+                {
                     Run("DELETE FROM feeds WHERE folder_id=?", id);
+                }
+
                 Run("DELETE FROM folders WHERE id=?", id);
             });
+        }
+
         Notify();
     }
 
@@ -164,9 +187,11 @@ public sealed class Store : ILibrary, IDisposable
     public IReadOnlyList<Feed> Feeds()
     {
         lock (_gate)
+        {
             return Query("SELECT id, title, url, site_url, folder_id, last_error FROM feeds ORDER BY title COLLATE NOCASE", [],
                 r => new Feed(r.GetInt64(0), r.GetString(1), r.GetString(2), NullableString(r, 3),
                     r.IsDBNull(4) ? null : r.GetInt64(4), NullableString(r, 5)));
+        }
     }
 
     public Feed? Feed(long id) => Feeds().FirstOrDefault(f => f.Id == id);
@@ -178,7 +203,10 @@ public sealed class Store : ILibrary, IDisposable
     {
         Feed feed;
         lock (_gate)
+        {
             feed = AddFeedCore(url, title, siteUrl, folderId);
+        }
+
         Notify();
         return feed;
     }
@@ -186,8 +214,11 @@ public sealed class Store : ILibrary, IDisposable
     public void UpdateFeed(Feed feed)
     {
         lock (_gate)
+        {
             Run("UPDATE feeds SET title=?, url=?, site_url=?, folder_id=?, last_error=? WHERE id=?",
                 feed.Title, feed.Url, feed.SiteUrl, feed.FolderId, feed.LastError, feed.Id);
+        }
+
         Notify();
     }
 
@@ -195,7 +226,10 @@ public sealed class Store : ILibrary, IDisposable
     public void DeleteFeed(long id)
     {
         lock (_gate)
+        {
             Run("DELETE FROM feeds WHERE id=?", id);
+        }
+
         Notify();
     }
 
@@ -205,7 +239,10 @@ public sealed class Store : ILibrary, IDisposable
             r => new Feed(r.GetInt64(0), r.GetString(1), r.GetString(2), NullableString(r, 3),
                 r.IsDBNull(4) ? null : r.GetInt64(4), NullableString(r, 5)));
         if (existing.Count > 0)
+        {
             return existing[0];
+        }
+
         Run("INSERT INTO feeds(url, title, site_url, folder_id) VALUES(?,?,?,?)", url, title, siteUrl, folderId);
         return new Feed(LastId(), title, url, siteUrl, folderId, null);
     }
@@ -215,6 +252,7 @@ public sealed class Store : ILibrary, IDisposable
     {
         var added = 0;
         lock (_gate)
+        {
             InTransaction(() =>
             {
                 var folders = Query("SELECT id, title FROM folders", [], r => new Folder(r.GetInt64(0), r.GetString(1)))
@@ -223,14 +261,22 @@ public sealed class Store : ILibrary, IDisposable
                 foreach (var outline in outlines)
                 {
                     if (!urls.Add(outline.XmlUrl))
+                    {
                         continue;
+                    }
+
                     long? folderId = null;
                     if (outline.Folder is { } name)
+                    {
                         folderId = folders.TryGetValue(name, out var id) ? id : folders[name] = AddFolderCore(name).Id;
+                    }
+
                     AddFeedCore(outline.XmlUrl, outline.Title, outline.HtmlUrl, folderId);
                     added++;
                 }
             });
+        }
+
         Notify();
         return added;
     }
@@ -246,6 +292,7 @@ public sealed class Store : ILibrary, IDisposable
     {
         var inserted = 0;
         lock (_gate)
+        {
             InTransaction(() =>
             {
                 foreach (var item in items)
@@ -259,12 +306,17 @@ public sealed class Store : ILibrary, IDisposable
                     }
                     var published = item.Published ?? _clock.GetUtcNow();
                     if (olderThan is { } cutoff && published < cutoff)
+                    {
                         continue;
+                    }
+
                     Run("INSERT INTO items(feed_id, guid, title, author, url, content, summary, image_url, published) VALUES(?,?,?,?,?,?,?,?,?)",
                         feedId, item.Guid, item.Title, item.Author, item.Link, item.Content, item.Summary, item.ImageUrl, published);
                     inserted++;
                 }
             });
+        }
+
         Notify();
         return inserted;
     }
@@ -280,14 +332,18 @@ public sealed class Store : ILibrary, IDisposable
             LIMIT {limit}
             """;
         lock (_gate)
+        {
             return Query(sql, args, ReadItem);
+        }
     }
 
     public Item? Item(long id)
     {
         lock (_gate)
+        {
             return Query($"SELECT {ItemColumns} FROM items i JOIN feeds f ON f.id = i.feed_id WHERE i.id=?", [id], ReadItem)
                 .FirstOrDefault();
+        }
     }
 
     /// <summary>Number of items in a stream matching the filter, without loading them.</summary>
@@ -295,7 +351,9 @@ public sealed class Store : ILibrary, IDisposable
     {
         var (where, args) = Conditions(stream, filter, "");
         lock (_gate)
+        {
             return Convert.ToInt32(Scalar($"SELECT COUNT(*) FROM items i JOIN feeds f ON f.id = i.feed_id {where}", args));
+        }
     }
 
     /// <summary>Unread counts per feed, or starred counts under the Starred filter.</summary>
@@ -303,17 +361,21 @@ public sealed class Store : ILibrary, IDisposable
     {
         var column = filter == StreamFilter.Starred ? "starred" : "unread";
         lock (_gate)
+        {
             return Query($"SELECT feed_id, COUNT(*) FROM items WHERE {column}=1 GROUP BY feed_id", [],
                     r => (r.GetInt64(0), r.GetInt32(1)))
                 .ToDictionary(p => p.Item1, p => p.Item2);
+        }
     }
 
     /// <summary>Every item per feed, read or not.</summary>
     public IReadOnlyDictionary<long, int> TotalCounts()
     {
         lock (_gate)
+        {
             return Query("SELECT feed_id, COUNT(*) FROM items GROUP BY feed_id", [], r => (r.GetInt64(0), r.GetInt32(1)))
                 .ToDictionary(p => p.Item1, p => p.Item2);
+        }
     }
 
     /// <summary>The read and starred flags of the items still stored among <paramref name="ids"/>.</summary>
@@ -321,9 +383,14 @@ public sealed class Store : ILibrary, IDisposable
     {
         var result = new List<(long, bool, bool)>(ids.Count);
         lock (_gate)
+        {
             foreach (var chunk in ids.Chunk(500))
+            {
                 result.AddRange(Query($"SELECT id, unread, starred FROM items WHERE id IN ({string.Join(',', chunk)})", [],
                     r => (r.GetInt64(0), r.GetInt64(1) != 0, r.GetInt64(2) != 0)));
+            }
+        }
+
         return result;
     }
 
@@ -345,10 +412,15 @@ public sealed class Store : ILibrary, IDisposable
         {
             ids = Query("SELECT id FROM items WHERE unread=1 AND published < ?", [cutoff], r => r.GetInt64(0));
             if (ids.Count > 0)
+            {
                 Run("UPDATE items SET unread=0 WHERE unread=1 AND published < ?", cutoff);
+            }
         }
         if (ids.Count > 0)
+        {
             Notify(ids);
+        }
+
         return ids.Count;
     }
 
@@ -356,26 +428,43 @@ public sealed class Store : ILibrary, IDisposable
     public int Prune(int days)
     {
         if (days <= 0)
+        {
             return 0;
+        }
+
         var cutoff = _clock.GetUtcNow().AddDays(-days);
         int deleted;
         lock (_gate)
+        {
             deleted = Run("DELETE FROM items WHERE unread=0 AND starred=0 AND published < ?", cutoff);
+        }
+
         if (deleted > 0)
+        {
             Notify();
+        }
+
         return deleted;
     }
 
     private void SetFlag(string column, IReadOnlyCollection<long> ids, bool value)
     {
         if (ids.Count == 0)
+        {
             return;
+        }
+
         lock (_gate)
+        {
             InTransaction(() =>
             {
                 foreach (var id in ids)
+                {
                     Run($"UPDATE items SET {column}=? WHERE id=?", value, id);
+                }
             });
+        }
+
         Notify(ids.ToList());
     }
 
@@ -535,7 +624,10 @@ public sealed class Store : ILibrary, IDisposable
         using var reader = cmd.ExecuteReader();
         var result = new List<T>();
         while (reader.Read())
+        {
             result.Add(read(reader));
+        }
+
         return result;
     }
 

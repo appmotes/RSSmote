@@ -42,7 +42,12 @@ public sealed partial class FolderPickerViewModel : ObservableObject
     {
         Folders.Clear();
         foreach (var folder in _store.Folders().OrderBy(f => f.Title, StringComparer.CurrentCultureIgnoreCase))
-            Folders.Add(new FolderChoiceViewModel(folder) { IsOn = folder.Id == Selected?.Id });
+        {
+            Folders.Add(new FolderChoiceViewModel(folder)
+            {
+                IsOn = folder.Id == Selected?.Id,
+            });
+        }
     }
 
     [RelayCommand]
@@ -50,7 +55,9 @@ public sealed partial class FolderPickerViewModel : ObservableObject
     {
         Selected = Selected?.Id == choice.Folder.Id ? null : choice.Folder;
         foreach (var row in Folders)
+        {
             row.IsOn = row.Folder.Id == Selected?.Id;
+        }
     }
 
     /// <summary>No folder: the "None" chip.</summary>
@@ -59,7 +66,9 @@ public sealed partial class FolderPickerViewModel : ObservableObject
     {
         Selected = null;
         foreach (var row in Folders)
+        {
             row.IsOn = false;
+        }
     }
 
     private bool CanAddFolder() => !string.IsNullOrWhiteSpace(NewFolderName);

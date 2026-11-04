@@ -48,13 +48,23 @@ public sealed partial class FeedFinder(HttpClient http) : IFeedFinder
     {
         var s = input.Trim();
         if (s.StartsWith("feed:https:", StringComparison.OrdinalIgnoreCase) || s.StartsWith("feed:http:", StringComparison.OrdinalIgnoreCase))
+        {
             s = s[5..];
+        }
         else if (s.StartsWith("feed://", StringComparison.OrdinalIgnoreCase))
+        {
             s = "https://" + s[7..];
+        }
         else if (s.StartsWith("feeds://", StringComparison.OrdinalIgnoreCase))
+        {
             s = "https://" + s[8..];
+        }
+
         if (!s.Contains("://", StringComparison.Ordinal))
+        {
             s = "https://" + s;
+        }
+
         return Uri.TryCreate(s, UriKind.Absolute, out var uri) && uri.Scheme is "http" or "https" && uri.Host.Length > 0 ? uri : null;
     }
 
@@ -65,13 +75,17 @@ public sealed partial class FeedFinder(HttpClient http) : IFeedFinder
         {
             var attrs = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
             foreach (Match a in Attribute().Matches(tag.Value))
+            {
                 attrs[a.Groups[1].Value] = a.Groups[2].Success ? a.Groups[2].Value : a.Groups[3].Success ? a.Groups[3].Value : a.Groups[4].Value;
+            }
 
             if (attrs.TryGetValue("rel", out var rel) && rel.Contains("alternate", StringComparison.OrdinalIgnoreCase)
                 && attrs.TryGetValue("type", out var type) && FeedTypes.Contains(type.ToLowerInvariant())
                 && attrs.TryGetValue("href", out var href)
                 && Uri.TryCreate(baseUri, HtmlContent.DecodeEntities(href), out var url))
+            {
                 result.Add(url);
+            }
         }
         return result;
     }
@@ -85,14 +99,18 @@ public sealed partial class FeedFinder(HttpClient http) : IFeedFinder
         var url = Normalize(input) ?? throw new FeedException(FeedError.InvalidUrl, "The address is not a valid URL.");
         var (data, finalUrl) = await GetAsync(url, ct).ConfigureAwait(false);
         if (FeedParser.Parse(data, finalUrl) is { } direct)
+        {
             return [new FoundFeed(finalUrl, direct)];
+        }
 
         var html = Encoding.UTF8.GetString(data);
         var results = new List<FoundFeed>();
         foreach (var candidate in AlternateLinks(html, finalUrl).DistinctBy(u => u.AbsoluteUri))
         {
             if (await TryFeedAsync(candidate, ct).ConfigureAwait(false) is { } found)
+            {
                 results.Add(found);
+            }
         }
         if (results.Count == 0)
         {
@@ -126,7 +144,10 @@ public sealed partial class FeedFinder(HttpClient http) : IFeedFinder
     {
         using var response = await http.GetAsync(url, ct).ConfigureAwait(false);
         if (!response.IsSuccessStatusCode)
+        {
             throw new FeedException(FeedError.Http, $"The server responded with HTTP {(int)response.StatusCode}.", response.StatusCode);
+        }
+
         var data = await response.Content.ReadAsByteArrayAsync(ct).ConfigureAwait(false);
         return (data, response.RequestMessage?.RequestUri ?? url);
     }

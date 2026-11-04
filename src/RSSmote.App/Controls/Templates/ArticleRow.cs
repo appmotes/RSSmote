@@ -135,20 +135,33 @@ public class ArticleRow : TemplatedControl
     {
         base.OnPropertyChanged(change);
         if (change.Property == FeedTitleProperty || change.Property == SummaryProperty)
+        {
             UpdateSummary();
+        }
+
         if (change.Property == IsUnreadProperty || change.Property == IsStarredProperty
             || change.Property == HasThumbnailProperty)
+        {
             UpdatePseudoClasses();
+        }
     }
 
     private void UpdateSummary()
     {
         if (_summary?.Inlines is not { } inlines)
+        {
             return;
+        }
+
         inlines.Clear();
-        inlines.Add(new Run(FeedTitle ?? "") { FontWeight = FontWeight.Medium });
+        inlines.Add(new Run(FeedTitle ?? "")
+        {
+            FontWeight = FontWeight.Medium,
+        });
         if (!string.IsNullOrWhiteSpace(Summary))
+        {
             inlines.Add(new Run(" — " + Summary));
+        }
     }
 
     private void UpdatePseudoClasses()

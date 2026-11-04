@@ -20,7 +20,12 @@ public class GalleryRenderTests
     {
         Application.Current!.RequestedThemeVariant = ThemeCatalogue.All.Single(t => t.Name == theme).Variant;
 
-        var window = new Window { Width = 1100, Height = 1900, Content = new ComponentGallery() };
+        var window = new Window
+        {
+            Width = 1100,
+            Height = 1900,
+            Content = new ComponentGallery(),
+        };
         window.Show();
         AvaloniaHeadlessPlatform.ForceRenderTimerTick();
 

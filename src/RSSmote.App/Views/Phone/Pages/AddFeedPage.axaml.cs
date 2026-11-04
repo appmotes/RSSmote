@@ -17,7 +17,10 @@ public partial class AddFeedPage : PhonePage
     private void OnAddressKeyDown(object? sender, KeyEventArgs e)
     {
         if (e.Key != Key.Enter || DataContext is not AddFeedViewModel add || !add.SearchCommand.CanExecute(null))
+        {
             return;
+        }
+
         e.Handled = true;
         // The keyboard goes, so the results and Add Feed are in view.
         TopLevel.GetTopLevel(this)?.FocusManager?.Focus(null);

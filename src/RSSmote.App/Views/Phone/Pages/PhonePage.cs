@@ -25,7 +25,11 @@ public class PhonePage : ContentPage
         set
         {
             field = value;
-            Header = new TextBlock { Text = value, Classes = { "phonePageTitle" } };
+            Header = new TextBlock
+            {
+                Text = value,
+                Classes = { "phonePageTitle" },
+            };
         }
     } = "";
 
@@ -42,7 +46,11 @@ public class PhonePage : ContentPage
                 Spacing = 2,
                 Children =
                 {
-                    new Icon { Data = Application.Current?.FindResource("Icon.ChevronLeft") as Geometry, Size = 24 },
+                    new Icon
+                    {
+                        Data = Application.Current?.FindResource("Icon.ChevronLeft") as Geometry,
+                        Size = 24,
+                    },
                     new TextBlock
                     {
                         Text = value,
@@ -58,7 +66,9 @@ public class PhonePage : ContentPage
     {
         base.OnPropertyChanged(change);
         if (change.Property == SafeAreaPaddingProperty)
+        {
             Padding = new Thickness(0, 0, 0, SafeAreaPadding.Bottom);
+        }
     }
 
     /// <summary>A text button at the right of the bar: Save, New Folder. The bar is not inside the page, so the

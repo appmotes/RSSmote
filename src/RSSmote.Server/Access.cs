@@ -69,7 +69,10 @@ public static class Access
             o.Events.OnValidatePrincipal = c =>
             {
                 if (c.Principal?.FindFirst(StampClaim)?.Value != key.Stamp)
+                {
                     c.RejectPrincipal();
+                }
+
                 return Task.CompletedTask;
             };
         });
@@ -80,9 +83,15 @@ public static class Access
         api.MapPost("/login", async (LoginRequest body, AccessKey key, HttpContext http) =>
         {
             if (!key.Matches(body.Key))
+            {
                 return Results.Unauthorized();
+            }
+
             var identity = new ClaimsIdentity([new Claim(StampClaim, key.Stamp)], CookieAuthenticationDefaults.AuthenticationScheme);
-            await http.SignInAsync(new ClaimsPrincipal(identity), new AuthenticationProperties { IsPersistent = true });
+            await http.SignInAsync(new ClaimsPrincipal(identity), new AuthenticationProperties
+            {
+                IsPersistent = true,
+            });
             return Results.NoContent();
         }).RequireRateLimiting(LoginPolicy);
 

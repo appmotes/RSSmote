@@ -19,7 +19,10 @@ public sealed class RemoteRefresher(ApiClient api) : IRefresher
     public void Apply(bool refreshing)
     {
         if (_refreshing == refreshing)
+        {
             return;
+        }
+
         _refreshing = refreshing;
         StateChanged?.Invoke(this, EventArgs.Empty);
     }

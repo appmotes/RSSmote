@@ -31,7 +31,13 @@ public class SettingsWindowTests
     private static Window Show(ShellFixture f, string palette = "Sand")
     {
         Application.Current!.RequestedThemeVariant = palette == "Ember" ? ThemeVariant.Dark : ThemeVariant.Light;
-        var window = new Window { Width = 1100, Height = 720, Content = new MainView(), DataContext = f.Shell };
+        var window = new Window
+        {
+            Width = 1100,
+            Height = 720,
+            Content = new MainView(),
+            DataContext = f.Shell,
+        };
         window.Show();
         Settle();
         return window;

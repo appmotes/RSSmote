@@ -46,7 +46,10 @@ public sealed partial class EditFeedViewModel : PanelViewModel
     {
         var updated = _feed with { Title = Name.Trim(), FolderId = Picker.Selected?.Id };
         if (updated != _feed)
+        {
             await _store.UpdateFeedAsync(updated);
+        }
+
         Close();
     }
 
@@ -71,7 +74,10 @@ public sealed partial class NewFolderViewModel(ILibrary store) : PanelViewModel
     {
         var name = Name.Trim();
         if (store.FolderNamed(name) is null)
+        {
             await store.AddFolderAsync(name);
+        }
+
         Close();
     }
 }
@@ -125,7 +131,10 @@ public sealed partial class EditFolderViewModel : PanelViewModel
     {
         var name = Name.Trim();
         if (name != _folder.Title)
+        {
             await _store.RenameFolderAsync(_folder.Id, name);
+        }
+
         Close();
     }
 

@@ -29,7 +29,10 @@ public class ContrastTests
     {
         var dir = new DirectoryInfo(AppContext.BaseDirectory);
         while (dir is not null && !File.Exists(Path.Combine(dir.FullName, "RSSmote.slnx")))
+        {
             dir = dir.Parent;
+        }
+
         Assert.NotNull(dir);
         return Path.Combine(dir!.FullName, "src", "RSSmote.App", "Assets", "Themes");
     }

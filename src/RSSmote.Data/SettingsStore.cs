@@ -34,7 +34,9 @@ public sealed class SettingsStore : ISettingsStore
         get
         {
             lock (_gate)
+            {
                 return _current;
+            }
         }
     }
 
@@ -47,7 +49,10 @@ public sealed class SettingsStore : ISettingsStore
             change(draft);
             next = draft.Normalized();
             if (next == _current)
+            {
                 return _current;
+            }
+
             Save(next);
             _current = next;
         }
@@ -60,7 +65,10 @@ public sealed class SettingsStore : ISettingsStore
         try
         {
             if (!File.Exists(path))
+            {
                 return new AppSettings();
+            }
+
             using var stream = File.OpenRead(path);
             return (JsonSerializer.Deserialize(stream, SettingsJsonContext.Default.AppSettings) ?? new AppSettings()).Normalized();
         }
@@ -73,10 +81,16 @@ public sealed class SettingsStore : ISettingsStore
     private void Save(AppSettings settings)
     {
         if (Path.GetDirectoryName(Path.GetFullPath(_path)) is { } folder)
+        {
             Directory.CreateDirectory(folder);
+        }
+
         var temp = _path + ".tmp";
         using (var stream = File.Create(temp))
+        {
             JsonSerializer.Serialize(stream, settings, SettingsJsonContext.Default.AppSettings);
+        }
+
         File.Move(temp, _path, overwrite: true);
     }
 }

@@ -65,7 +65,9 @@ public sealed partial class ManageFeedsViewModel : ObservableObject, IDisposable
     private void OnStoreChanged(object? sender, LibraryChangedEventArgs e)
     {
         if (e.ItemIds is null)
+        {
             _ui.Post(Reload);
+        }
     }
 
     /// <summary>
@@ -78,7 +80,10 @@ public sealed partial class ManageFeedsViewModel : ObservableObject, IDisposable
         var folders = _store.Folders();
         var all = _store.Feeds();
         if (_shown is { } shown && shown.Filter == filter && shown.Folders.SequenceEqual(folders) && shown.Feeds.SequenceEqual(all))
+        {
             return;
+        }
+
         _shown = (folders, all, filter);
         var feeds = all
             .Where(f => filter.Length == 0 || f.Title.Contains(filter, StringComparison.CurrentCultureIgnoreCase)
@@ -90,7 +95,9 @@ public sealed partial class ManageFeedsViewModel : ObservableObject, IDisposable
             .Where(g => g.HasFeeds || (g.IsFolder && filter.Length == 0));
         Groups.Clear();
         foreach (var group in groups)
+        {
             Groups.Add(group);
+        }
     }
 
     private List<ManagedFeedViewModel> Rows(IEnumerable<Feed> feeds)
@@ -99,11 +106,7 @@ public sealed partial class ManageFeedsViewModel : ObservableObject, IDisposable
         return [.. feeds.Select(feed =>
         {
             var row = new ManagedFeedViewModel(feed, settings.GrayscaleFavicons);
-            if (_favicons.TryGetValue(feed.Id, out var cached))
-                row.Favicon = cached;
-            else if (settings.DisplayFavicons && Favicons.Url(feed) is { } url)
-                _ = LoadFaviconAsync(feed.Id, url);
-            return row;
+            if (_favicons.TryGetValue(feed.Id, out var cached)) { row.Favicon = cached; } else if (settings.DisplayFavicons && Favicons.Url(feed) is { } url) { _ = LoadFaviconAsync(feed.Id, url); } return row;
         })];
     }
 
@@ -115,7 +118,9 @@ public sealed partial class ManageFeedsViewModel : ObservableObject, IDisposable
         {
             _favicons[feedId] = bitmap;
             foreach (var row in Groups.SelectMany(g => g.Feeds).Where(r => r.Feed.Id == feedId))
+            {
                 row.Favicon = bitmap;
+            }
         });
     }
 }

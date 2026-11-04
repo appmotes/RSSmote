@@ -89,7 +89,9 @@ public sealed class ArticleHost : Decorator
             {
                 _adapterReady = true;
                 if (_pending is { } html)
+                {
                     Show(html);
+                }
             };
             _web.AdapterDestroyed += (_, _) =>
             {
@@ -105,7 +107,12 @@ public sealed class ArticleHost : Decorator
         }
         else
         {
-            _label = new HtmlLabel { AutoSize = false, AutoSizeHeightOnly = true, IsContextMenuEnabled = false };
+            _label = new HtmlLabel
+            {
+                AutoSize = false,
+                AutoSizeHeightOnly = true,
+                IsContextMenuEnabled = false,
+            };
             _label.LinkClicked += OnFallbackLinkClicked;
             _scroller = new ScrollViewer
             {
@@ -185,11 +192,17 @@ public sealed class ArticleHost : Decorator
     public async Task<bool> ScrollPageAsync(bool up)
     {
         if (Document is null)
+        {
             return false;
+        }
+
         if (_web is not null)
         {
             if (!_adapterReady)
+            {
                 return false;
+            }
+
             var result = await _web.InvokeScript(ArticleTemplate.ScrollPageScript(up));
             return result?.Trim('"') == "true";
         }
@@ -197,7 +210,10 @@ public sealed class ArticleHost : Decorator
         var max = Math.Max(0, scroller.Extent.Height - scroller.Viewport.Height);
         var y = scroller.Offset.Y;
         if (!up && y >= max - 2)
+        {
             return false;
+        }
+
         var step = scroller.Viewport.Height * 0.85;
         scroller.Offset = new Vector(scroller.Offset.X, Math.Clamp(up ? y - step : y + step, 0, max));
         return true;
@@ -207,9 +223,14 @@ public sealed class ArticleHost : Decorator
     {
         base.OnPropertyChanged(change);
         if (change.Property == IsObscuredProperty && _web is not null)
+        {
             _web.IsVisible = !IsObscured;
+        }
+
         if (change.Property == DocumentProperty || change.Property == ArticleFontSizeProperty)
+        {
             Render();
+        }
     }
 
     protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
@@ -221,7 +242,10 @@ public sealed class ArticleHost : Decorator
     private void Render()
     {
         if (VisualRoot is null)
+        {
             return;
+        }
+
         if (Document is not { } document)
         {
             Show("");
@@ -234,7 +258,10 @@ public sealed class ArticleHost : Decorator
     private void Show(string html)
     {
         if (html == _shown)
+        {
             return;
+        }
+
         if (_web is not null)
         {
             if (!_adapterReady)
@@ -288,7 +315,10 @@ public sealed class ArticleHost : Decorator
         // Only the page set by NavigateToString may load; anything else goes to the browser. Engines differ in
         // the address they report for that page, so the load in progress is allowed whatever it says.
         if (_loading || e.Request is not { } url || url.Scheme is "about" or "data")
+        {
             return;
+        }
+
         e.Cancel = true;
         RaiseLink(url);
     }
@@ -297,7 +327,9 @@ public sealed class ArticleHost : Decorator
     {
         e.Handled = true;
         if (e.Request is { } url)
+        {
             RaiseLink(url);
+        }
     }
 
     private void OnWebMessage(object? sender, WebMessageReceivedEventArgs e)
@@ -322,9 +354,15 @@ public sealed class ArticleHost : Decorator
                 case "key" when ToKey(root.GetProperty("key").GetString()) is { } key:
                     var modifiers = KeyModifiers.None;
                     if (root.GetProperty("shift").GetBoolean())
+                    {
                         modifiers |= KeyModifiers.Shift;
+                    }
+
                     if (root.GetProperty("command").GetBoolean())
+                    {
                         modifiers |= App.CommandModifier;
+                    }
+
                     RaiseEvent(new ArticleShortcutEventArgs(key, modifiers));
                     break;
             }
@@ -356,12 +394,16 @@ public sealed class ArticleHost : Decorator
     {
         e.Event.Handled = true;
         if (Uri.TryCreate(e.Event.Link, UriKind.Absolute, out var url))
+        {
             RaiseLink(url);
+        }
     }
 
     private void RaiseLink(Uri url)
     {
         if (url.Scheme is "http" or "https" or "mailto")
+        {
             RaiseEvent(new ArticleLinkEventArgs(url));
+        }
     }
 }

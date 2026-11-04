@@ -34,10 +34,16 @@ public partial class FeedsView : UserControl
     private void Attach(SidebarViewModel? sidebar)
     {
         if (_sidebar is not null)
+        {
             _sidebar.Rows.CollectionChanged -= OnRowsChanged;
+        }
+
         _sidebar = sidebar;
         if (_sidebar is not null)
+        {
             _sidebar.Rows.CollectionChanged += OnRowsChanged;
+        }
+
         Regroup();
     }
 
@@ -45,7 +51,10 @@ public partial class FeedsView : UserControl
     private void OnRowsChanged(object? sender, NotifyCollectionChangedEventArgs e)
     {
         if (_regroupPending)
+        {
             return;
+        }
+
         _regroupPending = true;
         Dispatcher.UIThread.Post(Regroup, DispatcherPriority.Background);
     }
@@ -59,19 +68,25 @@ public partial class FeedsView : UserControl
     private void OnRowClick(object? sender, RoutedEventArgs e)
     {
         if ((sender as Control)?.Tag is SidebarRowViewModel row && _sidebar is not null)
+        {
             _sidebar.SelectedRow = row;
+        }
     }
 
     private void OnDisclosureClick(object? sender, RoutedEventArgs e)
     {
         if ((sender as Control)?.Tag is SidebarRowViewModel row)
+        {
             _sidebar?.Toggle(row);
+        }
     }
 
     private void OnSectionClick(object? sender, RoutedEventArgs e)
     {
         if ((sender as Control)?.Tag is SidebarRowViewModel row)
+        {
             _sidebar?.Toggle(row);
+        }
     }
 
     private async void OnRefreshRequested(object? sender, RefreshRequestedEventArgs e)
@@ -80,7 +95,9 @@ public partial class FeedsView : UserControl
         try
         {
             if (Shell is { } shell)
+            {
                 await shell.RefreshAsync();
+            }
         }
         finally
         {

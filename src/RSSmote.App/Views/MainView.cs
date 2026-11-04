@@ -46,10 +46,16 @@ public sealed class MainView : UserControl
     private void Choose(double width)
     {
         if (Shell is not { } shell || width <= 0)
+        {
             return;
+        }
+
         var layout = width >= DesktopMinWidth ? SidebarLayout.Desktop : SidebarLayout.Phone;
         if (layout == Layout)
+        {
             return;
+        }
+
         Layout = layout;
         Content = null;
         if (layout == SidebarLayout.Phone)
@@ -78,7 +84,10 @@ public sealed class MainView : UserControl
     private void OnKeyDown(object? sender, KeyEventArgs e)
     {
         if (e.Handled)
+        {
             return;
+        }
+
         var textBoxFocused = _topLevel?.FocusManager?.GetFocusedElement() is TextBox;
         e.Handled = HandleShortcut(e.Key, e.KeyModifiers, textBoxFocused);
     }
@@ -91,11 +100,16 @@ public sealed class MainView : UserControl
     private bool HandleShortcut(Key key, KeyModifiers modifiers, bool textBoxFocused)
     {
         if (Shell is not { } shell || Layout != SidebarLayout.Desktop)
+        {
             return false;
+        }
+
         var command = Chrome.CommandModifier;
 
         if (shell.SettingsMode is { } settings)
+        {
             return HandleSettingsShortcut(shell, settings, key, modifiers == command);
+        }
 
         if (modifiers == command)
         {
@@ -117,12 +131,17 @@ public sealed class MainView : UserControl
         if (textBoxFocused)
         {
             if (key != Key.Escape)
+            {
                 return false;
+            }
+
             shell.List.EndSearch();
             return true;
         }
         if (modifiers is not (KeyModifiers.None or KeyModifiers.Shift))
+        {
             return false;
+        }
 
         return key switch
         {
@@ -150,13 +169,21 @@ public sealed class MainView : UserControl
         if (key == Key.Escape && !command)
         {
             if (settings.Confirm is { } confirm)
+            {
                 confirm.CloseCommand.Execute(null);
+            }
             else
+            {
                 shell.CloseSettings();
+            }
+
             return true;
         }
         if (!command)
+        {
             return false;
+        }
+
         return key switch
         {
             Key.N => Run(() => settings.Show(SettingsSection.AddFeed)),
@@ -169,9 +196,14 @@ public sealed class MainView : UserControl
     {
         var article = this.GetVisualDescendants().OfType<ArticleView>().FirstOrDefault();
         if (article is not null && await article.ScrollPageAsync(up))
+        {
             return;
+        }
+
         if (!up)
+        {
             shell.NextArticleCommand.Execute(null);
+        }
     }
 
     private static bool Run(Action action)

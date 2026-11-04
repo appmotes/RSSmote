@@ -12,20 +12,33 @@ public static class AppFolders
     public static string Data()
     {
         if (Environment.GetEnvironmentVariable("RSSMOTE_DATA_DIR") is { Length: > 0 } overridden)
+        {
             return overridden;
+        }
 
         var home = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
         // On iOS and Android the home folder is the app's own sandbox, so no app-named subfolder is needed.
         if (OperatingSystem.IsIOS())
+        {
             return Path.Combine(home, "Library", "Application Support");
+        }
+
         if (OperatingSystem.IsAndroid())
+        {
             // The app's private files folder (Context.FilesDir).
             return home;
+        }
+
         if (OperatingSystem.IsMacOS())
+        {
             // SpecialFolder.ApplicationData is ~/.config on macOS, so build the native path.
             return Path.Combine(home, "Library", "Application Support", "com.ahrentlov.rssmote");
+        }
+
         if (OperatingSystem.IsWindows())
+        {
             return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "RSSmote");
+        }
 
         var xdg = Environment.GetEnvironmentVariable("XDG_DATA_HOME");
         return Path.Combine(string.IsNullOrEmpty(xdg) ? Path.Combine(home, ".local", "share") : xdg, "rssmote");

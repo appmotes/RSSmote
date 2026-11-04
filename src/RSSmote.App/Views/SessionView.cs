@@ -30,7 +30,9 @@ public sealed class SessionView : UserControl
         api.SignedOut += (_, _) => Dispatcher.UIThread.Post(() =>
         {
             if (_session is not null)
+            {
                 ShowSignIn(SignedOutText);
+            }
         });
     }
 
@@ -38,7 +40,9 @@ public sealed class SessionView : UserControl
     {
         base.OnAttachedToVisualTree(e);
         if (Content is null)
+        {
             _ = StartAsync();
+        }
     }
 
     private async Task StartAsync()
@@ -46,9 +50,13 @@ public sealed class SessionView : UserControl
         try
         {
             if (await _api.IsSignedInAsync())
+            {
                 await OpenAsync();
+            }
             else
+            {
                 ShowSignIn(null);
+            }
         }
         catch (HttpRequestException)
         {
@@ -59,7 +67,13 @@ public sealed class SessionView : UserControl
     private void ShowSignIn(string? message)
     {
         Close();
-        Content = new SignInView { DataContext = new SignInViewModel(_api, () => _ = OpenAsync()) { Error = message } };
+        Content = new SignInView
+        {
+            DataContext = new SignInViewModel(_api, () => _ = OpenAsync())
+            {
+                Error = message,
+            },
+        };
     }
 
     private async Task OpenAsync()
@@ -81,7 +95,10 @@ public sealed class SessionView : UserControl
         _shell = new ShellViewModel(session.Library, session.Settings, session.Refresher, session.Finder,
             new StorageFilePicker(Top), new ImageCache(_http, ImageCache.ThroughServer), new TopLevelLauncher(Top),
             new AvaloniaUiDispatcher(), TimeProvider.System);
-        Content = new MainView { DataContext = _shell };
+        Content = new MainView
+        {
+            DataContext = _shell,
+        };
     }
 
     private void Close()

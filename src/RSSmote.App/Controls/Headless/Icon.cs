@@ -77,7 +77,9 @@ public sealed class Icon : Control
     public override void Render(DrawingContext context)
     {
         if (Data is not { } data || Foreground is not { } brush || ViewBoxSize <= 0)
+        {
             return;
+        }
 
         var scale = Size / ViewBoxSize;
         var dx = (Bounds.Width - Size) / 2;
@@ -85,6 +87,8 @@ public sealed class Icon : Control
         var pen = new Pen(brush, StrokeThickness / scale, lineCap: PenLineCap.Round, lineJoin: PenLineJoin.Round);
 
         using (context.PushTransform(Matrix.CreateScale(scale, scale) * Matrix.CreateTranslation(dx, dy)))
+        {
             context.DrawGeometry(IsFilled ? brush : null, pen, data);
+        }
     }
 }

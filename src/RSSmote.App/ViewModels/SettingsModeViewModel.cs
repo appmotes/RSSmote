@@ -128,7 +128,9 @@ public sealed partial class SettingsModeViewModel : ObservableObject, IDisposabl
     private void Back()
     {
         if (_pages.Count > 1)
+        {
             PopAbove(_pages.Count - 2);
+        }
     }
 
     /// <summary>Back to Feeds.</summary>
@@ -144,7 +146,10 @@ public sealed partial class SettingsModeViewModel : ObservableObject, IDisposabl
         var add = _shell.CreateAddFeed();
         add.Added = added?.Title;
         if (added?.FolderId is { } folderId && add.Picker.Folders.FirstOrDefault(f => f.Folder.Id == folderId) is { } folder)
+        {
             add.Picker.ToggleCommand.Execute(folder);
+        }
+
         Feed? saved = null;
         add.Saved += (_, e) =>
         {
@@ -154,7 +159,10 @@ public sealed partial class SettingsModeViewModel : ObservableObject, IDisposabl
         add.Closed += (_, _) =>
         {
             if (saved is null || _pages.Count == 0 || !ReferenceEquals(_pages[0], add))
+            {
                 return;
+            }
+
             _pages[0] = NewAddFeed(saved);
             OnPageChanged();
         };
@@ -175,7 +183,10 @@ public sealed partial class SettingsModeViewModel : ObservableObject, IDisposabl
     private void OpenEditFeed(Feed feed, Bitmap? favicon)
     {
         if (_shell.CreateEditFeed(feed) is not { } edit)
+        {
             return;
+        }
+
         edit.Favicon = favicon ?? _shell.Sidebar.FaviconFor(feed.Id);
         Push(edit);
     }
@@ -188,7 +199,9 @@ public sealed partial class SettingsModeViewModel : ObservableObject, IDisposabl
             feed => OpenEditFeed(feed, null),
             f => Ask(_shell.ConfirmDeleteFolder(f), () => Pop(edit!)));
         if (edit is not null)
+        {
             Push(edit);
+        }
     }
 
     [RelayCommand]
@@ -199,7 +212,9 @@ public sealed partial class SettingsModeViewModel : ObservableObject, IDisposabl
     private void RemoveFeed(Feed feed) => Ask(_shell.ConfirmRemoveFeed(feed), () =>
     {
         if (_pages.OfType<EditFeedViewModel>().FirstOrDefault(e => e.Feed.Id == feed.Id) is { } edit)
+        {
             Pop(edit);
+        }
     });
 
     [RelayCommand]
@@ -215,7 +230,9 @@ public sealed partial class SettingsModeViewModel : ObservableObject, IDisposabl
         confirm.Closed += (_, _) =>
         {
             if (ReferenceEquals(Confirm, confirm))
+            {
                 Confirm = null;
+            }
         };
         Confirm = confirm;
     }
@@ -233,17 +250,25 @@ public sealed partial class SettingsModeViewModel : ObservableObject, IDisposabl
     {
         var index = _pages.IndexOf(page);
         if (index > 0)
+        {
             PopAbove(index - 1);
+        }
     }
 
     private void PopAbove(int index)
     {
         if (_pages.Count <= index + 1)
+        {
             return;
+        }
+
         var removed = _pages.Skip(index + 1).ToList();
         _pages.RemoveRange(index + 1, removed.Count);
         foreach (var page in removed)
+        {
             (page as IDisposable)?.Dispose();
+        }
+
         OnPageChanged();
     }
 
@@ -252,7 +277,10 @@ public sealed partial class SettingsModeViewModel : ObservableObject, IDisposabl
         Confirm?.Dispose();
         Confirm = null;
         foreach (var page in _pages)
+        {
             (page as IDisposable)?.Dispose();
+        }
+
         _pages.Clear();
     }
 

@@ -72,7 +72,9 @@ public sealed partial class ImportFeedsViewModel(ILibrary store, IFilePicker fil
             return;
         }
         if (picked is not null)
+        {
             Preview(picked.Name, OpmlDocument.Parse(picked.Text));
+        }
     }
 
     /// <summary>Shows what <paramref name="outlines"/> would add to the library as it is now.</summary>
@@ -107,7 +109,10 @@ public sealed partial class ImportFeedsViewModel(ILibrary store, IFilePicker fil
     private async Task Import()
     {
         if (await store.ImportOpmlAsync(_new) > 0)
+        {
             imported();
+        }
+
         Close();
     }
 }

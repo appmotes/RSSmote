@@ -9,8 +9,13 @@ public sealed class TopLevelLauncher(Func<TopLevel?> topLevel) : ILauncher
     public void Open(Uri url, bool inBackground)
     {
         if (url.Scheme is not ("http" or "https" or "mailto"))
+        {
             return;
+        }
+
         if (topLevel()?.Launcher is { } launcher)
+        {
             _ = launcher.LaunchUriAsync(url);
+        }
     }
 }

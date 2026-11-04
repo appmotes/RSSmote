@@ -54,19 +54,28 @@ public static partial class FeedParser
             var fixedText = NamedEntity().Replace(text, m =>
             {
                 if (XmlEntities.Contains(m.Groups[1].Value))
+                {
                     return m.Value;
+                }
+
                 var decoded = WebUtility.HtmlDecode(m.Value);
                 return decoded == m.Value ? "&amp;" + m.Groups[1].Value + ";" : string.Concat(decoded.Select(c => $"&#{(int)c};"));
             });
             if (fixedText != text)
+            {
                 doc = Load(Encoding.UTF8.GetBytes(fixedText));
+            }
         }
         if (doc?.Root is not { } root)
+        {
             return null;
+        }
 
         var rootName = root.Name.LocalName.ToLowerInvariant();
         if (rootName is not ("rss" or "feed" or "rdf"))
+        {
             return null;
+        }
 
         var isAtom = rootName == "feed";
         var channel = isAtom ? root : root.Elements().FirstOrDefault(e => Is(e, "channel"));
@@ -84,7 +93,11 @@ public static partial class FeedParser
 
     private static XDocument? Load(byte[] data)
     {
-        var settings = new XmlReaderSettings { DtdProcessing = DtdProcessing.Ignore, XmlResolver = null };
+        var settings = new XmlReaderSettings
+        {
+            DtdProcessing = DtdProcessing.Ignore,
+            XmlResolver = null,
+        };
         try
         {
             using var stream = new MemoryStream(data);
@@ -109,9 +122,14 @@ public static partial class FeedParser
                 case "link" when e.Attribute("href") is { } href:
                     var rel = (string?)e.Attribute("rel") ?? "alternate";
                     if (rel == "alternate")
+                    {
                         link ??= href.Value;
+                    }
                     else if (rel == "enclosure" && IsImage(e))
+                    {
                         image ??= href.Value;
+                    }
+
                     break;
                 case "link":
                     link ??= Text(e);
@@ -160,7 +178,10 @@ public static partial class FeedParser
         var body = string.IsNullOrWhiteSpace(content) ? summary ?? "" : content;
         var title = Clean(HtmlContent.DecodeEntities(HtmlContent.StripTags(rawTitle ?? "")).Trim());
         if (string.IsNullOrEmpty(title))
+        {
             title = HtmlContent.Excerpt(body, 80).TrimEnd('…');
+        }
+
         var id = string.IsNullOrWhiteSpace(guid)
             ? resolvedLink ?? $"{title}|{published?.ToUnixTimeSeconds() ?? 0}"
             : guid.Trim();
@@ -195,7 +216,9 @@ public static partial class FeedParser
             var root = doc.RootElement;
             if (root.ValueKind != JsonValueKind.Object || !root.TryGetProperty("items", out var items)
                 || items.ValueKind != JsonValueKind.Array)
+            {
                 return null;
+            }
 
             var home = Str(root, "home_page_url");
             var resolveBase = Absolute(home) ?? baseUri;
@@ -203,7 +226,10 @@ public static partial class FeedParser
             foreach (var raw in items.EnumerateArray())
             {
                 if (raw.ValueKind != JsonValueKind.Object)
+                {
                     continue;
+                }
+
                 var link = Str(raw, "url") ?? Str(raw, "external_url");
                 var html = Str(raw, "content_html");
                 var plain = Str(raw, "content_text");
@@ -242,7 +268,10 @@ public static partial class FeedParser
     private static string? Body(XElement e)
     {
         if ((string?)e.Attribute("type") != "xhtml")
+        {
             return Text(e);
+        }
+
         var container = e.Elements().FirstOrDefault(c => c.Name.NamespaceName == XhtmlNs && c.Name.LocalName == "div") ?? e;
         var html = string.Concat(container.Nodes().Select(n => n.ToString(SaveOptions.DisableFormatting)));
         return html.Replace($" xmlns=\"{XhtmlNs}\"", "").Trim();
@@ -263,10 +292,16 @@ public static partial class FeedParser
     private static string? Resolve(string? url, Uri? baseUri)
     {
         if (string.IsNullOrWhiteSpace(url))
+        {
             return null;
+        }
+
         url = url.Trim();
         if (Absolute(url) is { } absolute)
+        {
             return absolute.ToString();
+        }
+
         return baseUri is not null && Uri.TryCreate(baseUri, url, out var resolved) ? resolved.ToString() : url;
     }
 

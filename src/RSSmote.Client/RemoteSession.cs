@@ -63,7 +63,9 @@ public sealed class RemoteSession : IDisposable
                 await Library.ReloadAsync(ct);
                 retry = FirstRetry;
                 await foreach (var item in SseParser.Create(stream).EnumerateAsync(ct))
+                {
                     Dispatch(item);
+                }
             }
             catch (SignedOutException)
             {

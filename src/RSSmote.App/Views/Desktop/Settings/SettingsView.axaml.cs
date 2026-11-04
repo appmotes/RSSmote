@@ -15,17 +15,24 @@ public partial class SettingsView : UserControl
     {
         base.OnDataContextChanged(e);
         if (_mode is not null)
+        {
             _mode.PropertyChanged -= OnModeChanged;
+        }
+
         _mode = DataContext as SettingsModeViewModel;
         if (_mode is not null)
+        {
             _mode.PropertyChanged += OnModeChanged;
+        }
     }
 
     /// <summary>Every page starts at its top.</summary>
     private void OnModeChanged(object? sender, PropertyChangedEventArgs e)
     {
         if (e.PropertyName == nameof(SettingsModeViewModel.Page))
+        {
             Scroller.Offset = default;
+        }
     }
 
     /// <summary>A click beside the dialog cancels it.</summary>

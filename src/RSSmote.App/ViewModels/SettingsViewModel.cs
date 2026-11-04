@@ -198,7 +198,9 @@ public sealed partial class SettingsViewModel : ObservableObject
     private void Write(Action<AppSettings> change)
     {
         if (!_applying)
+        {
             _settings.Update(change);
+        }
     }
 
     /// <summary>Shows <paramref name="settings"/>; on the UI thread.</summary>
@@ -238,7 +240,9 @@ public sealed partial class SettingsViewModel : ObservableObject
     private static void Check(IEnumerable<ChoiceViewModel> choices, object key)
     {
         foreach (var choice in choices)
+        {
             choice.IsChecked = Equals(choice.Key, key);
+        }
     }
 
     /// <summary>Steps, labels and scales from <paramref name="settings"/>; the sliders' writes are muted meanwhile.</summary>
@@ -281,7 +285,9 @@ public sealed partial class SettingsViewModel : ObservableObject
     {
         var size = AppSettings.TextSizes[Math.Clamp((int)Math.Round(step), 0, MaxTextStep)];
         if (size != SizeOf(_settings.Current, pane))
+        {
             Write(s => SetSize(s, pane, size));
+        }
     }
 
     private static int StepOf(int size) => Array.IndexOf(AppSettings.TextSizes, AppSettings.NearestTextSize(size));

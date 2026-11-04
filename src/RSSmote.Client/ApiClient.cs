@@ -27,7 +27,10 @@ public sealed class ApiClient(HttpClient http)
         using var response = await SendAsync(HttpMethod.Post, "api/login",
             JsonContent.Create(new LoginRequest(key), ApiJsonContext.Default.LoginRequest), ct, signedOutIsError: false);
         if (response.StatusCode == HttpStatusCode.Unauthorized)
+        {
             return false;
+        }
+
         await EnsureSuccessAsync(response, ct);
         return true;
     }
@@ -41,7 +44,10 @@ public sealed class ApiClient(HttpClient http)
     {
         using var response = await SendAsync(HttpMethod.Get, "api/session", null, ct, signedOutIsError: false);
         if (response.StatusCode == HttpStatusCode.Unauthorized)
+        {
             return false;
+        }
+
         await EnsureSuccessAsync(response, ct);
         return true;
     }
@@ -98,13 +104,19 @@ public sealed class ApiClient(HttpClient http)
     {
         var response = await http.SendAsync(Request(method, path, content), ct);
         if (signedOutIsError)
+        {
             ThrowIfSignedOut(response);
+        }
+
         return response;
     }
 
     private HttpRequestMessage Request(HttpMethod method, string path, HttpContent? content)
     {
-        var request = new HttpRequestMessage(method, path) { Content = content };
+        var request = new HttpRequestMessage(method, path)
+        {
+            Content = content,
+        };
         request.Headers.Add(ApiNames.ClientHeader, ClientId);
         return request;
     }
@@ -112,7 +124,10 @@ public sealed class ApiClient(HttpClient http)
     private void ThrowIfSignedOut(HttpResponseMessage response)
     {
         if (response.StatusCode != HttpStatusCode.Unauthorized)
+        {
             return;
+        }
+
         response.Dispose();
         SignedOut?.Invoke(this, EventArgs.Empty);
         throw new SignedOutException();
@@ -121,12 +136,17 @@ public sealed class ApiClient(HttpClient http)
     private static async Task EnsureSuccessAsync(HttpResponseMessage response, CancellationToken ct)
     {
         if (response.IsSuccessStatusCode)
+        {
             return;
+        }
+
         string? message = null;
         try
         {
             if (response.Content.Headers.ContentType?.MediaType == "application/json")
+            {
                 message = (await response.Content.ReadFromJsonAsync(ApiJsonContext.Default.ErrorResponse, ct))?.Message;
+            }
         }
         catch (System.Text.Json.JsonException)
         {

@@ -48,7 +48,10 @@ public sealed class ServerTests : IDisposable
     public void Dispose()
     {
         foreach (var host in _hosts)
+        {
             host.Dispose();
+        }
+
         SqliteConnection.ClearAllPools();
         Directory.Delete(_folder, recursive: true);
     }
@@ -85,7 +88,10 @@ public sealed class ServerTests : IDisposable
         var client = Client(Host());
         var codes = new List<HttpStatusCode>();
         for (var i = 0; i < 6; i++)
+        {
             codes.Add((await client.PostAsJsonAsync("/api/login", new LoginRequest("wrong key, try again"), ApiJsonContext.Default.LoginRequest, Ct)).StatusCode);
+        }
+
         Assert.Equal(HttpStatusCode.TooManyRequests, codes[^1]);
         Assert.All(codes[..5], c => Assert.Equal(HttpStatusCode.Unauthorized, c));
     }
@@ -164,7 +170,10 @@ public sealed class ServerTests : IDisposable
 
         string? line;
         while ((line = await reader.ReadLineAsync(timeout.Token)) != "event: flags")
+        {
             Assert.NotNull(line);
+        }
+
         var data = (await reader.ReadLineAsync(timeout.Token))!["data: ".Length..];
         var flags = System.Text.Json.JsonSerializer.Deserialize(data, ApiJsonContext.Default.FlagsEvent)!;
         Assert.Equal("test", flags.Origin);

@@ -21,7 +21,11 @@ builder.Services.AddRateLimiter(o =>
 {
     o.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
     o.AddPolicy(Access.LoginPolicy, http => RateLimitPartition.GetFixedWindowLimiter(ClientAddress(http),
-        _ => new FixedWindowRateLimiterOptions { PermitLimit = 5, Window = TimeSpan.FromMinutes(1) }));
+        _ => new FixedWindowRateLimiterOptions
+        {
+            PermitLimit = 5,
+            Window = TimeSpan.FromMinutes(1),
+        }));
     // Every API call, per address: bursts of favicons pass, a flood does not.
     o.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(http =>
         http.Request.Path.StartsWithSegments("/api")
@@ -50,7 +54,9 @@ var app = builder.Build();
 // The published browser app: RSSMOTE_WEB_DIR, or wwwroot beside the server (A24). Without it the server is the API alone.
 var web = builder.Configuration["RSSMOTE_WEB_DIR"] is { Length: > 0 } folder ? folder : Path.Combine(app.Environment.ContentRootPath, "wwwroot");
 if (Directory.Exists(web))
+{
     app.UseWebApp(web);
+}
 
 app.UseRateLimiter();
 app.UseAuthentication();
@@ -63,7 +69,10 @@ api.AddEndpointFilter(async (context, next) =>
     var request = context.HttpContext.Request;
     var client = request.Headers[ApiNames.ClientHeader].ToString();
     if (client.Length == 0 && !HttpMethods.IsGet(request.Method))
+    {
         return Results.BadRequest(new ErrorResponse($"{ApiNames.ClientHeader} is required."));
+    }
+
     RequestOrigin.Current = client.Length == 0 ? null : client;
     return await next(context);
 });

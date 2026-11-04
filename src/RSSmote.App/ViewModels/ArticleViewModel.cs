@@ -59,7 +59,9 @@ public sealed partial class ArticleViewModel : ObservableObject
     public void ShowContent(Item full)
     {
         if (Item?.Id == full.Id)
+        {
             Document = ArticleDocument.Create(full, DateText(full.Published));
+        }
     }
 
     public static string DateText(DateTimeOffset published)

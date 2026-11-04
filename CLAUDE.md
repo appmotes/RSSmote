@@ -90,6 +90,30 @@ than drawing something plausible.
 - The product is written **RSSmote**; lowercase `rssmote` only in technical identifiers (data folder
   `com.ahrentlov.rssmote`, `rssmote.sqlite`, `RSSMOTE_*` variables).
 
+## Code layout: braces always, each on its own line
+
+Every body takes braces, a single statement too, and every brace stands on its own line. An object or collection
+initializer of a `new` is split the same way, one member per line with a trailing comma.
+
+```csharp
+if (x is null)
+{
+    return;
+}
+
+var sanitizer = new HtmlSanitizer
+{
+    KeepChildNodes = true,
+};
+```
+
+These stay on one line, as they are not blocks: `{ get; set; }`, property patterns (`is { } item`) and `with`
+expressions (`feed with { Id = id }`).
+
+`.editorconfig` holds the rules and the build checks them (`EnforceCodeStyleInBuild`): a missing brace is IDE0011 and
+a misplaced one IDE0055. No analyzer sees a one-line initializer, so that part is on the writer. `dotnet format
+RSSmote.slnx` fixes braces and layout.
+
 ## Code comments: minimal, English, and no archaeology
 
 A comment states **what the code does and what a reader must understand to change it safely** — in the present tense,

@@ -12,10 +12,18 @@ internal static class Program
         // Imported before anything calls into it.
         await JSHost.ImportAsync(BrowserStorage.ModuleName, "../interop.js");
         var server = new Uri(new Uri(args[0]), "./");
-        await BuildAvaloniaApp(new HttpClient { BaseAddress = server }).StartBrowserAppAsync("out");
+        await BuildAvaloniaApp(new HttpClient
+        {
+            BaseAddress = server,
+        }).StartBrowserAppAsync("out");
     }
 
     private static AppBuilder BuildAvaloniaApp(HttpClient http) =>
-        AppBuilder.Configure(() => new App.App { Http = http, Storage = new BrowserStorage(), AppleKeyboard = BrowserStorage.IsApple() })
+        AppBuilder.Configure(() => new App.App
+        {
+            Http = http,
+            Storage = new BrowserStorage(),
+            AppleKeyboard = BrowserStorage.IsApple(),
+        })
             .WithInterFont();
 }
