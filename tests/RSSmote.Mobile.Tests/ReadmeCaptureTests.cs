@@ -8,8 +8,8 @@ using RSSmote.App.ViewModels;
 using RSSmote.Core.Discovery;
 using RSSmote.Core.Models;
 using RSSmote.Data;
-using RSSmote.Mobile.Pages;
-using RSSmote.Mobile.Shell;
+using RSSmote.App.Views.Phone.Pages;
+using RSSmote.App.Views.Phone.Shell;
 
 namespace RSSmote.Mobile.Tests;
 
@@ -24,7 +24,10 @@ public class ReadmeCaptureTests
     {
         var output = Environment.GetEnvironmentVariable("RSSMOTE_README_DIR");
         if (string.IsNullOrEmpty(output))
+        {
             return;
+        }
+
         Directory.CreateDirectory(output);
 
         var folder = Path.Combine(Path.GetTempPath(), "rssmote-readme-phone-" + Guid.NewGuid().ToString("N"));
@@ -44,7 +47,11 @@ public class ReadmeCaptureTests
             using var vm = new ShellViewModel(store, settings, refresher: null, new FeedFinder(http), new ShellFixture.FakeFiles(),
                 new DemoImages(), new ShellFixture.RecordingLauncher(), new AvaloniaUiDispatcher(), TimeProvider.System,
                 SidebarLayout.Phone);
-            var shell = new MobileShell(vm) { PageTransition = null, ModalTransition = null };
+            var shell = new MobileShell(vm)
+            {
+                PageTransition = null,
+                ModalTransition = null,
+            };
             var window = PhoneRender.Show(shell, "Sand");
             // The demo favicons arrive at once, before the first rows they belong to exist; a reload takes them from the cache.
             vm.Sidebar.Reload();

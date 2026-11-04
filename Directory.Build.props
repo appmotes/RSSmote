@@ -5,6 +5,8 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <NuGetAuditMode>direct</NuGetAuditMode>
     <TreatWarningsAsErrors Condition="'$(Configuration)' == 'Release'">true</TreatWarningsAsErrors>
+    <!-- The style rules in .editorconfig that are set to warning (braces, layout) are checked on every build. -->
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
     <Company>RSSmote</Company>
     <Product>RSSmote</Product>
     <Version>0.1.0</Version>

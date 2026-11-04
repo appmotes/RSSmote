@@ -4,9 +4,9 @@ using Avalonia.Headless.XUnit;
 using Avalonia.Threading;
 using Avalonia.VisualTree;
 using RSSmote.App.ViewModels;
-using RSSmote.Mobile.Pages;
-using RSSmote.Mobile.Shell;
-using RSSmote.Mobile.Views;
+using RSSmote.App.Views.Phone.Pages;
+using RSSmote.App.Views.Phone.Shell;
+using RSSmote.App.Views.Phone;
 
 namespace RSSmote.Mobile.Tests;
 
@@ -25,7 +25,11 @@ public class SettingsFlowTests
     private static (ShellFixture Fixture, MobileShell Shell, Window Window) Open(string palette)
     {
         var f = new ShellFixture(s => s.ExpandedFolders = [1]);
-        var shell = new MobileShell(f.Shell) { PageTransition = null, ModalTransition = null };
+        var shell = new MobileShell(f.Shell)
+        {
+            PageTransition = null,
+            ModalTransition = null,
+        };
         var window = PhoneRender.Show(shell, palette);
         shell.Root.Show(RootTab.Settings);
         Settle();
@@ -42,7 +46,10 @@ public class SettingsFlowTests
                 || b.GetVisualDescendants().OfType<TextBlock>().Any(t => t.Text == text)));
         button.RaiseEvent(new Avalonia.Interactivity.RoutedEventArgs(Button.ClickEvent));
         if (button.Command?.CanExecute(button.CommandParameter) == true)
+        {
             button.Command.Execute(button.CommandParameter);
+        }
+
         Settle();
     }
 
@@ -107,7 +114,7 @@ public class SettingsFlowTests
             </channel></rss>
             """;
         Click(shell, "Add Feed");
-        var page = Assert.IsType<Pages.AddFeedPage>(shell.NavigationStack[^1]);
+        var page = Assert.IsType<RSSmote.App.Views.Phone.Pages.AddFeedPage>(shell.NavigationStack[^1]);
         var add = Assert.IsType<AddFeedViewModel>(page.DataContext);
         add.Address = "https://blog.example/feed.xml";
         await add.SearchCommand.ExecuteAsync(null);

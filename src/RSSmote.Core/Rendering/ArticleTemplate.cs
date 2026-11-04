@@ -13,8 +13,11 @@ namespace RSSmote.Core.Rendering;
 /// </summary>
 public static partial class ArticleTemplate
 {
-    /// <summary>Scrolls one page; evaluates to "false" at the end so space can move on to the next article.</summary>
-    public static string ScrollPageScript(bool up) => up ? "rssmote.scrollPage(true)" : "rssmote.scrollPage(false)";
+    /// <summary>
+    /// Scrolls one page and answers "false" at the end, so space can move on to the next article. The answer is a
+    /// string, because a browser's web view takes only a string back (P32).
+    /// </summary>
+    public static string ScrollPageScript(bool up) => up ? "String(rssmote.scrollPage(true))" : "String(rssmote.scrollPage(false))";
 
     private static readonly string Css = ReadResource("article.css");
     private static readonly string Script = ReadResource("article.js");
@@ -41,23 +44,37 @@ public static partial class ArticleTemplate
             .Append("<style>\n").Append(Stylesheet(style)).Append("</style>\n</head>\n<body>\n<main>\n<article>\n<header>\n")
             .Append("<div class=\"date\">").Append(e(document.DateText)).Append("</div>\n<h1>");
         if (document.Link is { } link)
+        {
             html.Append("<a href=\"").Append(e(link)).Append("\">").Append(e(document.Title)).Append("</a>");
+        }
         else
+        {
             html.Append(e(document.Title));
+        }
+
         html.Append("</h1>\n<div class=\"byline\">");
         for (var i = 0; i < document.Byline.Count; i++)
         {
             var last = i == document.Byline.Count - 1;
             if (i > 0)
+            {
                 html.Append(" · ");
+            }
+
             html.Append(last ? "<span class=\"source\">" : "<span>").Append(e(document.Byline[i])).Append("</span>");
         }
         html.Append("</div>\n</header>\n");
         if (document.HeroImage is { } hero)
+        {
             html.Append("<figure class=\"hero\"><img src=\"").Append(e(hero)).Append("\" alt=\"\"></figure>\n");
+        }
+
         html.Append("<div class=\"content\">").Append(content).Append("</div>\n</article>\n</main>\n");
         if (style.Scripted)
+        {
             html.Append("<script>\n").Append(Script).Append("</script>\n");
+        }
+
         html.Append("</body>\n</html>\n");
         return html.ToString();
     }

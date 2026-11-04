@@ -18,7 +18,12 @@ public static class PhoneRender
     public static Window Show(Control root, string palette)
     {
         Application.Current!.RequestedThemeVariant = Variant(palette);
-        var window = new Window { Width = Width, Height = Height, Content = root };
+        var window = new Window
+        {
+            Width = Width,
+            Height = Height,
+            Content = root,
+        };
         window.Show();
         return window;
     }

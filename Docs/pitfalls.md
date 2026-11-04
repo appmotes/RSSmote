@@ -14,14 +14,6 @@ palette's brushes in the same palette file, built from that file's colours. *(do
 typing in the filter box or a panel field unless it checks the focused element first. Handle `KeyDown` on the
 window in the tunnel phase and skip when `FocusManager` reports a `TextBox`.
 
-**P1 — `NativeWebView` needs system libraries on Linux.** WebKitGTK 4.1 + libsoup 3 (or WPE WebKit). Without
-them the control cannot start; the app must fall back (A9). Ubuntu does not package WPE. *(docs)*
-
-**P2 — `ExtendClientAreaToDecorationsHint` is limited on Linux.** Keep system decorations there (A5). *(docs)*
-
-**P3 — Windows draws its caption buttons over the right of the client area** when the client area is extended.
-The article column's title strip must reserve that width on Windows. *(to measure)*
-
 **P4 — `{Binding}` compiles by default in Avalonia 12.** A missing `x:DataType` is a build error, not a runtime
 miss — set it on every view, `DataTemplate` and `ControlTheme`. *(docs)*
 
@@ -94,13 +86,6 @@ so a card that both casts a shadow and clips its content to the rounded corners 
 borders: the outer one carries margin, background and `BoxShadows.Card`, the inner one (`Border.cardClip`) the
 corner radius and `ClipToBounds` (D20). Measured with `A_clipping_border_clips_its_own_shadow`.
 
-**L13 — A `NativeMenuItem` that gets its `Menu` after the window loads stays a disabled leaf on macOS.** The native
-menu is exported from the XAML tree as it stands; an item with neither a command nor a submenu at that point is
-shown disabled, and setting `Menu` later does not turn it into a submenu. Declare the submenu in XAML (an empty
-`<NativeMenu />`) and add to its `Items` from code; item additions are followed. Seen in the macOS menu bar's theme
-submenus (D22); `Theme_items_in_the_menu_bar_are_enabled_and_switch_the_theme` guards the structure, the native
-behaviour itself needs a check by hand.
-
 **L14 — A `UserControl` clips to its own bounds.** A card that sits flush with its view's edge draws its ring or
 shadow outside those bounds, and it was cut off: the list and article cards had no left edge in the ring palettes. The
 two card views set `ClipToBounds="False"`. Measured with `The_card_ring_shows_on_every_edge`.
@@ -113,23 +98,6 @@ cannot access this object because a different thread owns it") from `DefaultRend
 varies, so it showed mostly in the first full `dotnet test` after `dotnet clean`. Every test that creates an Avalonia
 object is an `[AvaloniaFact]`. Measured with `SidebarMenuTests.Feed_rows_have_a_menu_and_other_rows_none`: as a plain
 `[Fact]`, 2 of 4 first runs after `clean` failed; as an `[AvaloniaFact]`, 10 of 10 passed.
-
-**P12 — A Debug Android APK installed with `adb install` closes at once.** Debug builds use Fast Deployment: the
-assemblies are not in the APK but pushed separately by `dotnet build -t:Install`. Installed on its own, the APK
-aborts on launch (`monodroid: No assemblies found … Assuming this is part of Fast Deployment`), visible only in
-logcat. Install Debug with `-t:Install`; a Release APK carries its assemblies and installs with `adb`. Seen with the
-platform check, a temporary headless app since removed, on an API 35 emulator.
-
-**P13 — The iOS SDK reports trim analysis warnings that the Android SDK hides.** Both heads trim with
-`TrimMode=partial`: only assemblies marked `IsTrimmable` are trimmed, every other one is copied whole. Android sets
-`SuppressTrimAnalysisWarnings=true` by default, iOS does not, so an iOS Release build (warnings as errors) fails on
-IL2104 for AngleSharp, AngleSharp.Css, Microsoft.Data.Sqlite and Avalonia.DesignerSupport — none of which is trimmed:
-each one in `obj/…/linked/` is byte for byte the size of its package copy, while `Avalonia.Base` shrinks from 2.36 MB
-to 1.66 MB. ILLink also reports IL2037 for interface members `Avalonia.iOS` names (`AvaloniaAppDelegate`,
-`TextInputResponder`), which is not our code. The iOS head sets `SuppressTrimAnalysisWarnings` and `NoWarn` IL2037.
-Measured with a temporary platform check (since removed), which passed every step in a Release simulator build. A
-new dependency that is marked trimmable and uses reflection would be trimmed silently: exercise what it does in a
-Release simulator build after adding one.
 
 **P14 — A phone page's `Background` stops at the safe-area insets.** Under a `NavigationPage`, a `ContentPage` is laid
 out inside the status-bar and home-indicator insets, and its background goes with it: the strips above and below show
@@ -148,14 +116,6 @@ without a second event, so the shell reads it once the dispatcher is idle. A `Co
 never its `BottomCommandBar`, so the phone pages turn the automatic padding off, put the top inset on their content
 and the bottom inset under their bar (`PhoneConverters.TopInset`, `BottomInset`). Measured on the API 35 emulator.
 
-**P16 — `NativeWebView` shows nothing on iOS when the article slides in.** The cause is P29's: the WKWebView takes its
-place when its adapter attaches, partway through the page slide, and stays off screen, although WebKit loads the page
-(its processes log to the system log). Pushed without the slide, as `MobileShell` does for a native article, it
-shows. Measured on the iPhone 17 Pro simulator, iOS 26.4, Debug and Release, Avalonia 12.1.4 and Avalonia.Controls.WebView 12.1.1,
-with an article holding a web image and a YouTube embed: with the slide the page stayed blank for over 20 s; without
-it the article, the image and the embed showed within about a second. The package's `net10.0` build drives WKWebView
-on iOS too (`MaciosWebViewAdapter`); it has no iOS-specific build.
-
 **P17 — Asking `WebViewAdapterInfo` about another OS's adapter can crash.** On Android,
 `WebViewAdapterInfo.GetAdapterInfo(WebViewAdapterType.WkWebView)` throws a `TypeInitializationException` from
 `MaciosWebViewAdapter`, and the article page crashed as it was created. `ArticleHost` treats a throwing adapter as
@@ -170,17 +130,6 @@ leaves the root's back unhandled, so the system still closes the app there. Seen
 emulator with Avalonia 12.1.4: article → list → Feeds → home after the fix, home from the list before it.
 `ReadingFlowTests` raises `BackRequested` on the window. Read from the 12.1.4 source, not tried: `PageNavigationHost`
 also hands its page the safe-area insets (P15).
-
-**P19 — `adb install` installs incrementally, and the first launch then dies with an ANR.** On the API 35 emulator
-`adb install -r` streams the APK through incfs; ART does not compile it (`adb shell dumpsys package dexopt`:
-`status=run-from-apk`), class verification crawls at about 100 bytecodes/s, and the process is killed as "failed to
-complete startup" before any managed code runs (`App` never starts). `adb install -r --no-incremental` gives
-`status=verify` and a first launch of 1.9 s (`am start -W`, Release). A starved emulator (2 GB with swap, host load
-near 20) shows the same ANR on later launches too, and an emulator that has run for most of an hour with many
-installs took 17 s for a launch that took 1.8 s after a restart (same APK, main thread inside Mono's type loader).
-Measure startup on a freshly booted, idle emulator started with `-memory 4096`. After about 45 minutes and four
-installs a Release start stalled its UI thread for 8–14 s and ran into an ANR; the same APK on a fresh boot skipped
-at most 42 frames.
 
 **P20 — A list on a page that slides in realises no rows.** `PageSlide` starts the incoming page exactly one width
 to the right, and the page's first layout happens there. The effective viewport follows the render transform, so it
@@ -249,8 +198,7 @@ one; read as a scroll up, that brought the bars straight back, so the page ignor
 pushed with the page slide left the system web view where the page was when its adapter attached, partway through
 or at the start of the slide (`dumpsys activity top`: `WebView … 1080,252-2160,2205`, off screen); a layout pass after
 the slide did not move it. `MobileShell` pushes an article without a transition when `ArticleHost` uses the native
-view; then the web view sits at `0,252-1080,2205`. Measured on the API 35 emulator (Release); iOS does the same
-(P16). Like an overlay panel
+view; then the web view sits at `0,252-1080,2205`. Measured on the API 35 emulator (Release); iOS did the same. Like an overlay panel
 on desktop (L9), a sheet over the article must keep clear of the web view: the text sheet ends the article above
 itself by a bottom margin on `ArticleHost` (D31); on a device that margin is not yet seen to move the view (N21).
 
@@ -259,3 +207,23 @@ sidebar's status text ("Today at 12:37 PM · 64 feeds") sat in one beside the st
 joined the gear (D31), with no ellipsis. Text that must stop short of its neighbours goes in a `Grid` with a `*`
 column. Seen in the running app on macOS.
 
+**P30 — An automated browser's typing never reaches a `TextBox`.** Avalonia in a browser reads text from the
+`beforeinput` and `input` events of its hidden `<input class="avalonia-input-element">`. A test driver that sends key
+events (CDP `Input.dispatchKeyEvent`, or inserting text into that input) changes the input's value and fires
+`keydown`/`keyup` only: shortcuts work, the text box stays empty. Measured in the in-app browser: an event log on the
+input showed `keydown:a`, `keyup:a` and nothing else. In a test, dispatch `new InputEvent('beforeinput', {data,
+inputType: 'insertText', bubbles: true, cancelable: true})` on the focused input, or sign in with `fetch('api/login')`
+and reload. A person typing fires both events.
+
+**P31 — A browser does not tell Avalonia the keyboard is Apple's.** `PlatformSettings.HotkeyConfiguration.CommandModifiers`
+answers Ctrl in a browser on a Mac (measured: the empty state showed "Ctrl+N" with `navigator.platform` `MacIntel`),
+while ⌘ arrives as `KeyModifiers.Meta`. The browser head reads the platform in `interop.js` (`isApple`) and sets
+`App.AppleKeyboard`; every command shortcut and hint takes `App.CommandModifier` (A5).
+
+**P32 — A script run in the browser's web view must answer a string.** The iframe adapter's `InvokeScript` binds the
+result as `Task<string>` (decompiled `WebViewInterop.Eval`). With a script that answered a boolean
+(`rssmote.scrollPage(false)`) the scroll happened on space, then the app took no more clicks until the page was
+reloaded, as seen by the user. The cause is inferred, not measured: the boolean meets a string marshaller inside the
+runtime's promise handling, where nothing catches it. *(to confirm with the fix in a browser)* `ArticleTemplate.ScrollPageScript`
+wraps the call in `String(…)`; the native engines answer it the same way, quoted or not, which `ScrollPageAsync`
+trims.

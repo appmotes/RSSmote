@@ -20,9 +20,15 @@ public static class ItemFormatting
     public static string DayHeader(DateTime day, DateTime today)
     {
         if (day == today)
+        {
             return "TODAY";
+        }
+
         if (day == today.AddDays(-1))
+        {
             return "YESTERDAY";
+        }
+
         var culture = CultureInfo.CurrentCulture;
         var pattern = day.Year == today.Year ? "dddd, d MMMM" : "dddd, d MMMM yyyy";
         return day.ToString(pattern, culture).ToUpper(culture);
@@ -45,17 +51,29 @@ public static class ItemFormatting
     public static string LastRefreshText(DateTimeOffset? lastRefresh, bool refreshing, DateTimeOffset now)
     {
         if (refreshing)
+        {
             return "Updating…";
+        }
+
         if (lastRefresh is not { } when)
+        {
             return "Never updated";
+        }
+
         var culture = CultureInfo.CurrentCulture;
         var local = when.ToLocalTime();
         var time = local.ToString(culture.DateTimeFormat.ShortTimePattern, culture);
         var today = now.ToLocalTime().Date;
         if (local.Date == today)
+        {
             return $"Today at {time}";
+        }
+
         if (local.Date == today.AddDays(-1))
+        {
             return $"Yesterday at {time}";
+        }
+
         return $"{local.ToString("d MMM", culture)} at {time}";
     }
 

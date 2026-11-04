@@ -127,10 +127,15 @@ public class SidebarRow : TemplatedControl
     {
         base.OnPropertyChanged(change);
         if (change.Property == CountProperty)
+        {
             CountText = Count > 0 ? Count.ToString() : "";
+        }
+
         if (change.Property == KindProperty || change.Property == IsExpandedProperty || change.Property == CountProperty
             || change.Property == IsExpandableProperty || change.Property == HasErrorProperty || change.Property == FilterProperty)
+        {
             UpdatePseudoClasses();
+        }
     }
 
     private void UpdatePseudoClasses()

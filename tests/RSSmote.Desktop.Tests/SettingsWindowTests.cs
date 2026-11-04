@@ -8,16 +8,16 @@ using Avalonia.Threading;
 using Avalonia.VisualTree;
 using RSSmote.App.Controls.Headless;
 using RSSmote.App.ViewModels;
-using RSSmote.Desktop.Shell;
-using RSSmote.Desktop.Views;
-using RSSmote.Desktop.Views.Settings;
+using RSSmote.App.Views;
+using RSSmote.App.Views.Desktop;
+using RSSmote.App.Views.Desktop.Settings;
 
 namespace RSSmote.Desktop.Tests;
 
 /// <summary>The Settings mode in the real window (D30): how it opens and closes, its keys, and every page rendered.</summary>
 public class SettingsWindowTests
 {
-    private static RawInputModifiers Command => OperatingSystem.IsMacOS() ? RawInputModifiers.Meta : RawInputModifiers.Control;
+    private static RawInputModifiers Command => Chrome.CommandModifier == KeyModifiers.Meta ? RawInputModifiers.Meta : RawInputModifiers.Control;
 
     private static void Settle()
     {
@@ -28,10 +28,16 @@ public class SettingsWindowTests
         }
     }
 
-    private static MainWindow Show(ShellFixture f, string palette = "Sand")
+    private static Window Show(ShellFixture f, string palette = "Sand")
     {
         Application.Current!.RequestedThemeVariant = palette == "Ember" ? ThemeVariant.Dark : ThemeVariant.Light;
-        var window = new MainWindow(f.Shell) { Width = 1100, Height = 720 };
+        var window = new Window
+        {
+            Width = 1100,
+            Height = 720,
+            Content = new MainView(),
+            DataContext = f.Shell,
+        };
         window.Show();
         Settle();
         return window;
@@ -161,36 +167,6 @@ public class SettingsWindowTests
         Press(window, Key.Escape);
         Assert.False(f.Shell.IsSettingsOpen);
         window.Close();
-    }
-
-    [AvaloniaFact]
-    public void The_file_menu_and_the_application_menu_open_settings()
-    {
-        using var f = new ShellFixture();
-        var window = new MainWindow(f.Shell);
-        List<NativeMenuItem> Items(NativeMenu? menu) =>
-            menu?.Items.OfType<NativeMenuItem>().SelectMany(i => Items(i.Menu).Prepend(i)).ToList() ?? [];
-        var items = Items(NativeMenu.GetMenu(window));
-        void Click(string header)
-        {
-            var item = items.Single(i => i.Header == header);
-            item.Command!.Execute(item.CommandParameter);
-        }
-
-        Click("Import Feeds…");
-        Assert.Equal(SettingsSection.ImportFeeds, f.Shell.SettingsMode?.Section);
-        Click("Export Feeds…");
-        Assert.Equal(SettingsSection.ExportFeeds, f.Shell.SettingsMode?.Section);
-        Click("Add Feed…");
-        Assert.Equal(SettingsSection.AddFeed, f.Shell.SettingsMode?.Section);
-        f.Shell.CloseSettings();
-
-        MainWindow.AddSettingsItem(Application.Current!, f.Shell);
-        MainWindow.AddSettingsItem(Application.Current!, f.Shell);
-        var settings = Assert.Single(Items(NativeMenu.GetMenu(Application.Current!)), i => i.Header == MainWindow.SettingsItemHeader);
-        Assert.Equal(new KeyGesture(Key.OemComma, KeyModifiers.Meta), settings.Gesture);
-        settings.Command!.Execute(null);
-        Assert.Equal(SettingsSection.Reading, f.Shell.SettingsMode?.Section);
     }
 
     [AvaloniaFact]

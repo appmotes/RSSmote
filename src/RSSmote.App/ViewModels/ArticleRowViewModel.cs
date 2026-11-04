@@ -59,7 +59,10 @@ public sealed partial class ArticleRowViewModel : ObservableObject
     public bool ClaimImageRequest()
     {
         if (_imagesRequested)
+        {
             return false;
+        }
+
         _imagesRequested = true;
         return true;
     }

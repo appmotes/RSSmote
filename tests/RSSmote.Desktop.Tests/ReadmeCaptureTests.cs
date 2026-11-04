@@ -10,7 +10,7 @@ using Microsoft.Data.Sqlite;
 using RSSmote.App.Services;
 using RSSmote.App.Theming;
 using RSSmote.App.ViewModels;
-using RSSmote.Desktop.Views;
+using RSSmote.App.Views.Desktop;
 using RSSmote.Core.Discovery;
 using RSSmote.Core.Models;
 using RSSmote.Core.Parsing;
@@ -33,7 +33,10 @@ public class ReadmeCaptureTests
     {
         var output = Environment.GetEnvironmentVariable("RSSMOTE_README_DIR");
         if (string.IsNullOrEmpty(output))
+        {
             return;
+        }
+
         Directory.CreateDirectory(output);
 
         var folder = Path.Combine(Path.GetTempPath(), "rssmote-readme-" + Guid.NewGuid().ToString("N"));
@@ -54,7 +57,13 @@ public class ReadmeCaptureTests
             using var shell = new ShellViewModel(store, settings, refresher: null, new FeedFinder(http), new ShellFixture.FakeFiles(),
                 new DemoImages(), new ShellFixture.RecordingLauncher(), new AvaloniaUiDispatcher(), TimeProvider.System);
 
-            var window = new Window { Width = Width, Height = Height, Content = new ShellView(), DataContext = shell };
+            var window = new Window
+            {
+                Width = Width,
+                Height = Height,
+                Content = new ShellView(),
+                DataContext = shell,
+            };
             window.Show();
 
             void Use(string id) => Application.Current!.RequestedThemeVariant = ThemeCatalogue.All.Single(t => t.Id == id).Variant;

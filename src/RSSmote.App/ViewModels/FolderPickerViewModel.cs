@@ -2,7 +2,7 @@ using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using RSSmote.Core.Models;
-using RSSmote.Data;
+using RSSmote.Core.Library;
 
 namespace RSSmote.App.ViewModels;
 
@@ -20,9 +20,9 @@ public sealed partial class FolderChoiceViewModel(Folder folder) : ObservableObj
 /// </summary>
 public sealed partial class FolderPickerViewModel : ObservableObject
 {
-    private readonly Store _store;
+    private readonly ILibrary _store;
 
-    public FolderPickerViewModel(Store store, long? folderId)
+    public FolderPickerViewModel(ILibrary store, long? folderId)
     {
         _store = store;
         Selected = folderId is { } id ? store.Folders().FirstOrDefault(f => f.Id == id) : null;
@@ -42,7 +42,12 @@ public sealed partial class FolderPickerViewModel : ObservableObject
     {
         Folders.Clear();
         foreach (var folder in _store.Folders().OrderBy(f => f.Title, StringComparer.CurrentCultureIgnoreCase))
-            Folders.Add(new FolderChoiceViewModel(folder) { IsOn = folder.Id == Selected?.Id });
+        {
+            Folders.Add(new FolderChoiceViewModel(folder)
+            {
+                IsOn = folder.Id == Selected?.Id,
+            });
+        }
     }
 
     [RelayCommand]
@@ -50,7 +55,9 @@ public sealed partial class FolderPickerViewModel : ObservableObject
     {
         Selected = Selected?.Id == choice.Folder.Id ? null : choice.Folder;
         foreach (var row in Folders)
+        {
             row.IsOn = row.Folder.Id == Selected?.Id;
+        }
     }
 
     /// <summary>No folder: the "None" chip.</summary>
@@ -59,16 +66,18 @@ public sealed partial class FolderPickerViewModel : ObservableObject
     {
         Selected = null;
         foreach (var row in Folders)
+        {
             row.IsOn = false;
+        }
     }
 
     private bool CanAddFolder() => !string.IsNullOrWhiteSpace(NewFolderName);
 
     [RelayCommand(CanExecute = nameof(CanAddFolder))]
-    private void AddFolder()
+    private async Task AddFolder()
     {
         var name = NewFolderName.Trim();
-        Selected = _store.FolderNamed(name) ?? _store.AddFolder(name);
+        Selected = _store.FolderNamed(name) ?? await _store.AddFolderAsync(name);
         NewFolderName = "";
         Reload();
     }

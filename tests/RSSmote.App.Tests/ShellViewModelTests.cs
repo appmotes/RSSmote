@@ -181,6 +181,34 @@ public sealed class ShellViewModelTests : IDisposable
     }
 
     [Fact]
+    public void A_read_article_picked_under_all_leaves_the_list_when_the_reader_picks_unread_or_starred()
+    {
+        _f.Shell.ShowFilterCommand.Execute(StreamFilter.All);
+        _f.Shell.List.SelectedRow = _f.Shell.List.Articles.Single(a => a.Item.Title == "Already read");
+
+        _f.Shell.ShowFilterCommand.Execute(StreamFilter.Unread);
+        Assert.DoesNotContain(_f.Shell.List.Articles, a => a.Item.Title == "Already read");
+        Assert.Null(_f.Shell.Article.Item);
+
+        _f.Shell.ShowFilterCommand.Execute(StreamFilter.All);
+        _f.Shell.List.SelectedRow = _f.Shell.List.Articles.Single(a => a.Item.Title == "Already read");
+        _f.Shell.ShowFilterCommand.Execute(StreamFilter.Starred);
+        Assert.True(_f.Shell.List.IsEmpty);
+    }
+
+    [Fact]
+    public void An_article_read_under_unread_stays_listed()
+    {
+        var row = _f.Shell.List.Articles.First();
+        _f.Shell.List.SelectedRow = row;
+        _f.Shell.FlushPendingReload();
+        _f.Shell.List.Reload(keepSelection: true);
+
+        Assert.False(row.IsUnread);
+        Assert.Contains(row, _f.Shell.List.Articles);
+    }
+
+    [Fact]
     public void A_collapsed_section_hides_its_rows_and_selecting_it_does_not_change_the_stream()
     {
         var section = _f.Row("Feeds");

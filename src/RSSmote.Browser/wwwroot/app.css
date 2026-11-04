@@ -1,0 +1,37 @@
+/* The splash shows until Avalonia draws; its colours are Sand's and Ember's sidebar and ink. */
+html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: #E9E4DA;
+    color: #24201B;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+@media (prefers-color-scheme: dark) {
+    html, body {
+        background: #131211;
+        color: #EEE9E2;
+    }
+}
+
+#out {
+    position: fixed;
+    inset: 0;
+}
+
+.splash {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+}
+
+.splash .name {
+    font-size: 16px;
+    font-weight: 600;
+}

@@ -1,0 +1,46 @@
+<ContentPage xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:RSSmote.App.ViewModels"
+             xmlns:v="using:RSSmote.App.Views.Phone"
+             x:Class="RSSmote.App.Views.Phone.Pages.TextSheet"
+             x:DataType="vm:SettingsViewModel"
+             AutomaticallyApplySafeAreaPadding="False"
+             Background="Transparent"
+             NavigationPage.HasNavigationBar="False">
+    <!-- Aa (D26, D31): which pane and its size. No scrim, so the page above shows the size as it changes; a tap on it
+         closes the sheet. -->
+    <ContentPage.Resources>
+        <DataTemplate x:Key="Segment" x:DataType="vm:ChoiceViewModel">
+            <Button Classes="phoneSegment" Classes.on="{Binding IsChecked}" Content="{Binding Header}"
+                    Command="{Binding Command}" CommandParameter="{Binding Key}" />
+        </DataTemplate>
+    </ContentPage.Resources>
+    <Panel>
+        <Button Classes="phoneScrim" Click="OnScrimClick" />
+        <Border x:Name="Sheet" Classes="phoneSheet"
+                Padding="{Binding $parent[ContentPage].SafeAreaPadding, Converter={x:Static v:PhoneConverters.BottomInset}}">
+            <StackPanel Margin="20,20,20,16">
+                <Grid ColumnDefinitions="*,Auto">
+                    <TextBlock Classes="phonePageTitle" Text="Text" />
+                    <TextBlock Grid.Column="1" Classes="phoneValue" Text="{Binding PaneSizeText}" />
+                </Grid>
+                <Border Classes="phoneSegments">
+                    <ItemsControl ItemsSource="{Binding Panes}" ItemTemplate="{StaticResource Segment}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <UniformGrid Rows="1" />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                    </ItemsControl>
+                </Border>
+                <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="6" Margin="0,10,0,0">
+                    <Button Classes="textStep" Content="A" FontSize="14" MinWidth="44" MinHeight="44" ToolTip.Tip="Smaller text"
+                            Command="{Binding SmallerCommand}" CommandParameter="{Binding SelectedPane}" />
+                    <Slider Grid.Column="1" Classes="textSize" Maximum="{Binding MaxTextStep}" Value="{Binding PaneStep}" />
+                    <Button Grid.Column="2" Classes="textStep" Content="A" FontSize="22" MinWidth="44" MinHeight="44" ToolTip.Tip="Larger text"
+                            Command="{Binding LargerCommand}" CommandParameter="{Binding SelectedPane}" />
+                </Grid>
+            </StackPanel>
+        </Border>
+    </Panel>
+</ContentPage>

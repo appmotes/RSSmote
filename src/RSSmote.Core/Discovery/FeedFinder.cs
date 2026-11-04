@@ -20,11 +20,17 @@ public sealed class FeedException(FeedError error, string message, HttpStatusCod
     public HttpStatusCode? Status { get; } = status;
 }
 
+/// <summary>Finds the feeds an address offers; never empty (throws <see cref="FeedException"/> instead).</summary>
+public interface IFeedFinder
+{
+    Task<IReadOnlyList<FoundFeed>> FindAllAsync(string input, CancellationToken ct = default);
+}
+
 /// <summary>
 /// Turns what the user typed into feeds (A10): the address itself if it is a feed, otherwise every
 /// <c>&lt;link rel="alternate"&gt;</c> it advertises, otherwise the first common feed path that answers.
 /// </summary>
-public sealed partial class FeedFinder(HttpClient http)
+public sealed partial class FeedFinder(HttpClient http) : IFeedFinder
 {
     private static readonly string[] FeedTypes =
         ["application/rss+xml", "application/atom+xml", "application/feed+json", "application/json", "text/xml", "application/xml"];
@@ -42,13 +48,23 @@ public sealed partial class FeedFinder(HttpClient http)
     {
         var s = input.Trim();
         if (s.StartsWith("feed:https:", StringComparison.OrdinalIgnoreCase) || s.StartsWith("feed:http:", StringComparison.OrdinalIgnoreCase))
+        {
             s = s[5..];
+        }
         else if (s.StartsWith("feed://", StringComparison.OrdinalIgnoreCase))
+        {
             s = "https://" + s[7..];
+        }
         else if (s.StartsWith("feeds://", StringComparison.OrdinalIgnoreCase))
+        {
             s = "https://" + s[8..];
+        }
+
         if (!s.Contains("://", StringComparison.Ordinal))
+        {
             s = "https://" + s;
+        }
+
         return Uri.TryCreate(s, UriKind.Absolute, out var uri) && uri.Scheme is "http" or "https" && uri.Host.Length > 0 ? uri : null;
     }
 
@@ -59,13 +75,17 @@ public sealed partial class FeedFinder(HttpClient http)
         {
             var attrs = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
             foreach (Match a in Attribute().Matches(tag.Value))
+            {
                 attrs[a.Groups[1].Value] = a.Groups[2].Success ? a.Groups[2].Value : a.Groups[3].Success ? a.Groups[3].Value : a.Groups[4].Value;
+            }
 
             if (attrs.TryGetValue("rel", out var rel) && rel.Contains("alternate", StringComparison.OrdinalIgnoreCase)
                 && attrs.TryGetValue("type", out var type) && FeedTypes.Contains(type.ToLowerInvariant())
                 && attrs.TryGetValue("href", out var href)
                 && Uri.TryCreate(baseUri, HtmlContent.DecodeEntities(href), out var url))
+            {
                 result.Add(url);
+            }
         }
         return result;
     }
@@ -79,14 +99,18 @@ public sealed partial class FeedFinder(HttpClient http)
         var url = Normalize(input) ?? throw new FeedException(FeedError.InvalidUrl, "The address is not a valid URL.");
         var (data, finalUrl) = await GetAsync(url, ct).ConfigureAwait(false);
         if (FeedParser.Parse(data, finalUrl) is { } direct)
+        {
             return [new FoundFeed(finalUrl, direct)];
+        }
 
         var html = Encoding.UTF8.GetString(data);
         var results = new List<FoundFeed>();
         foreach (var candidate in AlternateLinks(html, finalUrl).DistinctBy(u => u.AbsoluteUri))
         {
             if (await TryFeedAsync(candidate, ct).ConfigureAwait(false) is { } found)
+            {
                 results.Add(found);
+            }
         }
         if (results.Count == 0)
         {
@@ -120,7 +144,10 @@ public sealed partial class FeedFinder(HttpClient http)
     {
         using var response = await http.GetAsync(url, ct).ConfigureAwait(false);
         if (!response.IsSuccessStatusCode)
+        {
             throw new FeedException(FeedError.Http, $"The server responded with HTTP {(int)response.StatusCode}.", response.StatusCode);
+        }
+
         var data = await response.Content.ReadAsByteArrayAsync(ct).ConfigureAwait(false);
         return (data, response.RequestMessage?.RequestUri ?? url);
     }

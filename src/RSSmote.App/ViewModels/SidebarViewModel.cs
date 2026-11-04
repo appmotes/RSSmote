@@ -5,7 +5,7 @@ using RSSmote.App.Controls.Templates;
 using RSSmote.App.Formatting;
 using RSSmote.App.Services;
 using RSSmote.Core.Models;
-using RSSmote.Data;
+using RSSmote.Core.Library;
 
 namespace RSSmote.App.ViewModels;
 
@@ -31,15 +31,15 @@ public sealed partial class SidebarViewModel : ObservableObject
     public const string FoldersSection = "Folders";
     public const string FeedsSection = "Feeds";
 
-    private readonly Store _store;
-    private readonly SettingsStore _settings;
+    private readonly ILibrary _store;
+    private readonly ISettingsStore _settings;
     private readonly IImageLoader _images;
     private readonly IUiDispatcher _ui;
     private readonly Dictionary<long, Bitmap?> _favicons = new();
     private bool _reloading;
     private string _refreshText = "";
 
-    public SidebarViewModel(Store store, SettingsStore settings, IImageLoader images, IUiDispatcher ui,
+    public SidebarViewModel(ILibrary store, ISettingsStore settings, IImageLoader images, IUiDispatcher ui,
                             SidebarLayout layout = SidebarLayout.Desktop)
     {
         _store = store;
@@ -61,7 +61,10 @@ public sealed partial class SidebarViewModel : ObservableObject
         set
         {
             if (_layout == value)
+            {
                 return;
+            }
+
             _layout = value;
             Reload();
         }
@@ -157,7 +160,9 @@ public sealed partial class SidebarViewModel : ObservableObject
         var index = candidates.FindIndex(r => r.Stream == SelectedStream);
         var next = index < 0 ? 0 : index + delta;
         if (next >= 0 && next < candidates.Count && candidates[next].Stream is { } stream && stream != SelectedStream)
+        {
             Select(stream);
+        }
     }
 
     /// <summary>
@@ -197,7 +202,10 @@ public sealed partial class SidebarViewModel : ObservableObject
             var selectedInside = !phone && (IsSelected(new ArticleStream.InFolder(folder.Id))
                                             || inFolder.Any(f => IsSelected(new ArticleStream.OfFeed(f.Id))));
             if (showable is not null && visible.Count == 0 && !selectedInside)
+            {
                 continue;
+            }
+
             var expanded = expandedFolders.Contains(folder.Id);
             folderRows.Add(new SidebarRowViewModel(SidebarRowKind.Folder, folder.Title, new ArticleStream.InFolder(folder.Id))
             {
@@ -207,7 +215,9 @@ public sealed partial class SidebarViewModel : ObservableObject
                 IsExpandable = visible.Count > 0,
             });
             if (expanded)
+            {
                 folderRows.AddRange(visible.Select(f => FeedRow(f, CountOf(f))));
+            }
         }
         AddSection(rows, FoldersSection, folderRows, collapsedSections);
 
@@ -241,7 +251,9 @@ public sealed partial class SidebarViewModel : ObservableObject
             {
                 Rows.Clear();
                 foreach (var row in rows)
+                {
                     Rows.Add(row);
+                }
             }
             if (phone)
             {
@@ -260,7 +272,9 @@ public sealed partial class SidebarViewModel : ObservableObject
             _reloading = false;
         }
         if (SelectedStream != previous)
+        {
             StreamSelected?.Invoke(this, SelectedStream);
+        }
     }
 
     /// <summary>The row that stands for <paramref name="stream"/>: of the three stream rows, the one named by the filter.</summary>
@@ -272,7 +286,11 @@ public sealed partial class SidebarViewModel : ObservableObject
         && a.Feed == b.Feed && a.IsFaviconGrayscale == b.IsFaviconGrayscale;
 
     private static SidebarRowViewModel SmartRow(StreamFilter filter, int count) =>
-        new(SidebarRowKind.Smart, ItemFormatting.FilterTitle(filter), new ArticleStream.All()) { Count = count, Filter = filter };
+        new(SidebarRowKind.Smart, ItemFormatting.FilterTitle(filter), new ArticleStream.All())
+        {
+            Count = count,
+            Filter = filter,
+        };
 
     private static ArticleStream? ParentOf(ArticleStream stream, IReadOnlyList<Feed> feeds) =>
         stream is ArticleStream.OfFeed f && feeds.FirstOrDefault(x => x.Id == f.FeedId)?.FolderId is { } folderId
@@ -282,11 +300,20 @@ public sealed partial class SidebarViewModel : ObservableObject
     private static void AddSection(List<SidebarRowViewModel> rows, string key, List<SidebarRowViewModel> children, HashSet<string> collapsed)
     {
         if (children.Count == 0)
+        {
             return;
+        }
+
         var expanded = !collapsed.Contains(key);
-        rows.Add(new SidebarRowViewModel(SidebarRowKind.Section, key) { SectionKey = key, IsExpanded = expanded });
+        rows.Add(new SidebarRowViewModel(SidebarRowKind.Section, key)
+        {
+            SectionKey = key,
+            IsExpanded = expanded,
+        });
         if (expanded)
+        {
             rows.AddRange(children);
+        }
     }
 
     private SidebarRowViewModel FeedRow(Feed feed, int count)
@@ -299,9 +326,14 @@ public sealed partial class SidebarViewModel : ObservableObject
             HasError = feed.LastError is not null,
         };
         if (_favicons.TryGetValue(feed.Id, out var cached))
+        {
             row.Favicon = cached;
+        }
         else if (_settings.Current.DisplayFavicons && Favicons.Url(feed) is { } url)
+        {
             _ = LoadFaviconAsync(feed.Id, url);
+        }
+
         return row;
     }
 
@@ -313,7 +345,9 @@ public sealed partial class SidebarViewModel : ObservableObject
         {
             _favicons[feedId] = bitmap;
             foreach (var row in Rows.Where(r => r.Feed?.Id == feedId))
+            {
                 row.Favicon = bitmap;
+            }
         });
     }
 
@@ -321,7 +355,10 @@ public sealed partial class SidebarViewModel : ObservableObject
     public void ReloadFavicon(Feed feed)
     {
         if (Favicons.Url(feed) is not { } url)
+        {
             return;
+        }
+
         _images.Forget(url);
         _favicons.Remove(feed.Id);
         _ = LoadFaviconAsync(feed.Id, url);

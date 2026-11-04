@@ -4,8 +4,8 @@
 
 [English](README.md) · **Dansk**
 
-En RSS-læser til macOS, Windows og Linux og til iPhone og Android. Tre kolonner på skrivebordet, tastaturet i centrum
-og alt gemt lokalt.
+En RSS-læser, du selv hoster og læser i browseren: på skrivebordet, tabletten og telefonen. Tre kolonner på en bred
+skærm, én stak på en telefon, tastaturet i centrum og ét bibliotek på din egen server, som alle enheder deler.
 
 **Denne app er skrevet af en maskinintelligens.** Al kode, alle kommentarer, designet, de ti farvetemaer,
 app-ikonet, testene, dokumentationen og denne README er lavet af Claude Opus 5.5 (Anthropic, med *reasoning effort*
@@ -15,10 +15,11 @@ sat til high) efter beskrivelse fra et menneske. Intet menneske har gennemgået 
 ![RSSmote med en artikel åben, lyst tema](Docs/images/reading-light.png)
 
 Til venstre er dine feeds, samlet i mapper. I midten er artiklerne, grupperet efter dag. Til højre er den artikel,
-du læser. Der er ingen konto, ingen synkronisering og ingen sky: dine feeds og artikler ligger i én SQLite-fil på din
-egen maskine.
+du læser. En lille server gemmer dine feeds og artikler i én SQLite-fil, opdaterer dem og serverer appen til din
+browser. Der er én nøgle og ingen konti: den, der har nøglen, læser biblioteket fra så mange enheder, de vil, og det,
+der er læst på én, er læst på dem alle.
 
-Bygget i .NET 10 og [Avalonia](https://avaloniaui.net) 12. Kun gratis komponenter med MIT- eller lignende licenser;
+Bygget i .NET 10, ASP.NET Core og [Avalonia](https://avaloniaui.net) 12, som kører i browseren som WebAssembly. Kun gratis komponenter med MIT- eller lignende licenser;
 se [Docs/dependencies.md](Docs/dependencies.md).
 
 ## Hvad den kan
@@ -28,11 +29,12 @@ se [Docs/dependencies.md](Docs/dependencies.md).
 - **RSS 2.0, Atom, RDF og JSON Feed.** Feeds med ugyldig XML (fx `&nbsp;` midt i en titel) læses alligevel.
 - **Mapper**, der kan foldes ind og ud, med antal ulæste på hver mappe og hvert feed.
 - **Filtre**: Starred, Unread og All, plus et filterfelt over listen, der søger i titler, resuméer og feednavne.
-- **Artikler i OS'ets egen web-motor** (WebKit på macOS, WebView2 på Windows, WebKitGTK på Linux) med appens egen
-  typografi. Scripts, formularer og indlejrede styles fjernes, før siden vises. Hvor der ingen web-motor er, viser en
-  indbygget HTML-renderer den samme side.
+- **Artikler i browserens egen motor** med appens egen typografi. Scripts, formularer og indlejrede styles fjernes,
+  før siden vises.
+- **Ét bibliotek, alle enheder.** Læst, stjernemarkeret, mapper og feeds følger dig fra skrivebordet til telefonen med
+  det samme; hver enhed beholder sit eget tema og sine egne tekststørrelser.
 - **Import og eksport af OPML**, så du kan flytte dine feeds ind og ud.
-- **Opdatering** hver halve time i baggrunden og med `r`, når du vil. Læste, ikke-stjernemarkerede artikler ryddes
+- **Opdatering** hver halve time på serveren, også når ingen enhed er åben, og med `r`, når du vil. Læste, ikke-stjernemarkerede artikler ryddes
   efter 30 dage.
 - **Ti farvetemaer**, fem lyse og fem mørke. Se [Temaer](#temaer).
 
@@ -53,7 +55,7 @@ Hele appen kan styres uden mus. Tasterne virker ikke, mens du skriver i et felt.
 | `r` | Opdatér alle feeds |
 | `a` | Markér alt i listen som læst |
 | `.` eller `esc` | Luk artiklen |
-| `⌘1` `⌘2` `⌘3` | Starred / Unread / All (`Ctrl` på Windows og Linux) |
+| `⌘1` `⌘2` `⌘3` | Starred / Unread / All (`Ctrl` i stedet for `⌘` uden for en Mac) |
 | `⌘F` | Gå til filterfeltet; `esc` rydder det |
 | `⌘,` | Indstillinger: tilføj, ret og fjern feeds, import, eksport, udseende; `esc` går tilbage |
 | `⌘N` | Tilføj feed (i Indstillinger) |
@@ -74,12 +76,13 @@ Uden en artikel valgt viser højre side de vigtigste genveje:
 
 Alle skærmbilleder er taget af appen selv, uden skærm, over et opdigtet demo-bibliotek: feeds, artikler, favicons og
 billeder er lavet til formålet (se `ReadmeCaptureTests.cs` i `tests/RSSmote.Desktop.Tests` og
-`tests/RSSmote.Mobile.Tests`).
+`tests/RSSmote.Mobile.Tests`). De er tegnet med den indbyggede HTML-renderer, så en artikel ser lidt anderledes ud end i
+browseren.
 
 ## På mobilen
 
-RSSmote kører også på iPhone og Android, bygget af den samme kode som skrivebordsappen: samme bibliotek, samme
-indstillinger og samme ti temaer. Billederne herunder viser iPhone.
+Åbn samme adresse på telefonen. Under 900 pixels bredde er RSSmote én stak i stedet for tre kolonner, og et
+skrivebordsvindue, der gøres så smalt, bliver det samme. Billederne herunder viser et vindue i iPhone-størrelse.
 
 | | | | |
 | --- | --- | --- | --- |
@@ -93,19 +96,16 @@ indstillinger og samme ti temaer. Billederne herunder viser iPhone.
   systemets tekststørrelse.
 - **Feeds** tilføjes, rettes, fjernes, importeres og eksporteres under Indstillinger, som på skrivebordet. Fjern
   spørger i et ark nedefra.
-- **Opdatering:** træk ned på Feeds, eller kom tilbage til appen, når opdateringsintervallet er gået.
-- **Ingen synkronisering.** Telefonen har sit eget bibliotek. Flyt dine feeds mellem enheder med OPML-eksport og
-  -import.
+- **Opdatering:** serveren opdaterer selv; træk ned på Feeds for at opdatere nu.
+- **Det samme bibliotek** som på skrivebordet: det, du læser på telefonen, er læst alle steder.
 
-Artiklerne vises i telefonens egen web-motor (WebKit på iOS, systemets WebView på Android) med billeder og video.
-Skærmbillederne er tegnet uden skærm i iPhone 17 Pro-størrelse (402 × 874 pt) med den indbyggede HTML-renderer, så de
-har ingen statuslinje.
+Skærmbillederne er tegnet uden skærm i iPhone 17 Pro-størrelse (402 × 874 pt), så de har ingen statuslinje.
 
 ## Temaer
 
-Du vælger ét lyst og ét mørkt tema under **View ▸ Theme**. Vælger du et tema, skifter appen til det med det samme.
-Under **Appearance** kan du sætte den til at følge systemet; så skifter den selv mellem dit lyse og dit mørke tema,
-når macOS, Windows eller Linux går fra lyst til mørkt.
+Du vælger ét lyst og ét mørkt tema i menuen (**Theme**) eller under Indstillinger ▸ Appearance. Vælger du et tema,
+skifter appen til det med det samme. Du kan sætte den til at følge systemet; så skifter den selv mellem dit lyse og dit
+mørke tema, når enheden går fra lyst til mørkt. Hver enhed beholder sit eget valg.
 
 | Lyse | Mørke |
 | --- | --- |
@@ -117,93 +117,74 @@ når macOS, Windows eller Linux går fra lyst til mørkt.
 
 Hvert tema er kun en palet: størrelser, skrift og afstande er de samme overalt. Alle ti skal klare de samme
 kontrastkrav (WCAG 2) for tekst, links og knapper, og en test måler dem direkte i temafilerne. Skriften er
-[Inter](https://rsms.me/inter/) på alle tre styresystemer, og ikonerne er [Lucide](https://lucide.dev).
+[Inter](https://rsms.me/inter/) i alle browsere, og ikonerne er [Lucide](https://lucide.dev).
 
-## Byg og kør
+## Kør den
 
-Kræver [.NET 10 SDK](https://dotnet.microsoft.com/download).
+Kræver [.NET 10 SDK](https://dotnet.microsoft.com/download). Vælg en nøgle på mindst 12 tegn: det er det eneste, der
+logger en enhed ind.
+
+**På denne maskine:**
 
 ```bash
-dotnet build RSSmote.slnx
+RSSMOTE_KEY='en lang nøgle af din egen' build/run-local.sh
+```
+
+Åbn <http://localhost:5000> og indtast nøglen. Med `--lan` lytter serveren på alle adresser, så en telefon på samme
+netværk kan åbne `http://<denne maskine>:5000`.
+
+**På en server**, med Docker:
+
+```bash
+docker build -t rssmote .
 ```
 
 ```bash
-dotnet run --project src/RSSmote.Desktop
+docker run -d -p 8080:8080 -e RSSMOTE_KEY='en lang nøgle af din egen' -v rssmote:/data rssmote
 ```
 
-Kør testene:
+Eller uden Docker: `build/publish.sh` skriver serveren med appen ved siden af til `artifacts/server`
+(`build/publish.sh linux-x64` har sin egen .NET-runtime med). Kør den med `RSSMOTE_KEY` sat.
+
+Sæt den bag en reverse proxy med HTTPS (Caddy, nginx, Traefik), før den kan nås fra internettet, og sæt
+`ASPNETCORE_FORWARDEDHEADERS_ENABLED=true`, så serveren ser læserens adresse. Login-forsøg er begrænset til fem i
+minuttet pr. adresse. En ny nøgle logger alle enheder ud.
+
+**Tests:**
 
 ```bash
 dotnet test RSSmote.slnx
 ```
 
 Testene starter den rigtige app uden skærm (Avalonias headless-platform) og tegner den med Skia, så de også fanger
-fejl i layout, temaer og kontrast.
-
-### Pakker
-
-`build/` laver en pakke pr. styresystem og arkitektur i `artifacts/packages/`, hver med sin egen .NET-runtime:
-
-```bash
-build/package-macos.sh
-```
-
-```bash
-build/package-windows.sh
-```
-
-```bash
-build/package-linux.sh
-```
-
-macOS-scriptet kræver en Mac; de to andre kører på macOS eller Linux. Ingen af pakkerne er signeret af en kendt
-udvikler, så første start spørger:
-
-- **macOS** (14 eller nyere): pak ud, flyt `RSSmote.app` til Programmer, højreklik den og vælg Åbn. Eller fjern
-  download-mærket med `xattr -dr com.apple.quarantine /Applications/RSSmote.app`.
-- **Windows:** pak ud og kør `RSSmote\RSSmote.exe`; SmartScreen spørger én gang (Flere oplysninger ▸ Kør alligevel).
-  Artiklerne kræver WebView2-runtimen, som Windows 11 har.
-- **Linux:** pak ud i `/opt` (`sudo tar -xzf RSSmote-…-linux-x64.tar.gz -C /opt`) og kopiér
-  `/opt/RSSmote/rssmote.desktop` til `~/.local/share/applications/`. Pakker du ud et andet sted, så ret de to stier i
-  filen.
-
-**iPhone og Android:** mobilapperne ligger i `RSSmote.Mobile.slnx` og kræver workloaden `ios` eller `android`
-(`dotnet workload install ios android`). iOS kræver også den Xcode-version, workloaden nævner; Android kræver API
-36-platformen og JDK 17 eller nyere. `RSSmote.slnx` bygger uden noget af det.
-
-```bash
-dotnet build src/RSSmote.iOS/RSSmote.iOS.csproj -r iossimulator-arm64
-```
-
-```bash
-dotnet build src/RSSmote.Android/RSSmote.Android.csproj
-```
-
-**Linux:** artiklerne vises i WebKitGTK 4.1 med libsoup 3. Mangler de, bruger appen den indbyggede HTML-renderer i
-stedet, som ikke kan vise video.
+fejl i layout, temaer og kontrast. Serverens tests kører den i processen og lader to enheder synkronisere gennem den.
 
 ### Hvor dine data ligger
 
-Biblioteket hedder `rssmote.sqlite` og indstillingerne `settings.json`. De ligger side om side:
+På serveren: biblioteket hedder `rssmote.sqlite`, bibliotekets indstillinger `settings.json`, og login-nøglerne ligger
+i `keys/`, side om side:
 
 | System | Mappe |
 | --- | --- |
+| Docker | volumen `/data` |
 | macOS | `~/Library/Application Support/com.ahrentlov.rssmote/` |
 | Windows | `%LOCALAPPDATA%\RSSmote\` |
 | Linux | `$XDG_DATA_HOME/rssmote/` (ellers `~/.local/share/rssmote/`) |
-| iOS | `<app-container>/Library/Application Support/` |
-| Android | Appens private filmappe (`/data/user/0/com.ahrentlov.rssmote/files/`) |
 
-Sæt miljøvariablen `RSSMOTE_DATA_DIR` for at bruge en anden mappe, fx til et testbibliotek.
+Sæt `RSSMOTE_DATA_DIR` for at bruge en anden mappe. Et bibliotek fra den tidligere skrivebordsapp kan kopieres ind,
+som det er. Hver enhed gemmer sit tema og sine tekststørrelser i browserens eget lager.
 
 ## Hvad appen henter fra nettet
+
+Serveren henter:
 
 - **Dine feeds** fra de adresser, du har tilføjet.
 - **Favicons** gennem Googles favicon-tjeneste (`google.com/s2/favicons`), med sitets domæne som parameter. Google kan
   altså se, hvilke domæner du følger, men ikke hvad du læser.
-- **Billeder i artiklerne**, når du åbner dem, fra de servere, artiklen peger på.
+- **Miniaturer** i listen, på browserens vegne.
 
-Der er ingen analytics, ingen sporing og ingen konto. Links åbnes i din browser, ikke i appen.
+Browseren henter **billeder i artiklerne**, når du åbner dem, fra de servere, artiklen peger på. Der er ingen
+analytics og ingen sporing. Links åbnes i en ny fane.
 
 ## Dokumentation
 
@@ -221,9 +202,10 @@ Projektet er beskrevet i `Docs/`, med en id på hver regel, så kode og dokument
 ## Ansvarsfraskrivelse
 
 **Skrevet af en maskine.** Hele projektet er genereret af Claude Opus 5.5, en sprogmodel fra Anthropic, med
-*reasoning effort* sat til high. Koden er afprøvet af omkring 240 automatiske tests, der kører appen uden skærm, men
-den er ikke gennemgået linje for linje af et menneske og ikke revideret af nogen med forstand på sikkerhed. Den native
-artikelvisning er endnu ikke afprøvet af hånd på Windows og Linux (se [Docs/todo.md](Docs/todo.md)).
+*reasoning effort* sat til high. Koden er afprøvet af omkring 280 automatiske tests, der kører appen uden skærm, men
+den er ikke gennemgået linje for linje af et menneske og ikke revideret af nogen med forstand på sikkerhed. Det betyder
+mere, nu hvor den er en server: hold nøglen lang, og hold serveren bag HTTPS. Den er endnu ikke afprøvet af hånd i alle
+browsere (se [Docs/todo.md](Docs/todo.md)).
 
 **Ingen garanti.** Appen leveres, som den er, uden nogen form for garanti. Brug den på eget ansvar. Hverken
 forfatteren, Anthropic eller nogen anden hæfter for tabte data eller andet, der måtte følge af at bruge den.
@@ -234,9 +216,6 @@ listen.
 
 **Indholdet er andres.** Artiklerne tilhører dem, der har skrevet dem. RSSmote henter feeds, som de er offentliggjort,
 og viser dem til dig; den kopierer ikke noget videre.
-
-**Ikke signeret.** Der er ingen signerede eller notariserede pakker. Bygger du selv, kan macOS og Windows advare første
-gang, appen åbnes.
 
 Appen er lavet til privat brug og er ikke forbundet med noget firma eller produkt.
 

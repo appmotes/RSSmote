@@ -63,7 +63,9 @@ public sealed class SidebarPhoneTests : IDisposable
         f.Shell.List.Rows.CollectionChanged += (_, e) =>
         {
             if (e.Action == System.Collections.Specialized.NotifyCollectionChangedAction.Reset)
+            {
                 builds++;
+            }
         };
 
         f.Shell.Sidebar.SelectedRow = f.Row("Unread");

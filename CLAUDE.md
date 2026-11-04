@@ -1,8 +1,9 @@
 # RSSmote — working notes for Claude
 
-RSSmote is a cross-platform RSS reader (macOS, Windows, Linux) built with .NET 10 and Avalonia 12.
-It is distributed by direct download, possibly with full source, so every dependency must be free and
-permissively licensed (see `Docs/dependencies.md`), and no code may reference other products by name.
+RSSmote is a self-hosted RSS reader: an ASP.NET Core server (.NET 10) that keeps one library behind a single key,
+and an Avalonia 12 app that runs in the browser as WebAssembly, with desktop columns and a phone stack (A22).
+It is distributed as source, so every dependency must be free and permissively licensed (see
+`Docs/dependencies.md`), and no code may reference other products by name.
 
 ## Communication and Coding Do's and Dont's
 - Do not overdo abstractions when a simpler and more readable solution suffice
@@ -88,6 +89,30 @@ than drawing something plausible.
   (`Controls/XmlNamespace.cs`).
 - The product is written **RSSmote**; lowercase `rssmote` only in technical identifiers (data folder
   `com.ahrentlov.rssmote`, `rssmote.sqlite`, `RSSMOTE_*` variables).
+
+## Code layout: braces always, each on its own line
+
+Every body takes braces, a single statement too, and every brace stands on its own line. An object or collection
+initializer of a `new` is split the same way, one member per line with a trailing comma.
+
+```csharp
+if (x is null)
+{
+    return;
+}
+
+var sanitizer = new HtmlSanitizer
+{
+    KeepChildNodes = true,
+};
+```
+
+These stay on one line, as they are not blocks: `{ get; set; }`, property patterns (`is { } item`) and `with`
+expressions (`feed with { Id = id }`).
+
+`.editorconfig` holds the rules and the build checks them (`EnforceCodeStyleInBuild`): a missing brace is IDE0011 and
+a misplaced one IDE0055. No analyzer sees a one-line initializer, so that part is on the writer. `dotnet format
+RSSmote.slnx` fixes braces and layout.
 
 ## Code comments: minimal, English, and no archaeology
 

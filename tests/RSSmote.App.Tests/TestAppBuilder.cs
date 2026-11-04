@@ -14,5 +14,8 @@ public static class TestAppBuilder
         AppBuilder.Configure<RSSmote.App.App>()
             .UseSkia()
             .WithInterFont()
-            .UseHeadless(new AvaloniaHeadlessPlatformOptions { UseHeadlessDrawing = false });
+            .UseHeadless(new AvaloniaHeadlessPlatformOptions
+            {
+                UseHeadlessDrawing = false,
+            });
 }

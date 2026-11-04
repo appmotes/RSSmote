@@ -2,7 +2,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using RSSmote.App.Services;
 using RSSmote.Core.Opml;
-using RSSmote.Data;
+using RSSmote.Core.Library;
 
 namespace RSSmote.App.ViewModels;
 
@@ -16,7 +16,7 @@ public sealed record ImportGroup(string Title, bool IsFolder, int Count)
 /// Import Feeds (D27, D30): a chosen OPML file shows what it would add, folder by folder, and how many of its feeds
 /// are already added; nothing is saved until <see cref="ImportCommand"/>.
 /// </summary>
-public sealed partial class ImportFeedsViewModel(Store store, IFilePicker files, Action imported) : PanelViewModel
+public sealed partial class ImportFeedsViewModel(ILibrary store, IFilePicker files, Action imported) : PanelViewModel
 {
     private IReadOnlyList<OpmlOutline> _new = [];
 
@@ -72,7 +72,9 @@ public sealed partial class ImportFeedsViewModel(Store store, IFilePicker files,
             return;
         }
         if (picked is not null)
+        {
             Preview(picked.Name, OpmlDocument.Parse(picked.Text));
+        }
     }
 
     /// <summary>Shows what <paramref name="outlines"/> would add to the library as it is now.</summary>
@@ -104,16 +106,19 @@ public sealed partial class ImportFeedsViewModel(Store store, IFilePicker files,
     private bool CanImport() => NewCount > 0;
 
     [RelayCommand(CanExecute = nameof(CanImport))]
-    private void Import()
+    private async Task Import()
     {
-        if (store.ImportOpml(_new) > 0)
+        if (await store.ImportOpmlAsync(_new) > 0)
+        {
             imported();
+        }
+
         Close();
     }
 }
 
 /// <summary>Export Feeds (D27): what the OPML file holds, then the system's save or share sheet.</summary>
-public sealed partial class ExportFeedsViewModel(Store store, IFilePicker files) : PanelViewModel
+public sealed partial class ExportFeedsViewModel(ILibrary store, IFilePicker files) : PanelViewModel
 {
     public const string FileName = "RSSmote Feeds.opml";
 

@@ -89,7 +89,9 @@ public sealed class ShellFixture : IDisposable
         public void RunAll()
         {
             while (_queue.TryDequeue(out var action))
+            {
                 action();
+            }
         }
     }
 
@@ -98,7 +100,9 @@ public sealed class ShellFixture : IDisposable
         Store = new Store(Path.Combine(_folder, "rssmote.sqlite"), Clock);
         Settings = new SettingsStore(Path.Combine(_folder, "settings.json"));
         if (settings is not null)
+        {
             Settings.Update(settings);
+        }
 
         Apple = Store.AddFolder("Apple");
         Store.AddFolder("Tech");

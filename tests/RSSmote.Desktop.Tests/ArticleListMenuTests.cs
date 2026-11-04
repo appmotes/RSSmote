@@ -5,7 +5,7 @@ using Avalonia.Headless.XUnit;
 using Avalonia.Input;
 using Avalonia.VisualTree;
 using RSSmote.App.Controls.Templates;
-using RSSmote.Desktop.Views;
+using RSSmote.App.Views.Desktop;
 
 namespace RSSmote.Desktop.Tests;
 
@@ -17,7 +17,13 @@ public class ArticleListMenuTests
     {
         using var f = new ShellFixture();
         var view = new ShellView();
-        var window = new Window { Width = 1045, Height = 660, Content = view, DataContext = f.Shell };
+        var window = new Window
+        {
+            Width = 1045,
+            Height = 660,
+            Content = view,
+            DataContext = f.Shell,
+        };
         window.Show();
         AvaloniaHeadlessPlatform.ForceRenderTimerTick();
 

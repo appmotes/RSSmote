@@ -1,0 +1,26 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:RSSmote.App.ViewModels"
+             x:Class="RSSmote.App.Views.SignInView"
+             x:DataType="vm:SignInViewModel"
+             Background="{DynamicResource Brush.Bg.Sidebar}">
+    <!-- Sign in (A17): the app icon, one key field in the address card of Add Feed, and the primary button. -->
+    <ScrollViewer HorizontalScrollBarVisibility="Disabled">
+        <StackPanel Width="340" Margin="16,0" VerticalAlignment="Center" HorizontalAlignment="Center">
+            <Image Source="avares://RSSmote.App/Assets/AppIcon/AppIcon.png" Width="72" Height="72" />
+            <TextBlock Classes="settingsDialogTitle" Text="RSSmote" Margin="0,14,0,0" />
+            <TextBlock Classes="settingsFootnote" TextAlignment="Center" Margin="0,4,0,18"
+                       Text="Enter the key set on the server." />
+            <Border Classes="settingsAddress">
+                <TextBox x:Name="KeyField" Classes="settingsField" Text="{Binding Key}" PasswordChar="•"
+                         PlaceholderText="Key">
+                    <TextBox.KeyBindings>
+                        <KeyBinding Gesture="Enter" Command="{Binding SignInCommand}" />
+                    </TextBox.KeyBindings>
+                </TextBox>
+            </Border>
+            <TextBlock Classes="settingsFootnote error" Margin="0,8,0,0" Text="{Binding Error}" IsVisible="{Binding HasError}" />
+            <Button Classes="settingsPrimary" Content="Sign In" Command="{Binding SignInCommand}" />
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

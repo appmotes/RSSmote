@@ -22,7 +22,7 @@ public abstract partial class PanelViewModel : ObservableObject, IDisposable
 }
 
 /// <summary>Asks before something that cannot be undone.</summary>
-public sealed partial class ConfirmViewModel(string title, string message, string actionTitle, Action confirm) : PanelViewModel
+public sealed partial class ConfirmViewModel(string title, string message, string actionTitle, Func<Task> confirm) : PanelViewModel
 {
     public string Title { get; } = title;
     public string Message { get; } = message;
@@ -32,9 +32,9 @@ public sealed partial class ConfirmViewModel(string title, string message, strin
     public event EventHandler? Confirmed;
 
     [RelayCommand]
-    private void Confirm()
+    private async Task Confirm()
     {
-        confirm();
+        await confirm();
         Confirmed?.Invoke(this, EventArgs.Empty);
         Close();
     }

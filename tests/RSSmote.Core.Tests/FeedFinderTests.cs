@@ -46,7 +46,10 @@ public class FeedFinderTests
     [Fact]
     public async Task A_feed_address_is_returned_as_is()
     {
-        var found = await Finder(new() { ["https://site.example/rss"] = Rss }).FindAllAsync("site.example/rss", TestContext.Current.CancellationToken);
+        var found = await Finder(new()
+        {
+            ["https://site.example/rss"] = Rss,
+        }).FindAllAsync("site.example/rss", TestContext.Current.CancellationToken);
         Assert.Equal("Site Feed", Assert.Single(found).Feed.Title);
     }
 
@@ -65,7 +68,11 @@ public class FeedFinderTests
     [Fact]
     public async Task Common_paths_are_tried_when_nothing_is_advertised()
     {
-        var pages = new Dictionary<string, string> { ["https://site.example/"] = "<html></html>", ["https://site.example/rss.xml"] = Rss };
+        var pages = new Dictionary<string, string>
+        {
+            ["https://site.example/"] = "<html></html>",
+            ["https://site.example/rss.xml"] = Rss,
+        };
         var found = await Finder(pages).FindAllAsync("https://site.example", TestContext.Current.CancellationToken);
         Assert.Equal("https://site.example/rss.xml", Assert.Single(found).Url.AbsoluteUri);
     }
@@ -74,7 +81,10 @@ public class FeedFinderTests
     public async Task Nothing_found_throws_not_found()
     {
         var error = await Assert.ThrowsAsync<FeedException>(() =>
-            Finder(new() { ["https://site.example/"] = "<html></html>" }).FindAllAsync("site.example", TestContext.Current.CancellationToken));
+            Finder(new()
+            {
+                ["https://site.example/"] = "<html></html>",
+            }).FindAllAsync("site.example", TestContext.Current.CancellationToken));
         Assert.Equal(FeedError.NotFound, error.Error);
     }
 

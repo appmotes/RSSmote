@@ -1,4 +1,5 @@
 using RSSmote.Core.Discovery;
+using RSSmote.Core.Library;
 using RSSmote.Core.Models;
 using RSSmote.Core.Parsing;
 
@@ -12,7 +13,7 @@ public sealed record RefreshSummary(int Feeds, int NewItems, int Failed, int Pru
 /// per-feed errors, marks old unread items read, prunes old items, and repeats on the interval from settings. A refresh requested while one is
 /// running joins the running one. Events are raised on background threads.
 /// </summary>
-public sealed class Refresher : IDisposable
+public sealed class Refresher : IRefresher, IDisposable
 {
     public const int MaxConcurrentFeeds = 6;
 
@@ -44,7 +45,9 @@ public sealed class Refresher : IDisposable
         get
         {
             lock (_gate)
+            {
                 return _running is { IsCompleted: false };
+            }
         }
     }
 
@@ -54,7 +57,10 @@ public sealed class Refresher : IDisposable
     public void Start()
     {
         lock (_gate)
+        {
             _started = true;
+        }
+
         Schedule();
         _ = RefreshAllAsync();
     }
@@ -78,6 +84,8 @@ public sealed class Refresher : IDisposable
 
     public Task<RefreshSummary> RefreshAllAsync() => RefreshAsync(_store.Feeds());
 
+    Task IRefresher.RefreshAllAsync() => RefreshAllAsync();
+
     /// <summary>Refreshes the given feeds, or joins the refresh that is already running.</summary>
     public Task<RefreshSummary> RefreshAsync(IReadOnlyList<Feed> feeds)
     {
@@ -85,7 +93,10 @@ public sealed class Refresher : IDisposable
         lock (_gate)
         {
             if (_running is { IsCompleted: false } running)
+            {
                 return running;
+            }
+
             task = _running = RunAsync(feeds);
         }
         StateChanged?.Invoke(this, EventArgs.Empty);
@@ -110,13 +121,18 @@ public sealed class Refresher : IDisposable
         var newItems = 0;
         var failed = 0;
         var cutoff = RetentionCutoff();
-        await Parallel.ForEachAsync(feeds, new ParallelOptions { MaxDegreeOfParallelism = MaxConcurrentFeeds },
+        await Parallel.ForEachAsync(feeds, new ParallelOptions
+        {
+            MaxDegreeOfParallelism = MaxConcurrentFeeds,
+        },
             async (feed, ct) =>
             {
                 var (added, ok) = await RefreshFeedAsync(feed, cutoff, ct).ConfigureAwait(false);
                 Interlocked.Add(ref newItems, added);
                 if (!ok)
+                {
                     Interlocked.Increment(ref failed);
+                }
             }).ConfigureAwait(false);
 
         MarkOldRead();
@@ -132,16 +148,25 @@ public sealed class Refresher : IDisposable
         try
         {
             if (!Uri.TryCreate(feed.Url, UriKind.Absolute, out var url))
+            {
                 throw new FeedException(FeedError.InvalidUrl, "The address is not a valid URL.");
+            }
+
             var (data, finalUrl) = await _finder.GetAsync(url, ct).ConfigureAwait(false);
             var parsed = FeedParser.Parse(data, finalUrl)
                          ?? throw new FeedException(FeedError.NotFound, "The address no longer returns a feed.");
 
             added = _store.Upsert(feed.Id, parsed.Items, cutoff);
             if ((string.IsNullOrWhiteSpace(feed.Title) || feed.Title == feed.Url) && parsed.Title is { } title)
+            {
                 updated = updated with { Title = title };
+            }
+
             if (feed.SiteUrl is null && parsed.SiteUrl is not null)
+            {
                 updated = updated with { SiteUrl = parsed.SiteUrl };
+            }
+
             updated = updated with { LastError = null };
         }
         catch (Exception e) when (e is FeedException or HttpRequestException or TaskCanceledException or IOException)
@@ -150,7 +175,10 @@ public sealed class Refresher : IDisposable
         }
 
         if (updated != feed)
+        {
             _store.UpdateFeed(updated);
+        }
+
         return (added, updated.LastError is null);
     }
 
@@ -179,7 +207,9 @@ public sealed class Refresher : IDisposable
     {
         Schedule();
         if (Interlocked.Exchange(ref _markReadAfterDays, settings.MarkReadAfterDays) != settings.MarkReadAfterDays)
+        {
             MarkOldRead();
+        }
     }
 
     /// <summary>(Re)creates the periodic timer when the interval changes; 0 minutes means no timer.</summary>
@@ -189,12 +219,18 @@ public sealed class Refresher : IDisposable
         {
             var minutes = _settings.Current.RefreshIntervalMinutes;
             if (!_started || minutes == _scheduledMinutes)
+            {
                 return;
+            }
+
             _timer?.Dispose();
             _timer = null;
             _scheduledMinutes = minutes;
             if (minutes <= 0)
+            {
                 return;
+            }
+
             var period = TimeSpan.FromMinutes(minutes);
             _timer = _clock.CreateTimer(_ => _ = RefreshAllAsync(), null, period, period);
         }

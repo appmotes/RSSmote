@@ -8,7 +8,7 @@ using Avalonia.Threading;
 using RSSmote.App.Services;
 using RSSmote.App.Theming;
 using RSSmote.App.ViewModels;
-using RSSmote.Desktop.Views;
+using RSSmote.App.Views.Desktop;
 using RSSmote.Core.Discovery;
 using RSSmote.Core.Models;
 using RSSmote.Data;
@@ -30,7 +30,10 @@ public class DesignCaptureTests
         var output = Environment.GetEnvironmentVariable("RSSMOTE_CAPTURE_DIR");
         var library = Environment.GetEnvironmentVariable("RSSMOTE_CAPTURE_DB");
         if (string.IsNullOrEmpty(output) || string.IsNullOrEmpty(library))
+        {
             return;
+        }
+
         Directory.CreateDirectory(output);
 
         using var http = FeedFinder.CreateHttpClient();
@@ -46,7 +49,13 @@ public class DesignCaptureTests
         using var shell = new ShellViewModel(store, settings, refresher: null, new FeedFinder(http), new ShellFixture.FakeFiles(),
             new ImageCache(http), new ShellFixture.RecordingLauncher(), new AvaloniaUiDispatcher(), TimeProvider.System);
 
-        var window = new Window { Width = Width, Height = Height, Content = new ShellView(), DataContext = shell };
+        var window = new Window
+        {
+            Width = Width,
+            Height = Height,
+            Content = new ShellView(),
+            DataContext = shell,
+        };
         window.Show();
 
         var feedInFolder = store.Feeds().First(f => f.FolderId is not null);
@@ -74,7 +83,9 @@ public class DesignCaptureTests
             SelectArticleWithImage(shell);
             await Shot(window, output, theme, "03-folder-all-items", settle: 30);
             if (!full)
+            {
                 continue;
+            }
 
             Reset(shell, settings, StreamFilter.Starred);
             await Shot(window, output, theme, "04-starred-empty");

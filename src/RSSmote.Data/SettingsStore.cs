@@ -1,5 +1,6 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using RSSmote.Core.Library;
 using RSSmote.Core.Models;
 
 namespace RSSmote.Data;
@@ -14,7 +15,7 @@ internal sealed partial class SettingsJsonContext : JsonSerializerContext;
 /// <see cref="Update"/> applies a change, normalises it, writes the file atomically and raises <see cref="Changed"/>.
 /// A missing or unreadable file starts from the defaults.
 /// </summary>
-public sealed class SettingsStore
+public sealed class SettingsStore : ISettingsStore
 {
     private readonly string _path;
     private readonly Lock _gate = new();
@@ -33,7 +34,9 @@ public sealed class SettingsStore
         get
         {
             lock (_gate)
+            {
                 return _current;
+            }
         }
     }
 
@@ -46,7 +49,10 @@ public sealed class SettingsStore
             change(draft);
             next = draft.Normalized();
             if (next == _current)
+            {
                 return _current;
+            }
+
             Save(next);
             _current = next;
         }
@@ -59,7 +65,10 @@ public sealed class SettingsStore
         try
         {
             if (!File.Exists(path))
+            {
                 return new AppSettings();
+            }
+
             using var stream = File.OpenRead(path);
             return (JsonSerializer.Deserialize(stream, SettingsJsonContext.Default.AppSettings) ?? new AppSettings()).Normalized();
         }
@@ -72,10 +81,16 @@ public sealed class SettingsStore
     private void Save(AppSettings settings)
     {
         if (Path.GetDirectoryName(Path.GetFullPath(_path)) is { } folder)
+        {
             Directory.CreateDirectory(folder);
+        }
+
         var temp = _path + ".tmp";
         using (var stream = File.Create(temp))
+        {
             JsonSerializer.Serialize(stream, settings, SettingsJsonContext.Default.AppSettings);
+        }
+
         File.Move(temp, _path, overwrite: true);
     }
 }

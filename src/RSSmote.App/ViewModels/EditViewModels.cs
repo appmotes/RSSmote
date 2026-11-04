@@ -3,17 +3,17 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using RSSmote.App.Formatting;
 using RSSmote.Core.Models;
-using RSSmote.Data;
+using RSSmote.Core.Library;
 
 namespace RSSmote.App.ViewModels;
 
 /// <summary>Edit a feed: its name and its folder. The check mark saves; closing discards.</summary>
 public sealed partial class EditFeedViewModel : PanelViewModel
 {
-    private readonly Store _store;
+    private readonly ILibrary _store;
     private readonly Feed _feed;
 
-    public EditFeedViewModel(Store store, Feed feed)
+    public EditFeedViewModel(ILibrary store, Feed feed)
     {
         _store = store;
         _feed = feed;
@@ -42,11 +42,14 @@ public sealed partial class EditFeedViewModel : PanelViewModel
     private bool CanSave() => !string.IsNullOrWhiteSpace(Name);
 
     [RelayCommand(CanExecute = nameof(CanSave))]
-    private void Save()
+    private async Task Save()
     {
         var updated = _feed with { Title = Name.Trim(), FolderId = Picker.Selected?.Id };
         if (updated != _feed)
-            _store.UpdateFeed(updated);
+        {
+            await _store.UpdateFeedAsync(updated);
+        }
+
         Close();
     }
 
@@ -58,7 +61,7 @@ public sealed partial class EditFeedViewModel : PanelViewModel
 }
 
 /// <summary>Name a new folder; saving an existing name keeps that folder.</summary>
-public sealed partial class NewFolderViewModel(Store store) : PanelViewModel
+public sealed partial class NewFolderViewModel(ILibrary store) : PanelViewModel
 {
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(SaveCommand))]
@@ -67,11 +70,14 @@ public sealed partial class NewFolderViewModel(Store store) : PanelViewModel
     private bool CanSave() => !string.IsNullOrWhiteSpace(Name);
 
     [RelayCommand(CanExecute = nameof(CanSave))]
-    private void Save()
+    private async Task Save()
     {
         var name = Name.Trim();
         if (store.FolderNamed(name) is null)
-            store.AddFolder(name);
+        {
+            await store.AddFolderAsync(name);
+        }
+
         Close();
     }
 }
@@ -89,12 +95,12 @@ public sealed record FolderFeedRow(Feed Feed)
 /// </summary>
 public sealed partial class EditFolderViewModel : PanelViewModel
 {
-    private readonly Store _store;
+    private readonly ILibrary _store;
     private readonly Folder _folder;
     private readonly Action<Feed> _editFeed;
     private readonly Action<Folder> _delete;
 
-    public EditFolderViewModel(Store store, Folder folder, Action<Feed> editFeed, Action<Folder> delete)
+    public EditFolderViewModel(ILibrary store, Folder folder, Action<Feed> editFeed, Action<Folder> delete)
     {
         _store = store;
         _folder = folder;
@@ -121,11 +127,14 @@ public sealed partial class EditFolderViewModel : PanelViewModel
     private bool CanSave() => !string.IsNullOrWhiteSpace(Name);
 
     [RelayCommand(CanExecute = nameof(CanSave))]
-    private void Save()
+    private async Task Save()
     {
         var name = Name.Trim();
         if (name != _folder.Title)
-            _store.RenameFolder(_folder.Id, name);
+        {
+            await _store.RenameFolderAsync(_folder.Id, name);
+        }
+
         Close();
     }
 

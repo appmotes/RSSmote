@@ -4,20 +4,21 @@ using CommunityToolkit.Mvvm.Input;
 using RSSmote.App.Formatting;
 using RSSmote.App.Services;
 using RSSmote.Core.Models;
-using RSSmote.Data;
+using RSSmote.Core.Library;
 
 namespace RSSmote.App.ViewModels;
 
 /// <summary>
 /// The article list (D18): day headings and article rows for the selected stream under the current filter, sort
-/// and search. The article being read stays listed after it stops matching the filter (e.g. once read).
+/// and search. The article being read stays listed after it stops matching the filter (e.g. once read), until the
+/// reader picks another filter.
 /// </summary>
 public sealed partial class ArticleListViewModel : ObservableObject
 {
     public const int ThumbnailDecodeWidth = 122;
 
-    private readonly Store _store;
-    private readonly SettingsStore _settings;
+    private readonly ILibrary _store;
+    private readonly ISettingsStore _settings;
     private readonly IImageLoader _images;
     private readonly IUiDispatcher _ui;
     private readonly TimeProvider _clock;
@@ -25,7 +26,7 @@ public sealed partial class ArticleListViewModel : ObservableObject
     private bool _reloading;
     private AppSettings? _builtWith;
 
-    public ArticleListViewModel(Store store, SettingsStore settings, IImageLoader images, IUiDispatcher ui,
+    public ArticleListViewModel(ILibrary store, ISettingsStore settings, IImageLoader images, IUiDispatcher ui,
                                 TimeProvider clock, Func<long, Feed?> feedLookup)
     {
         _store = store;
@@ -161,18 +162,30 @@ public sealed partial class ArticleListViewModel : ObservableObject
         if (_builtWith is { } built && built.Filter == settings.Filter && built.SortNewestFirst == settings.SortNewestFirst
             && built.GroupByDate == settings.GroupByDate && built.GrayscaleFavicons == settings.GrayscaleFavicons
             && built.DisplayFavicons == settings.DisplayFavicons)
+        {
             return;
+        }
+
         Reload(keepSelection: true);
     }
 
     public void Reload(bool keepSelection)
     {
         if (!IsShown)
+        {
             return;
+        }
+
+        var filterChanged = _builtWith is { } built && built.Filter != _settings.Current.Filter;
         var settings = _builtWith = _settings.Current;
         Filter = settings.Filter;
         var selected = keepSelection ? SelectedArticle : null;
         var items = _store.Items(Stream, settings.Filter, SearchText, settings.SortNewestFirst).ToList();
+        if (selected is not null && filterChanged && items.All(i => i.Id != selected.Id))
+        {
+            selected = null;
+        }
+
         if (selected is not null && items.All(i => i.Id != selected.Id))
         {
             var at = items.FindIndex(i => settings.SortNewestFirst ? i.Published < selected.Item.Published : i.Published > selected.Item.Published);
@@ -206,7 +219,10 @@ public sealed partial class ArticleListViewModel : ObservableObject
         {
             Rows.Clear();
             foreach (var row in rows)
+            {
                 Rows.Add(row);
+            }
+
             SelectedRow = selected is null ? null : rows.FirstOrDefault(r => r == selected);
         }
         finally
@@ -218,7 +234,9 @@ public sealed partial class ArticleListViewModel : ObservableObject
         UpdateStatusText(rows.Count(r => r is ArticleRowViewModel), settings.SortNewestFirst);
         UpdateEmptyText(rows.Count == 0, settings.Filter);
         if (SelectedRow is null)
+        {
             ArticleSelected?.Invoke(this, null);
+        }
     }
 
     /// <summary>Applies read/starred changes to the listed rows without rebuilding the list.</summary>
@@ -228,7 +246,9 @@ public sealed partial class ArticleListViewModel : ObservableObject
         foreach (var row in Articles.Where(r => wanted.Contains(r.Id)))
         {
             if (_store.Item(row.Id) is { } item)
+            {
                 row.Update(item);
+            }
         }
         UpdateSubtitle();
     }
@@ -265,7 +285,10 @@ public sealed partial class ArticleListViewModel : ObservableObject
         var articles = Articles.ToList();
         var index = articles.IndexOf(row);
         if (index < 0)
+        {
             return [];
+        }
+
         var side = below ? articles.Skip(index + 1) : articles.Take(index);
         return [.. side.Where(r => r.IsUnread).Select(r => r.Id)];
     }
@@ -275,11 +298,17 @@ public sealed partial class ArticleListViewModel : ObservableObject
     {
         var articles = Articles.ToList();
         if (articles.Count == 0)
+        {
             return false;
+        }
+
         var index = SelectedArticle is { } current ? articles.IndexOf(current) : -1;
         var next = index < 0 ? (delta > 0 ? 0 : articles.Count - 1) : index + delta;
         if (next < 0 || next >= articles.Count)
+        {
             return false;
+        }
+
         SelectedRow = articles[next];
         return true;
     }
@@ -288,16 +317,26 @@ public sealed partial class ArticleListViewModel : ObservableObject
     public void RequestImages(ArticleRowViewModel row)
     {
         if (!row.ClaimImageRequest())
+        {
             return;
+        }
+
         if (_settings.Current.DisplayFavicons && _feedLookup(row.Item.FeedId) is { } feed && Favicons.Url(feed) is { } favicon)
+        {
             _ = LoadAsync(favicon, Favicons.DecodeWidth, b => row.Favicon = b);
+        }
+
         if (row.Item.ImageUrl is { } image)
+        {
             _ = LoadAsync(image, ThumbnailDecodeWidth, b => row.Thumbnail = b);
+        }
     }
 
     private async Task LoadAsync(string url, int width, Action<Avalonia.Media.Imaging.Bitmap> apply)
     {
         if (await _images.LoadAsync(url, width).ConfigureAwait(false) is { } bitmap)
+        {
             _ui.Post(() => apply(bitmap));
+        }
     }
 }

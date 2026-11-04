@@ -4,7 +4,7 @@ using Avalonia.Controls.Primitives;
 using Avalonia.Headless.XUnit;
 using Avalonia.VisualTree;
 using RSSmote.App.Controls.Headless;
-using RSSmote.Mobile.Shell;
+using RSSmote.App.Views.Phone.Shell;
 
 namespace RSSmote.Mobile.Tests;
 

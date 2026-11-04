@@ -1,4 +1,5 @@
 using Microsoft.Data.Sqlite;
+using RSSmote.Core.Library;
 using RSSmote.Core.Models;
 using RSSmote.Core.Opml;
 using RSSmote.Core.Parsing;
@@ -140,14 +141,17 @@ public sealed class StoreTests : IDisposable
     {
         var a = _store.AddFeed("https://a.example/feed", "A", null, null);
         _store.Upsert(a.Id, [Item("old", published: Now.AddDays(-6)), Item("new", published: Now.AddDays(-1))]);
-        var changed = new List<StoreChangedEventArgs>();
+        var changed = new List<LibraryChangedEventArgs>();
         _store.Changed += (_, e) => changed.Add(e);
 
         Assert.Equal(1, _store.MarkReadBefore(Now.AddDays(-5)));
         Assert.Equal(["new"], _store.Items(new ArticleStream.All(), StreamFilter.Unread).Select(i => i.Guid));
         Assert.True(Assert.Single(changed).FlagsOnly);
         Assert.Equal(0, _store.MarkReadBefore(Now.AddDays(-5)));
-        Assert.Equal(new Dictionary<long, int> { [a.Id] = 2 }, _store.TotalCounts());
+        Assert.Equal(new Dictionary<long, int>
+        {
+            [a.Id] = 2,
+        }, _store.TotalCounts());
     }
 
     [Fact]
@@ -195,7 +199,7 @@ public sealed class StoreTests : IDisposable
     [Fact]
     public void Changed_reports_item_ids_only_for_flag_changes()
     {
-        var events = new List<StoreChangedEventArgs>();
+        var events = new List<LibraryChangedEventArgs>();
         _store.Changed += (_, e) => events.Add(e);
         var a = _store.AddFeed("https://a.example/feed", "A", null, null);
         _store.Upsert(a.Id, [Item("1")]);
@@ -250,6 +254,8 @@ public sealed class StoreTests : IDisposable
             Assert.Equal(DateTimeOffset.FromUnixTimeMilliseconds(1759743000500), item.Published);
         }
         using (var reopened = new Store(path))
+        {
             Assert.Single(reopened.Feeds());
+        }
     }
 }

@@ -14,10 +14,22 @@ public static partial class FeedDates
 
     private static readonly Dictionary<string, int> Zones = new(StringComparer.OrdinalIgnoreCase)
     {
-        ["GMT"] = 0, ["UT"] = 0, ["UTC"] = 0, ["Z"] = 0,
-        ["EST"] = -5, ["EDT"] = -4, ["CST"] = -6, ["CDT"] = -5,
-        ["MST"] = -7, ["MDT"] = -6, ["PST"] = -8, ["PDT"] = -7,
-        ["CET"] = 1, ["CEST"] = 2, ["BST"] = 1, ["IST"] = 5,
+        ["GMT"] = 0,
+        ["UT"] = 0,
+        ["UTC"] = 0,
+        ["Z"] = 0,
+        ["EST"] = -5,
+        ["EDT"] = -4,
+        ["CST"] = -6,
+        ["CDT"] = -5,
+        ["MST"] = -7,
+        ["MDT"] = -6,
+        ["PST"] = -8,
+        ["PDT"] = -7,
+        ["CET"] = 1,
+        ["CEST"] = 2,
+        ["BST"] = 1,
+        ["IST"] = 5,
     };
 
     private static readonly string[] Months = ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"];
@@ -26,23 +38,35 @@ public static partial class FeedDates
     {
         var text = value?.Trim();
         if (string.IsNullOrEmpty(text))
+        {
             return null;
+        }
 
         if (char.IsDigit(text[0]) && text.Length >= 10 && text[4] == '-'
             && DateTimeOffset.TryParse(text, CultureInfo.InvariantCulture,
                 DateTimeStyles.AssumeUniversal | DateTimeStyles.AllowWhiteSpaces, out var iso))
+        {
             return iso;
+        }
 
         var m = Rfc822().Match(text);
         if (!m.Success)
+        {
             return null;
+        }
 
         var month = Array.IndexOf(Months, m.Groups[2].Value[..3].ToLowerInvariant()) + 1;
         if (month == 0)
+        {
             return null;
+        }
+
         var year = int.Parse(m.Groups[3].Value, CultureInfo.InvariantCulture);
         if (year < 100)
+        {
             year += year < 50 ? 2000 : 1900;
+        }
+
         var day = int.Parse(m.Groups[1].Value, CultureInfo.InvariantCulture);
         var hour = m.Groups[4].Success ? int.Parse(m.Groups[4].Value, CultureInfo.InvariantCulture) : 0;
         var minute = m.Groups[5].Success ? int.Parse(m.Groups[5].Value, CultureInfo.InvariantCulture) : 0;
@@ -61,9 +85,15 @@ public static partial class FeedDates
     private static TimeSpan Offset(string zone)
     {
         if (string.IsNullOrEmpty(zone))
+        {
             return TimeSpan.Zero;
+        }
+
         if (Zones.TryGetValue(zone, out var hours))
+        {
             return TimeSpan.FromHours(hours);
+        }
+
         if (zone[0] is '+' or '-')
         {
             var digits = zone[1..].Replace(":", "");

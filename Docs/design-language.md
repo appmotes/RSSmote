@@ -188,7 +188,7 @@ Licence notice in `Assets/Icons/LICENSE-lucide.txt`.
 | Previous article (phone) | `Icon.ChevronUp` | chevron-up |
 | Feed error (phone) | `Icon.CircleAlert` | circle-alert |
 | Settings | `Icon.Settings` | settings |
-| Menu (Win/Linux) | `Icon.Menu` | ellipsis |
+| Menu | `Icon.Menu` | ellipsis |
 | Open website | `Icon.Globe`, `Icon.ExternalLink` | globe, external-link |
 | Checked row | `Icon.Check` | check |
 | Import, Export | `Icon.Download`, `Icon.Upload` | download, upload |
@@ -204,16 +204,14 @@ Licence notice in `Assets/Icons/LICENSE-lucide.txt`.
 **D13 — Other assets.**
 - App icon: a spark, the mote, sending out two feed arcs, white on the Sand accent as a rounded square; the outer
   arc at 55 %. The feed symbol is read at once, the spark makes it RSSmote's own, and it holds at 16 px. Master SVG
-  in `Assets/AppIcon/AppIcon.svg`, drawn on a 120-unit grid. `build/AppIcons.cs` draws the PNGs, the `.ico` and the
-  `.icns` set from it when packaging (A2). `build/icons.sh` writes the rest into the repository, to be committed: the
-  desktop window's icon and the one beside the version line in Settings on both platforms (`AppIcon.png` beside the
-  SVG, at `Size.Favicon` on desktop and `Size.Phone.Icon` on the phone), the `.exe`'s (`RSSmote.Desktop/Assets`), the
-  README's (`Docs/images/app-icon.png`), iOS an opaque 1024 square in `Assets.xcassets` (the system rounds it),
-  Android an adaptive icon, the accent behind the marks with the tile's 120 units on the 72 dp that show, and the
-  rounded tile below API 26.
+  in `Assets/AppIcon/AppIcon.svg`, drawn on a 120-unit grid. `build/AppIcons.cs` draws the PNGs from it and
+  `build/icons.sh` writes them into the repository, to be committed: `AppIcon.png` beside the SVG, which is the icon
+  beside the version line in Settings (at `Size.Favicon` on desktop and `Size.Phone.Icon` on the phone), on the sign-in
+  screen, and the browser's page and home-screen icon (`icon.png`, linked into the browser head); and the README's
+  (`Docs/images/app-icon.png`).
 - Empty states use Lucide icons and type, not an illustration (D9).
-- Favicons: fetched at runtime, shown greyscale when "Grayscale Favicons" is on (BGRA on desktop, RGBA on the
-  phones); a letter tile when missing.
+- Favicons: fetched at runtime through the server (A19), shown greyscale when "Grayscale Favicons" is on (BGRA or
+  RGBA, P26); a letter tile when missing.
 - Font: Inter via `Avalonia.Fonts.Inter` on every OS, so the measured metrics hold everywhere.
 
 **D14 — Article typography is CSS.** The HTML template sets the date at 12.5 px with tabular figures, the title at
@@ -230,9 +228,8 @@ next, `m` read, `s` star, `b` browser, `v` web page, `r` refresh, `a` mark all r
 feed, `.` go back. They are ignored while a text box has focus, and off in Settings, where Escape leaves (D30).
 Modified shortcuts: ⌘/Ctrl+1/2/3 filter, ⌘/Ctrl+N Add Feed in Settings, ⌘/Ctrl+F filter box, ⌘/Ctrl+, settings.
 
-**D16 — Menus per OS.** macOS gets a full `NativeMenu` (app, File, Edit, View, Feeds, Article, Window), with
-"Settings…" (⌘,) in the application menu. Windows and Linux get no menu bar; the same commands are reachable from
-shortcuts and a menu button (`Icon.Menu`) in the sidebar's title strip, which starts with "Settings…".
+**D16 — One menu button.** No menu bar: the commands are reachable from shortcuts and a menu button (`Icon.Menu`)
+in the sidebar's title strip, which starts with "Settings…".
 
 ## Lists and tables
 
@@ -253,8 +250,7 @@ which `TableView` offers. `ListBox` virtualizes by default and gives keyboard se
 **D19 — The component gallery shows every token, icon and component with sample data.** `Gallery/ComponentGallery`
 is the reference for how a component looks in each palette; `GalleryRenderTests` renders it headless to
 `tests/RSSmote.App.Tests/bin/Debug/net10.0/snapshots/gallery-{Light,Dark,Black}.png`, and `ShellRenderTests` (in `RSSmote.Desktop.Tests`)
-renders the real shell over a seeded library to `shell-{Light,Dark}.png`. In a Debug build Ctrl/⌘+Shift+G opens
-the gallery in its own window. A new component gets a
+renders the real shell over a seeded library to `shell-{Light,Dark}.png`. A new component gets a
 gallery entry in the same change as its `templates.html` article.
 
 
@@ -286,7 +282,7 @@ Harbor (blue accent and brown danger, apart in lightness as well as hue, so they
 Contrast (black on white). Dark: Ember (default; Sand turned over), Black (OLED), Fjord (arctic blue-grey),
 Phosphor (green on an unlit tube; danger stays red) and Contrast Dark (white on black). In Black, the contrast pair
 and Phosphor a card is marked by a 1 px ring instead of a shadow (D20). The menus offer View ▸ Theme ▸
-Appearance, Light Theme and Dark Theme as radio items (macOS menu bar and the Windows/Linux menu button).
+Appearance, Light Theme and Dark Theme as radio items (the menu button).
 
 Every palette clears these floors (WCAG 2, translucent ink composited first; `ContrastTests`):
 
@@ -431,8 +427,8 @@ favicon, thumbnail, icon and padding — so a row keeps its proportions: each ro
 The article is CSS: its body is 16 px × the step. No platform offers a choice of typeface.
 - Settings ▸ Text, under Display after Appearance, on both form factors: Feeds, Article list and Article, each a
   slider between a small and a large A that stops on the steps, Reset to Standard, and no preview. On the phone the
-  page starts with "Follow system text size" (on): the steps then apply on top of iOS Larger Text or Android's font
-  size, which the heads pass in (A15).
+  page starts with "Follow system text size" (on): the steps then apply on top of a system text size a head passes
+  in; a browser passes none, so it stays at 1.
 - While reading on desktop: one Aa, left of the gear in the sidebar's status bar, opens a popover upward: "Text size"
   and the value, Feeds | List | Article as segments, the slider, and Standard. No scrim, so the panes change as the
   slider moves; it hangs over the sidebar and the list, never over the article column, so nothing covers the native

@@ -1,0 +1,35 @@
+<!-- The three columns (A5): sidebar · article list · article, resizable with splitters; or the Settings mode (D30). -->
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:RSSmote.App.ViewModels"
+             xmlns:v="using:RSSmote.App.Views.Desktop"
+             xmlns:s="using:RSSmote.App.Views.Desktop.Settings"
+             x:Class="RSSmote.App.Views.Desktop.ShellView"
+             x:DataType="vm:ShellViewModel">
+    <Panel>
+        <Grid IsVisible="{Binding !IsSettingsOpen}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="{StaticResource GridLength.Column.Sidebar}"
+                                  MinWidth="{StaticResource Size.Column.SidebarMin}"
+                                  MaxWidth="{StaticResource Size.Column.SidebarMax}" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="{StaticResource GridLength.Column.List}"
+                                  MinWidth="{StaticResource Size.Column.ListMin}"
+                                  MaxWidth="{StaticResource Size.Column.ListMax}" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" MinWidth="{StaticResource Size.Column.ArticleMin}" />
+            </Grid.ColumnDefinitions>
+
+            <v:SidebarView Grid.Column="0" />
+            <GridSplitter Grid.Column="1" Classes="column" />
+            <v:ArticleListView Grid.Column="2" />
+            <GridSplitter Grid.Column="3" Classes="column gap" />
+            <v:ArticleView Grid.Column="4" />
+        </Grid>
+
+        <!-- Settings take the whole window (D30); the article hides its native web view meanwhile (L9). -->
+        <Panel IsVisible="{Binding IsSettingsOpen}">
+            <s:SettingsView DataContext="{Binding SettingsMode}" />
+        </Panel>
+    </Panel>
+</UserControl>

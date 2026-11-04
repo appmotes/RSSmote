@@ -1,0 +1,18 @@
+root = true
+
+[*.cs]
+indent_style = space
+indent_size = 4
+
+# Every body in braces, also one statement; each brace on its own line. Enforced by the build (Directory.Build.props).
+csharp_prefer_braces = true:warning
+dotnet_diagnostic.IDE0011.severity = warning
+csharp_new_line_before_open_brace = all
+csharp_new_line_before_else = true
+csharp_new_line_before_catch = true
+csharp_new_line_before_finally = true
+csharp_new_line_before_members_in_object_initializers = true
+# Keeps { get; set; } and property patterns ({ } x) on one line; object initializers are split by hand (CLAUDE.md).
+csharp_preserve_single_line_blocks = true
+csharp_preserve_single_line_statements = false
+dotnet_diagnostic.IDE0055.severity = warning

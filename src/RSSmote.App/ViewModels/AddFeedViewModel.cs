@@ -4,7 +4,7 @@ using CommunityToolkit.Mvvm.Input;
 using RSSmote.App.Formatting;
 using RSSmote.Core.Discovery;
 using RSSmote.Core.Models;
-using RSSmote.Data;
+using RSSmote.Core.Library;
 
 namespace RSSmote.App.ViewModels;
 
@@ -30,13 +30,13 @@ public sealed partial class FoundFeedRowViewModel(FoundFeed found, bool saved) :
 /// </summary>
 public sealed partial class AddFeedViewModel : PanelViewModel
 {
-    private readonly Store _store;
+    private readonly ILibrary _store;
     private readonly Func<string, CancellationToken, Task<IReadOnlyList<FoundFeed>>> _find;
-    private readonly Func<FoundFeed, long?, Feed> _save;
+    private readonly Func<FoundFeed, long?, Task<Feed>> _save;
     private CancellationTokenSource? _search;
 
-    public AddFeedViewModel(Store store, Func<string, CancellationToken, Task<IReadOnlyList<FoundFeed>>> find,
-                              Func<FoundFeed, long?, Feed> save)
+    public AddFeedViewModel(ILibrary store, Func<string, CancellationToken, Task<IReadOnlyList<FoundFeed>>> find,
+                              Func<FoundFeed, long?, Task<Feed>> save)
     {
         _store = store;
         _find = find;
@@ -107,25 +107,35 @@ public sealed partial class AddFeedViewModel : PanelViewModel
         {
             var found = await _find(Address.Trim(), search.Token);
             if (search.IsCancellationRequested)
+            {
                 return;
+            }
+
             ShowResults(found);
         }
         catch (Exception e) when (e is FeedException or HttpRequestException or TaskCanceledException or IOException)
         {
             if (!search.IsCancellationRequested)
+            {
                 Error = e is TaskCanceledException ? "The server did not respond in time." : e.Message;
+            }
         }
         finally
         {
             if (ReferenceEquals(_search, search))
+            {
                 IsSearching = false;
+            }
         }
     }
 
     private void ShowResults(IReadOnlyList<FoundFeed> found)
     {
         foreach (var row in Results)
+        {
             row.PropertyChanged -= OnResultChanged;
+        }
+
         Results.Clear();
         var saved = _store.Feeds().Select(f => f.Url).ToHashSet(StringComparer.OrdinalIgnoreCase);
         foreach (var feed in found)
@@ -136,7 +146,10 @@ public sealed partial class AddFeedViewModel : PanelViewModel
         }
         // Only the first new feed is picked, as an address often lists comment or category feeds too.
         if (Results.FirstOrDefault(r => !r.IsSaved) is { } first)
+        {
             first.IsOn = true;
+        }
+
         OnPropertyChanged(nameof(CanSave));
         OnPropertyChanged(nameof(FoundText));
         OnPropertyChanged(nameof(HasResults));
@@ -153,19 +166,30 @@ public sealed partial class AddFeedViewModel : PanelViewModel
     private void PickResult(FoundFeedRowViewModel row)
     {
         if (row.IsSaved)
+        {
             return;
+        }
+
         foreach (var other in Results)
+        {
             other.IsOn = ReferenceEquals(other, row);
+        }
     }
 
     [RelayCommand(CanExecute = nameof(CanSave))]
-    private void Save()
+    private async Task Save()
     {
         Feed? last = null;
-        foreach (var row in Results.Where(r => r.IsOn && !r.IsSaved))
-            last = _save(row.Found, Picker.Selected?.Id);
+        foreach (var row in Results.Where(r => r.IsOn && !r.IsSaved).ToList())
+        {
+            last = await _save(row.Found, Picker.Selected?.Id);
+        }
+
         if (last is not null)
+        {
             Saved?.Invoke(this, (last, Picker.Selected?.Id));
+        }
+
         Close();
     }
 }

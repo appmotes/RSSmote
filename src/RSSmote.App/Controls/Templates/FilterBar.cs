@@ -31,7 +31,10 @@ public class FilterBar : TemplatedControl
     {
         base.OnApplyTemplate(e);
         foreach (var button in _segments.Values)
+        {
             button.Click -= OnSegmentClick;
+        }
+
         _segments.Clear();
 
         Add(StreamFilter.Starred, e.NameScope.Find<Button>("PART_Starred"));
@@ -44,13 +47,18 @@ public class FilterBar : TemplatedControl
     {
         base.OnPropertyChanged(change);
         if (change.Property == FilterProperty)
+        {
             UpdateSegments();
+        }
     }
 
     private void Add(StreamFilter filter, Button? button)
     {
         if (button is null)
+        {
             return;
+        }
+
         button.Tag = filter;
         button.Click += OnSegmentClick;
         _segments[filter] = button;
@@ -59,12 +67,16 @@ public class FilterBar : TemplatedControl
     private void OnSegmentClick(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
         if (sender is Button { Tag: StreamFilter filter })
+        {
             Filter = filter;
+        }
     }
 
     private void UpdateSegments()
     {
         foreach (var (filter, button) in _segments)
+        {
             button.Classes.Set("selected", filter == Filter);
+        }
     }
 }

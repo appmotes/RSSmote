@@ -101,7 +101,9 @@ public sealed class Favicon : Control
         }
 
         if (TileBrush is { } tile)
+        {
             context.FillRectangle(tile, rect);
+        }
 
         var title = Title?.Trim();
         var letter = string.IsNullOrEmpty(title) ? "•" : char.ToLowerInvariant(title[0]).ToString();
@@ -117,9 +119,15 @@ public sealed class Favicon : Control
     internal static Bitmap Grayscale(Bitmap source)
     {
         if (GrayscaleCache.TryGetValue(source, out var cached))
+        {
             return cached;
+        }
+
         if (source.Format is not { } format || (format != PixelFormat.Bgra8888 && format != PixelFormat.Rgba8888))
+        {
             return source;
+        }
+
         var (red, blue) = format == PixelFormat.Bgra8888 ? (2, 0) : (0, 2);
 
         var size = source.PixelSize;
@@ -145,7 +153,9 @@ public sealed class Favicon : Control
         using (var buffer = result.Lock())
         {
             for (var row = 0; row < size.Height; row++)
+            {
                 Marshal.Copy(pixels, row * stride, buffer.Address + row * buffer.RowBytes, stride);
+            }
         }
 
         GrayscaleCache.AddOrUpdate(source, result);

@@ -41,7 +41,10 @@ public static partial class HtmlContent
     {
         var text = PlainText(html);
         if (text.Length <= length)
+        {
             return text;
+        }
+
         var info = new StringInfo(text);
         var cut = info.LengthInTextElements > length ? info.SubstringByTextElements(0, length) : text[..length];
         return cut.TrimEnd() + "…";
