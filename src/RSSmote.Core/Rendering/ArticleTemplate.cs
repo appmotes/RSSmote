@@ -13,8 +13,10 @@ namespace RSSmote.Core.Rendering;
 /// </summary>
 public static partial class ArticleTemplate
 {
-    /// <summary>Scrolls one page; evaluates to "false" at the end so space can move on to the next article.</summary>
-    /// <summary>Answers "true" or "false" as a string: a browser's web view takes only a string back (P32).</summary>
+    /// <summary>
+    /// Scrolls one page and answers "false" at the end, so space can move on to the next article. The answer is a
+    /// string, because a browser's web view takes only a string back (P32).
+    /// </summary>
     public static string ScrollPageScript(bool up) => up ? "String(rssmote.scrollPage(true))" : "String(rssmote.scrollPage(false))";
 
     private static readonly string Css = ReadResource("article.css");
