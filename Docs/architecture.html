@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>RSSmote architecture</title>
+<style>
+  /* One reading column; each figure scrolls sideways inside its own frame on a phone. Colours are RSSmote's Sand and Ember palettes. */
+  :root {
+    --bg: #E9E4DA;
+    --card: #FFFEFB;
+    --region: #EFE9DF;
+    --ink: #24201B;
+    --ink2: #6B6257;
+    --accent: #A85607;
+    --line: rgba(58, 42, 16, 0.18);
+    --sans: system-ui, -apple-system, "Segoe UI", Ubuntu, Cantarell, "Noto Sans", sans-serif;
+    --mono: ui-monospace, Menlo, Consolas, "DejaVu Sans Mono", monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #131211; --card: #211F1D; --region: #1D1C1A; --ink: #EEE9E2; --ink2: #A39A8E;
+      --accent: #F0A447; --line: rgba(255, 255, 255, 0.16); color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #131211; --card: #211F1D; --region: #1D1C1A; --ink: #EEE9E2; --ink2: #A39A8E;
+    --accent: #F0A447; --line: rgba(255, 255, 255, 0.16); color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font: 15px/1.6 var(--sans);
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+    padding-block: 40px 64px;
+  }
+  main { max-width: 980px; margin: 0 auto; display: grid; gap: 56px; }
+  header { display: grid; gap: 8px; max-width: 68ch; }
+  h1 { font: 600 30px/1.2 var(--sans); margin: 0; text-wrap: balance; }
+  h2 { font: 600 20px/1.3 var(--sans); margin: 0; text-wrap: balance; }
+  h1 .da, h2 .da { color: var(--ink2); font-weight: 400; }
+  p { margin: 0; max-width: 68ch; }
+  .lede { color: var(--ink2); }
+  section { display: grid; gap: 16px; }
+  .eyebrow { font: 600 11px var(--sans); letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); }
+  code { font: 13px var(--mono); }
+  figure { margin: 0; display: grid; gap: 10px; }
+  .frame { background: var(--card); border: 1px solid var(--line); border-radius: 10px; overflow-x: auto; padding: 12px; }
+  figcaption { color: var(--ink2); font-size: 14px; max-width: 76ch; display: grid; gap: 8px; }
+  /* The Danish text follows the English, marked by a rule and a tag. */
+  .pair { display: grid; gap: 8px; }
+  .pair > [lang="da"], figcaption > [lang="da"] { border-left: 2px solid var(--line); padding-left: 12px; }
+  .pair > [lang="da"]::before, figcaption > [lang="da"]::before {
+    content: "DA";
+    font: 600 10px var(--sans);
+    letter-spacing: 0.08em;
+    color: var(--accent);
+    margin-right: 8px;
+  }
+  .legend { display: flex; flex-wrap: wrap; gap: 8px 20px; font-size: 13px; color: var(--ink2); }
+  .legend span { display: inline-flex; align-items: center; gap: 8px; }
+  .legend svg { flex: none; }
+  table { border-collapse: collapse; font-size: 14px; width: 100%; }
+  .tablewrap { overflow-x: auto; }
+  th, td { text-align: left; padding: 8px 12px 8px 0; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { font: 600 11px var(--sans); letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink2); }
+  td:first-child { white-space: nowrap; }
+  td .da { display: block; color: var(--ink2); }
+
+  /* Diagram marks */
+  .dg { display: block; width: 100%; min-width: 760px; height: auto; color: var(--ink); }
+  .dg .region { fill: var(--region); }
+  .dg .box { fill: var(--card); stroke: var(--line); stroke-width: 1.25; }
+  .dg .box.key { stroke: var(--accent); stroke-width: 1.5; }
+  .dg .name { font: 600 13px var(--mono); fill: var(--ink); }
+  .dg .sub { font: 12px var(--sans); fill: var(--ink2); }
+  .dg .lbl { font: 11.5px var(--sans); fill: var(--ink2); }
+  .dg .lbl.acc { fill: var(--accent); font-weight: 500; }
+  .dg .rlbl { font: 600 11px var(--sans); letter-spacing: 0.06em; text-transform: uppercase; fill: var(--ink2); }
+  .dg .ref { stroke: var(--ink2); stroke-width: 1.5; fill: none; }
+  .dg .run { stroke: var(--accent); stroke-width: 1.75; stroke-dasharray: 6 5; fill: none; }
+  .dg .impl { stroke: var(--ink2); stroke-width: 1.25; stroke-dasharray: 4 4; fill: none; }
+  .dg .step { fill: var(--accent); }
+  .dg .stepn { font: 600 11px var(--sans); fill: var(--card); }
+  .ah { fill: var(--ink2); }
+  .ahacc { fill: var(--accent); }
+  .ahhollow { fill: var(--card); stroke: var(--ink2); stroke-width: 1.25; }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <span class="eyebrow">RSSmote · server and WebAssembly</span>
+    <h1>How RSSmote fits together <span class="da" lang="da">Sådan hænger RSSmote sammen</span></h1>
+    <div class="pair">
+      <p class="lede">Five drawings: which projects reference which, how the view-models run over two different
+        libraries, how a "read" travels from the phone to the desktop, how the UI is built, and what a request meets on
+        the server. Ids such as <code>A20</code> point into <code>Docs/architecture.md</code>.</p>
+      <p class="lede" lang="da">Fem tegninger: hvilke projekter der refererer hvilke, hvordan view-modellerne kører over
+        to forskellige biblioteker, hvordan et "læst" når fra telefonen til skrivebordet, hvordan UI'et bygges, og hvad
+        en request møder på serveren. Id'er som <code>A20</code> peger ind i <code>Docs/architecture.md</code>.</p>
+    </div>
+  </header>
+
+  <!-- 1. Projects -->
+  <section>
+    <h2>1. The projects <span class="da" lang="da">Projekterne</span></h2>
+    <div class="legend">
+      <span><svg width="36" height="10" aria-hidden="true"><line x1="0" y1="5" x2="36" y2="5" stroke="var(--ink2)" stroke-width="1.5"/></svg>project reference · projektreference</span>
+      <span><svg width="36" height="10" aria-hidden="true"><line x1="0" y1="5" x2="36" y2="5" stroke="var(--accent)" stroke-width="1.75" stroke-dasharray="6 5"/></svg>over the network, at run time · over nettet, mens appen kører</span>
+    </div>
+    <figure>
+      <div class="frame">
+        <svg class="dg" viewBox="0 0 920 490" role="img" aria-label="Two chains of projects meet in Core: Browser, App and Client in the browser, Server and Data on the server. Client talks to Server over HTTP, and Server delivers the app's files to the browser.">
+          <defs>
+            <marker id="p-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ah" d="M0 0 L10 5 L0 10 z"/></marker>
+            <marker id="p-acc" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ahacc" d="M0 0 L10 5 L0 10 z"/></marker>
+          </defs>
+
+          <rect class="region" x="20" y="20" width="300" height="330" rx="12"/>
+          <text class="rlbl" x="38" y="44">In the browser · WebAssembly</text>
+          <rect class="region" x="600" y="20" width="300" height="330" rx="12"/>
+          <text class="rlbl" x="618" y="44">On the server · ASP.NET Core</text>
+
+          <rect class="box" x="50" y="60" width="240" height="64" rx="8"/>
+          <text class="name" x="66" y="86">RSSmote.Browser</text>
+          <text class="sub" x="66" y="106">WASM head: Program, interop.js</text>
+
+          <rect class="box" x="50" y="160" width="240" height="64" rx="8"/>
+          <text class="name" x="66" y="186">RSSmote.App</text>
+          <text class="sub" x="66" y="206">Every view, view-model and theme</text>
+
+          <rect class="box" x="50" y="260" width="240" height="64" rx="8"/>
+          <text class="name" x="66" y="286">RSSmote.Client</text>
+          <text class="sub" x="66" y="306">API client, mirror of the library</text>
+
+          <rect class="box" x="630" y="110" width="240" height="64" rx="8"/>
+          <text class="name" x="646" y="136">RSSmote.Server</text>
+          <text class="sub" x="646" y="156">API, sign-in, events, image proxy</text>
+
+          <rect class="box" x="630" y="260" width="240" height="64" rx="8"/>
+          <text class="name" x="646" y="286">RSSmote.Data</text>
+          <text class="sub" x="646" y="306">SQLite store, refresher</text>
+
+          <rect class="box key" x="340" y="400" width="240" height="64" rx="8"/>
+          <text class="name" x="356" y="426">RSSmote.Core</text>
+          <text class="sub" x="356" y="446">Models, parser, contracts, API types</text>
+
+          <line class="ref" x1="170" y1="124" x2="170" y2="158" marker-end="url(#p-ah)"/>
+          <line class="ref" x1="170" y1="224" x2="170" y2="258" marker-end="url(#p-ah)"/>
+          <polyline class="ref" points="170,324 170,432 338,432" marker-end="url(#p-ah)"/>
+          <line class="ref" x1="750" y1="174" x2="750" y2="258" marker-end="url(#p-ah)"/>
+          <polyline class="ref" points="750,324 750,432 582,432" marker-end="url(#p-ah)"/>
+
+          <line class="run" x1="292" y1="290" x2="628" y2="156" marker-start="url(#p-acc)" marker-end="url(#p-acc)"/>
+          <text class="lbl acc" x="460" y="215" text-anchor="middle" transform="rotate(-21.7 460 223)">HTTP /api · SSE /api/events</text>
+          <line class="run" x1="628" y1="126" x2="292" y2="92" marker-end="url(#p-acc)"/>
+          <text class="lbl acc" x="460" y="101" text-anchor="middle" transform="rotate(5.8 460 109)">delivers the app's files (wwwroot)</text>
+        </svg>
+      </div>
+      <figcaption>
+        <span>No reference crosses the middle. App never references Data, so SQLite never reaches the browser. The
+          server never references Avalonia. App also references Core directly, for the models. The two halves meet only
+          over the network and in the shared types in Core (A1).</span>
+        <span lang="da">Ingen reference krydser midten. App refererer aldrig Data, så SQLite kommer aldrig med til
+          browseren. Serveren refererer aldrig Avalonia. App refererer også Core direkte, for modellerne. De to halvdele
+          mødes kun over nettet og i de fælles typer i Core (A1).</span>
+      </figcaption>
+    </figure>
+
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Test project</th><th>References</th><th>Tests · Tester</th></tr></thead>
+        <tbody>
+          <tr><td><code>Core.Tests</code></td><td>Core</td><td>Parser, dates, HTML, feed discovery, OPML<span class="da" lang="da">Parser, datoer, HTML, feed-søgning, OPML</span></td></tr>
+          <tr><td><code>Data.Tests</code></td><td>Data</td><td>Store, refresh, pruning, migrations<span class="da" lang="da">Store, opdatering, oprydning, migrationer</span></td></tr>
+          <tr><td><code>Server.Tests</code></td><td>Server, Client</td><td>The API in process, and two devices syncing through it<span class="da" lang="da">API'et i processen, og to enheder der synkroniserer gennem det</span></td></tr>
+          <tr><td><code>App.Tests</code></td><td>App, Data</td><td>View-models over a real SQLite store, palettes, gallery<span class="da" lang="da">View-models over en rigtig SQLite-store, paletter, galleri</span></td></tr>
+          <tr><td><code>Desktop.Tests</code></td><td>App, Data</td><td>The columns drawn headless: Settings, menus, README images<span class="da" lang="da">Kolonnerne tegnet headless: Settings, menuer, README-billeder</span></td></tr>
+          <tr><td><code>Mobile.Tests</code></td><td>App, Data</td><td>The phone stack at 402 × 874, and MainView's switch at 900 px<span class="da" lang="da">Phone-stakken ved 402 × 874, og MainView's skift ved 900 px</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- 2. Contract -->
+  <section>
+    <h2>2. The same view-models, two libraries <span class="da" lang="da">Samme view-models, to biblioteker</span></h2>
+    <div class="pair">
+      <p>The view-models know only four interfaces in Core. In the browser the <code>Remote*</code> classes stand behind
+        them. In the tests and on the server it is <code>Store</code> and its companions. So the tests can run the UI over
+        a real SQLite file with no server.</p>
+      <p lang="da">View-modellerne kender kun fire interfaces i Core. I browseren står <code>Remote*</code>-klasserne bag
+        dem. I testene og på serveren er det <code>Store</code> og dens venner. Derfor kan testene køre UI'et over en
+        rigtig SQLite-fil uden en server.</p>
+    </div>
+    <div class="legend">
+      <span><svg width="36" height="12" aria-hidden="true"><line x1="0" y1="6" x2="28" y2="6" stroke="var(--ink2)" stroke-width="1.25" stroke-dasharray="4 4"/><path d="M28 1 L36 6 L28 11 z" fill="var(--card)" stroke="var(--ink2)"/></svg>implements · implementerer</span>
+      <span><svg width="36" height="10" aria-hidden="true"><line x1="0" y1="5" x2="36" y2="5" stroke="var(--ink2)" stroke-width="1.5"/></svg>calls · kalder</span>
+    </div>
+    <figure>
+      <div class="frame">
+        <svg class="dg" viewBox="0 0 920 380" role="img" aria-label="ShellViewModel calls ILibrary, ISettingsStore, IRefresher and IFeedFinder. On the left Store, SettingsStore, Refresher and FeedFinder implement them; on the right RemoteLibrary, RemoteSettings, RemoteRefresher and RemoteFeedFinder.">
+          <defs>
+            <marker id="c-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path class="ah" d="M0 0 L10 5 L0 10 z"/></marker>
+            <marker id="c-impl" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="11" markerHeight="11" orient="auto"><path class="ahhollow" d="M1 1 L11 6 L1 11 z"/></marker>
+          </defs>
+
+          <rect class="box key" x="320" y="16" width="280" height="56" rx="8"/>
+          <text class="name" x="460" y="40" text-anchor="middle">ShellViewModel</text>
+          <text class="sub" x="460" y="60" text-anchor="middle">and Sidebar, ArticleList, Settings VMs …</text>
+          <line class="ref" x1="460" y1="72" x2="460" y2="98" marker-end="url(#c-ah)"/>
+          <text class="lbl" x="470" y="90">calls only these</text>
+
+          <rect class="region" x="345" y="100" width="230" height="260" rx="12"/>
+          <text class="rlbl" x="460" y="122" text-anchor="middle">Core · the contract</text>
+          <rect class="region" x="40" y="100" width="240" height="260" rx="12"/>
+          <text class="rlbl" x="160" y="122" text-anchor="middle">Tests and server</text>
+          <rect class="region" x="640" y="100" width="240" height="260" rx="12"/>
+          <text class="rlbl" x="760" y="122" text-anchor="middle">The browser · Client</text>
+
+          <g>
+            <rect class="box" x="360" y="134" width="200" height="40" rx="7"/><text class="name" x="460" y="159" text-anchor="middle">ILibrary</text>
+            <rect class="box" x="360" y="188" width="200" height="40" rx="7"/><text class="name" x="460" y="213" text-anchor="middle">ISettingsStore</text>
+            <rect class="box" x="360" y="242" width="200" height="40" rx="7"/><text class="name" x="460" y="267" text-anchor="middle">IRefresher</text>
+            <rect class="box" x="360" y="296" width="200" height="40" rx="7"/><text class="name" x="460" y="321" text-anchor="middle">IFeedFinder</text>
+          </g>
+          <g>
+            <rect class="box" x="60" y="134" width="200" height="40" rx="7"/><text class="name" x="160" y="159" text-anchor="middle">Store</text>
+            <rect class="box" x="60" y="188" width="200" height="40" rx="7"/><text class="name" x="160" y="213" text-anchor="middle">SettingsStore</text>
+            <rect class="box" x="60" y="242" width="200" height="40" rx="7"/><text class="name" x="160" y="267" text-anchor="middle">Refresher</text>
+            <rect class="box" x="60" y="296" width="200" height="40" rx="7"/><text class="name" x="160" y="321" text-anchor="middle">FeedFinder</text>
+          </g>
+          <g>
+            <rect class="box" x="660" y="134" width="200" height="40" rx="7"/><text class="name" x="760" y="159" text-anchor="middle">RemoteLibrary</text>
+            <rect class="box" x="660" y="188" width="200" height="40" rx="7"/><text class="name" x="760" y="213" text-anchor="middle">RemoteSettings</text>
+            <rect class="box" x="660" y="242" width="200" height="40" rx="7"/><text class="name" x="760" y="267" text-anchor="middle">RemoteRefresher</text>
+            <rect class="box" x="660" y="296" width="200" height="40" rx="7"/><text class="name" x="760" y="321" text-anchor="middle">RemoteFeedFinder</text>
+          </g>
+
+          <line class="impl" x1="260" y1="154" x2="358" y2="154" marker-end="url(#c-impl)"/>
+          <line class="impl" x1="260" y1="208" x2="358" y2="208" marker-end="url(#c-impl)"/>
+          <line class="impl" x1="260" y1="262" x2="358" y2="262" marker-end="url(#c-impl)"/>
+          <line class="impl" x1="260" y1="316" x2="358" y2="316" marker-end="url(#c-impl)"/>
+          <line class="impl" x1="660" y1="154" x2="562" y2="154" marker-end="url(#c-impl)"/>
+          <line class="impl" x1="660" y1="208" x2="562" y2="208" marker-end="url(#c-impl)"/>
+          <line class="impl" x1="660" y1="262" x2="562" y2="262" marker-end="url(#c-impl)"/>
+          <line class="impl" x1="660" y1="316" x2="562" y2="316" marker-end="url(#c-impl)"/>
+        </svg>
+      </div>
+      <figcaption>
+        <span><code>RemoteLibrary</code> answers every read from memory: folders, feeds and articles without their
+          content. So the view-models still read synchronously, as they did over SQLite. Only writes and article content
+          go over the network (A20).</span>
+        <span lang="da"><code>RemoteLibrary</code> svarer alle læsninger fra hukommelsen: mapper, feeds og artikler uden
+          indhold. Derfor kan view-modellerne fortsat læse synkront, som de gjorde over SQLite. Kun skrivninger og
+          artikelindhold går over nettet (A20).</span>
+      </figcaption>
+    </figure>
+  </section>
+
+  <!-- 3. Sync -->
+  <section>
+    <h2>3. A "read" from the phone to the desktop <span class="da" lang="da">Et "læst" fra telefonen til skrivebordet</span></h2>
+    <div class="pair">
+      <p>You read an article on the phone. These are the eight steps before it is read on the desktop. The phone updates
+        itself at once, before the server has answered.</p>
+      <p lang="da">Du læser en artikel på telefonen. Her er de otte skridt, før den er læst på skrivebordet. Telefonen
+        opdaterer sig selv med det samme, før serveren har svaret.</p>
+    </div>
+    <figure>
+      <div class="frame">
+        <svg class="dg" viewBox="0 0 920 360" role="img" aria-label="The phone's ShellViewModel calls RemoteLibrary, which changes the mirror and posts through ApiClient to the server's LibraryApi. Store writes to SQLite and raises Changed, LibraryEvents sends a flags event over SSE, and the desktop's RemoteSession puts the flags into its RemoteLibrary, which updates the UI.">
+          <defs>
+            <marker id="s-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path class="ah" d="M0 0 L10 5 L0 10 z"/></marker>
+            <marker id="s-acc" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path class="ahacc" d="M0 0 L10 5 L0 10 z"/></marker>
+          </defs>
+
+          <rect class="region" x="20" y="16" width="240" height="330" rx="12"/>
+          <text class="rlbl" x="140" y="40" text-anchor="middle">Phone</text>
+          <rect class="region" x="340" y="16" width="240" height="330" rx="12"/>
+          <text class="rlbl" x="460" y="40" text-anchor="middle">Server</text>
+          <rect class="region" x="660" y="16" width="240" height="330" rx="12"/>
+          <text class="rlbl" x="780" y="40" text-anchor="middle">Desktop</text>
+
+          <rect class="box" x="40" y="60" width="200" height="48" rx="8"/><text class="name" x="140" y="89" text-anchor="middle">ShellViewModel</text>
+          <rect class="box" x="40" y="164" width="200" height="48" rx="8"/><text class="name" x="140" y="193" text-anchor="middle">RemoteLibrary</text>
+          <rect class="box" x="40" y="268" width="200" height="48" rx="8"/><text class="name" x="140" y="297" text-anchor="middle">ApiClient</text>
+
+          <rect class="box" x="360" y="268" width="200" height="48" rx="8"/><text class="name" x="460" y="297" text-anchor="middle">LibraryApi</text>
+          <rect class="box" x="360" y="164" width="200" height="48" rx="8"/><text class="name" x="460" y="187" text-anchor="middle">Store</text><text class="sub" x="460" y="204" text-anchor="middle">rssmote.sqlite</text>
+          <rect class="box" x="360" y="60" width="200" height="48" rx="8"/><text class="name" x="460" y="89" text-anchor="middle">LibraryEvents</text>
+
+          <rect class="box" x="680" y="60" width="200" height="48" rx="8"/><text class="name" x="780" y="89" text-anchor="middle">RemoteSession</text>
+          <rect class="box" x="680" y="164" width="200" height="48" rx="8"/><text class="name" x="780" y="193" text-anchor="middle">RemoteLibrary</text>
+          <rect class="box" x="680" y="268" width="200" height="48" rx="8"/><text class="name" x="780" y="297" text-anchor="middle">ShellViewModel</text>
+
+          <!-- 1, 2 down the phone -->
+          <line class="ref" x1="140" y1="108" x2="140" y2="162" marker-end="url(#s-ah)"/>
+          <circle class="step" cx="158" cy="135" r="9"/><text class="stepn" x="158" y="139" text-anchor="middle">1</text>
+          <text class="lbl" x="173" y="139">SetUnread</text>
+          <line class="ref" x1="140" y1="212" x2="140" y2="266" marker-end="url(#s-ah)"/>
+          <circle class="step" cx="158" cy="239" r="9"/><text class="stepn" x="158" y="243" text-anchor="middle">2</text>
+          <text class="lbl" x="173" y="235">mirror first,</text>
+          <text class="lbl" x="173" y="250">then POST</text>
+
+          <!-- 3 across -->
+          <line class="run" x1="240" y1="292" x2="358" y2="292" marker-end="url(#s-acc)"/>
+          <circle class="step" cx="299" cy="272" r="9"/><text class="stepn" x="299" y="276" text-anchor="middle">3</text>
+          <text class="lbl acc" x="299" y="312" text-anchor="middle">/items/unread</text>
+
+          <!-- 4, 5 up the server -->
+          <line class="ref" x1="460" y1="268" x2="460" y2="214" marker-end="url(#s-ah)"/>
+          <circle class="step" cx="478" cy="241" r="9"/><text class="stepn" x="478" y="245" text-anchor="middle">4</text>
+          <text class="lbl" x="493" y="245">SetUnread</text>
+          <line class="ref" x1="460" y1="164" x2="460" y2="110" marker-end="url(#s-ah)"/>
+          <circle class="step" cx="478" cy="137" r="9"/><text class="stepn" x="478" y="141" text-anchor="middle">5</text>
+          <text class="lbl" x="493" y="141">Changed(ids)</text>
+
+          <!-- 6 across -->
+          <line class="run" x1="560" y1="84" x2="678" y2="84" marker-end="url(#s-acc)"/>
+          <circle class="step" cx="619" cy="64" r="9"/><text class="stepn" x="619" y="68" text-anchor="middle">6</text>
+          <text class="lbl acc" x="619" y="104" text-anchor="middle">SSE: flags</text>
+
+          <!-- 7, 8 down the desktop -->
+          <line class="ref" x1="780" y1="108" x2="780" y2="162" marker-end="url(#s-ah)"/>
+          <circle class="step" cx="798" cy="135" r="9"/><text class="stepn" x="798" y="139" text-anchor="middle">7</text>
+          <text class="lbl" x="813" y="139">ApplyFlags</text>
+          <line class="ref" x1="780" y1="212" x2="780" y2="266" marker-end="url(#s-ah)"/>
+          <circle class="step" cx="798" cy="239" r="9"/><text class="stepn" x="798" y="243" text-anchor="middle">8</text>
+          <text class="lbl" x="813" y="243">Changed → UI</text>
+        </svg>
+      </div>
+      <figcaption>
+        <span>The phone gets the event in step 6 too. That costs nothing: flags that already hold the right value raise no
+          change. Everything other than flags goes out as a short <code>library</code> event, and the client fetches the
+          whole library again. The same happens each time the stream opens, so a phone that has slept misses nothing
+          (A18, A20).</span>
+        <span lang="da">Telefonen får også selv eventet i skridt 6. Det koster intet: flag, der allerede står rigtigt,
+          rejser ingen ændring. Alt andet end flag sendes som et kort <code>library</code>-event, og så henter klienten
+          hele biblioteket igen. Det samme sker, hver gang strømmen åbner, så en telefon, der har sovet, ikke mister
+          noget (A18, A20).</span>
+      </figcaption>
+    </figure>
+  </section>
+
+  <!-- 4. UI tree -->
+  <section>
+    <h2>4. From start-up to screen <span class="da" lang="da">Fra opstart til skærm</span></h2>
+    <figure>
+      <div class="frame">
+        <svg class="dg" viewBox="0 0 920 470" role="img" aria-label="App creates SessionView. Before sign-in it shows SignInView; after sign-in it creates a RemoteSession and a ShellViewModel and shows MainView. MainView shows ShellView from 900 pixels and MobileShell below. ArticleHost shows the article in an iframe.">
+          <defs>
+            <marker id="u-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path class="ah" d="M0 0 L10 5 L0 10 z"/></marker>
+            <marker id="u-acc" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path class="ahacc" d="M0 0 L10 5 L0 10 z"/></marker>
+          </defs>
+
+          <rect class="box" x="340" y="16" width="240" height="56" rx="8"/>
+          <text class="name" x="460" y="40" text-anchor="middle">Program → App</text>
+          <text class="sub" x="460" y="60" text-anchor="middle">HttpClient, BrowserStorage, theme</text>
+
+          <rect class="box key" x="340" y="116" width="240" height="56" rx="8"/>
+          <text class="name" x="460" y="140" text-anchor="middle">SessionView</text>
+          <text class="sub" x="460" y="160" text-anchor="middle">GET /api/session</text>
+          <line class="ref" x1="460" y1="72" x2="460" y2="114" marker-end="url(#u-ah)"/>
+
+          <rect class="box" x="40" y="226" width="220" height="56" rx="8"/>
+          <text class="name" x="150" y="250" text-anchor="middle">SignInView</text>
+          <text class="sub" x="150" y="270" text-anchor="middle">SignInViewModel · POST /login</text>
+
+          <rect class="box" x="350" y="226" width="220" height="56" rx="8"/>
+          <text class="name" x="460" y="250" text-anchor="middle">ShellViewModel</text>
+          <text class="sub" x="460" y="270" text-anchor="middle">over a RemoteSession</text>
+
+          <rect class="box" x="660" y="226" width="220" height="56" rx="8"/>
+          <text class="name" x="770" y="250" text-anchor="middle">MainView</text>
+          <text class="sub" x="770" y="270" text-anchor="middle">picks a layout by width</text>
+
+          <polyline class="ref" points="400,172 400,196 150,196 150,224" marker-end="url(#u-ah)"/>
+          <text class="lbl" x="160" y="190">not signed in</text>
+          <line class="ref" x1="460" y1="172" x2="460" y2="224" marker-end="url(#u-ah)"/>
+          <text class="lbl" x="470" y="204">creates</text>
+          <polyline class="ref" points="520,172 520,196 770,196 770,224" marker-end="url(#u-ah)"/>
+          <text class="lbl" x="780" y="190">signed in</text>
+
+          <line class="run" x1="658" y1="254" x2="572" y2="254" marker-end="url(#u-acc)"/>
+          <text class="lbl acc" x="615" y="246" text-anchor="middle">DataContext</text>
+
+          <rect class="box" x="330" y="330" width="260" height="76" rx="8"/>
+          <text class="sub" x="346" y="354">SidebarViewModel</text>
+          <text class="sub" x="346" y="372">ArticleListViewModel</text>
+          <text class="sub" x="474" y="354">ArticleViewModel</text>
+          <text class="sub" x="474" y="372">SettingsViewModel</text>
+          <text class="sub" x="346" y="394">+ panels: AddFeed, EditFeed …</text>
+          <line class="ref" x1="460" y1="282" x2="460" y2="328" marker-end="url(#u-ah)"/>
+          <text class="lbl" x="470" y="310">owns</text>
+
+          <rect class="box" x="640" y="330" width="120" height="56" rx="8"/>
+          <text class="name" x="700" y="354" text-anchor="middle">ShellView</text>
+          <text class="sub" x="700" y="374" text-anchor="middle">≥ 900 px</text>
+          <rect class="box" x="780" y="330" width="120" height="56" rx="8"/>
+          <text class="name" x="840" y="354" text-anchor="middle">MobileShell</text>
+          <text class="sub" x="840" y="374" text-anchor="middle">&lt; 900 px</text>
+          <polyline class="ref" points="740,282 740,306 700,306 700,328" marker-end="url(#u-ah)"/>
+          <polyline class="ref" points="800,282 800,306 840,306 840,328" marker-end="url(#u-ah)"/>
+
+          <rect class="box" x="640" y="414" width="260" height="44" rx="8"/>
+          <text class="name" x="770" y="441" text-anchor="middle">ArticleHost → &lt;iframe srcdoc&gt;</text>
+          <line class="ref" x1="700" y1="386" x2="700" y2="412" marker-end="url(#u-ah)"/>
+        </svg>
+      </div>
+      <figcaption>
+        <span>The columns and the phone stack both bind to the same <code>ShellViewModel</code>. When the window crosses
+          900 px, <code>MainView</code> swaps only the view, and what you are reading stays (A22). The article sits in an
+          <code>&lt;iframe srcdoc&gt;</code>. Its script sends links, scrolling and keys to the app with
+          <code>postMessage</code> (A23).</span>
+        <span lang="da">Både kolonnerne og phone-stakken binder til den samme <code>ShellViewModel</code>. Når vinduet
+          krydser 900 px, skifter <code>MainView</code> kun viewet, og det, du læser, bliver stående (A22). Artiklen
+          ligger i en <code>&lt;iframe srcdoc&gt;</code>. Dens script sender links, scroll og taster til appen med
+          <code>postMessage</code> (A23).</span>
+      </figcaption>
+    </figure>
+  </section>
+
+  <!-- 5. Server pipeline -->
+  <section>
+    <h2>5. A request on the server <span class="da" lang="da">En request på serveren</span></h2>
+    <figure>
+      <div class="frame">
+        <svg class="dg" viewBox="0 0 920 300" role="img" aria-label="A request passes WebApp, the rate limiter, cookie sign-in and an endpoint filter before the endpoints reach Store, Refresher, SettingsStore, FeedFinder, ImageProxy and LibraryEvents.">
+          <defs>
+            <marker id="r-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path class="ah" d="M0 0 L10 5 L0 10 z"/></marker>
+          </defs>
+
+          <rect class="box" x="20" y="30" width="150" height="72" rx="8"/>
+          <text class="name" x="95" y="56" text-anchor="middle">WebApp</text>
+          <text class="sub" x="95" y="74" text-anchor="middle">static files, brotli</text>
+          <text class="sub" x="95" y="90" text-anchor="middle">fingerprinted: cached</text>
+
+          <rect class="box" x="195" y="30" width="150" height="72" rx="8"/>
+          <text class="name" x="270" y="56" text-anchor="middle">RateLimiter</text>
+          <text class="sub" x="270" y="74" text-anchor="middle">login: 5 / min</text>
+          <text class="sub" x="270" y="90" text-anchor="middle">/api: 600, 60 / s</text>
+
+          <rect class="box" x="370" y="30" width="150" height="72" rx="8"/>
+          <text class="name" x="445" y="56" text-anchor="middle">Cookie sign-in</text>
+          <text class="sub" x="445" y="74" text-anchor="middle">AccessKey stamp</text>
+          <text class="sub" x="445" y="90" text-anchor="middle">otherwise 401</text>
+
+          <rect class="box" x="545" y="30" width="150" height="72" rx="8"/>
+          <text class="name" x="620" y="56" text-anchor="middle">Filter</text>
+          <text class="sub" x="620" y="74" text-anchor="middle">X-RSSmote-Client</text>
+          <text class="sub" x="620" y="90" text-anchor="middle">→ RequestOrigin</text>
+
+          <rect class="box key" x="720" y="30" width="180" height="72" rx="8"/>
+          <text class="name" x="810" y="56" text-anchor="middle">Endpoints</text>
+          <text class="sub" x="810" y="74" text-anchor="middle">Access · LibraryApi</text>
+          <text class="sub" x="810" y="90" text-anchor="middle">/api/*</text>
+
+          <line class="ref" x1="170" y1="66" x2="193" y2="66" marker-end="url(#r-ah)"/>
+          <line class="ref" x1="345" y1="66" x2="368" y2="66" marker-end="url(#r-ah)"/>
+          <line class="ref" x1="520" y1="66" x2="543" y2="66" marker-end="url(#r-ah)"/>
+          <line class="ref" x1="695" y1="66" x2="718" y2="66" marker-end="url(#r-ah)"/>
+          <text class="lbl" x="95" y="124" text-anchor="middle">not /api: answers itself</text>
+
+          <polyline class="ref" points="810,102 810,150 95,150" />
+          <line class="ref" x1="95" y1="150" x2="95" y2="188" marker-end="url(#r-ah)"/>
+          <line class="ref" x1="270" y1="150" x2="270" y2="188" marker-end="url(#r-ah)"/>
+          <line class="ref" x1="445" y1="150" x2="445" y2="188" marker-end="url(#r-ah)"/>
+          <line class="ref" x1="620" y1="150" x2="620" y2="188" marker-end="url(#r-ah)"/>
+          <line class="ref" x1="810" y1="150" x2="810" y2="188" marker-end="url(#r-ah)"/>
+
+          <rect class="box" x="20" y="190" width="150" height="64" rx="8"/>
+          <text class="name" x="95" y="216" text-anchor="middle">Store</text>
+          <text class="sub" x="95" y="236" text-anchor="middle">rssmote.sqlite</text>
+          <rect class="box" x="195" y="190" width="150" height="64" rx="8"/>
+          <text class="name" x="270" y="216" text-anchor="middle">Refresher</text>
+          <text class="sub" x="270" y="236" text-anchor="middle">timer in RefreshService</text>
+          <rect class="box" x="370" y="190" width="150" height="64" rx="8"/>
+          <text class="name" x="445" y="216" text-anchor="middle">SettingsStore</text>
+          <text class="sub" x="445" y="236" text-anchor="middle">settings.json</text>
+          <rect class="box" x="545" y="190" width="150" height="64" rx="8"/>
+          <text class="name" x="620" y="216" text-anchor="middle">FeedFinder</text>
+          <text class="sub" x="620" y="236" text-anchor="middle">and ImageProxy</text>
+          <rect class="box" x="720" y="190" width="180" height="64" rx="8"/>
+          <text class="name" x="810" y="216" text-anchor="middle">LibraryEvents</text>
+          <text class="sub" x="810" y="236" text-anchor="middle">SSE to every device</text>
+        </svg>
+      </div>
+      <figcaption>
+        <span>Every service is a singleton, set up in <code>Program.cs</code>. <code>LibraryEvents</code> listens to
+          <code>Store</code>, <code>SettingsStore</code> and <code>Refresher</code> and sends the changes out.
+          <code>RequestOrigin</code> remembers which client wrote, so the event can say so (A17, A18, A24).</span>
+        <span lang="da">Alle tjenester er singletons, sat op i <code>Program.cs</code>. <code>LibraryEvents</code> lytter
+          på <code>Store</code>, <code>SettingsStore</code> og <code>Refresher</code> og sender ændringerne ud.
+          <code>RequestOrigin</code> husker, hvilken klient der skrev, så eventet kan sige det (A17, A18, A24).</span>
+      </figcaption>
+    </figure>
+  </section>
+</main>
+</body>
+</html>
