@@ -162,6 +162,14 @@ ellipsis (the full title is its tooltip), so every title starts at the same plac
 column. Under it one `TextBlock` with two `Run`s — the feed name in Medium, then " — " and the summary — has
 `MaxLines=2` at `Double.SummaryLineHeight`. Row height is therefore content-driven but bounded; no measuring code.
 
+**D32 — Scroll bars match the article's.** Every scroll bar in the app is a rounded thumb with no arrows or track,
+like the browser's own bar beside the article. A pane with two kinds of bar would look like two apps. The thumb is
+`Size.ScrollThumb` wide, sits `Thickness.ScrollThumb.Inset` from the edge with `CornerRadius.ScrollThumb`, and draws
+`Brush.Ink.Secondary` at `Double.ScrollThumb.Opacity`, so every palette has one with no new colour. It is hidden at
+rest. It fades in (0.3 s) while the content moves and for a second after (`ScrollActivity`), and while the pointer is
+over it, so it can still be dragged. The theme lives in `Styles/ScrollBars.axaml`; it overlays the content, as
+Fluent's does, so it takes no width from the rows.
+
 ## Icons and assets
 
 **D12 — Icons are stroked geometry, not glyphs or fonts.** Lucide (ISC) path data is copied into

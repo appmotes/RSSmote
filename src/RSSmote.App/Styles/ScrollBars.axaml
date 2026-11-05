@@ -1,0 +1,65 @@
+<!-- Every scroll bar in the app (D32): a rounded thumb with no arrows or track, shown while the content moves. -->
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Styles.Resources>
+        <ControlTheme x:Key="ScrollThumb" TargetType="Thumb">
+            <Setter Property="Background" Value="{DynamicResource Brush.Ink.Secondary}" />
+            <Setter Property="Opacity" Value="{StaticResource Double.ScrollThumb.Opacity}" />
+            <Setter Property="CornerRadius" Value="{StaticResource CornerRadius.ScrollThumb}" />
+            <Setter Property="Margin" Value="{StaticResource Thickness.ScrollThumb.Inset}" />
+            <Setter Property="Template">
+                <ControlTemplate>
+                    <Border Background="{TemplateBinding Background}" CornerRadius="{TemplateBinding CornerRadius}" />
+                </ControlTemplate>
+            </Setter>
+        </ControlTheme>
+
+        <ControlTheme x:Key="{x:Type ScrollBar}" TargetType="ScrollBar">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Opacity" Value="0" />
+            <Setter Property="Transitions">
+                <Transitions>
+                    <DoubleTransition Property="Opacity" Duration="0:0:0.3" />
+                </Transitions>
+            </Setter>
+            <Style Selector="^:vertical">
+                <Setter Property="Template">
+                    <ControlTemplate>
+                        <Border Background="{TemplateBinding Background}">
+                            <Track Minimum="{TemplateBinding Minimum}"
+                                   Maximum="{TemplateBinding Maximum}"
+                                   Value="{TemplateBinding Value, Mode=TwoWay}"
+                                   ViewportSize="{TemplateBinding ViewportSize}"
+                                   Orientation="{TemplateBinding Orientation}"
+                                   DeferThumbDrag="{TemplateBinding ScrollViewer.IsDeferredScrollingEnabled}"
+                                   IsDirectionReversed="True">
+                                <Thumb Theme="{StaticResource ScrollThumb}" Width="{StaticResource Size.ScrollThumb}" />
+                            </Track>
+                        </Border>
+                    </ControlTemplate>
+                </Setter>
+            </Style>
+            <Style Selector="^:horizontal">
+                <Setter Property="Template">
+                    <ControlTemplate>
+                        <Border Background="{TemplateBinding Background}">
+                            <Track Minimum="{TemplateBinding Minimum}"
+                                   Maximum="{TemplateBinding Maximum}"
+                                   Value="{TemplateBinding Value, Mode=TwoWay}"
+                                   ViewportSize="{TemplateBinding ViewportSize}"
+                                   Orientation="{TemplateBinding Orientation}"
+                                   DeferThumbDrag="{TemplateBinding ScrollViewer.IsDeferredScrollingEnabled}">
+                                <Thumb Theme="{StaticResource ScrollThumb}" Height="{StaticResource Size.ScrollThumb}" />
+                            </Track>
+                        </Border>
+                    </ControlTemplate>
+                </Setter>
+            </Style>
+        </ControlTheme>
+    </Styles.Resources>
+
+    <!-- A ControlTheme cannot look up to its scroll viewer (L4), so showing the bar is a plain style. -->
+    <Style Selector="ScrollViewer.scrolling /template/ ScrollBar, ScrollBar:pointerover">
+        <Setter Property="Opacity" Value="1" />
+    </Style>
+</Styles>

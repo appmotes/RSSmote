@@ -35,6 +35,7 @@
 
     <Application.Styles>
         <FluentTheme />
+        <StyleInclude Source="avares://RSSmote.App/Styles/ScrollBars.axaml" />
         <StyleInclude Source="avares://RSSmote.App/Styles/TextBlocks.axaml" />
         <StyleInclude Source="avares://RSSmote.App/Styles/Buttons.axaml" />
         <StyleInclude Source="avares://RSSmote.App/Styles/Lists.axaml" />

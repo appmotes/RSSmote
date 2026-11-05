@@ -4,6 +4,7 @@ using Avalonia.Input;
 using Avalonia.Markup.Xaml;
 using Avalonia.Platform;
 using Avalonia.Threading;
+using RSSmote.App.Controls.Headless;
 using RSSmote.App.Theming;
 using RSSmote.App.Views;
 using RSSmote.Client;
@@ -29,7 +30,11 @@ public partial class App : Application
         Current is App { AppleKeyboard: true } ? KeyModifiers.Meta
             : Current?.PlatformSettings?.HotkeyConfiguration.CommandModifiers ?? KeyModifiers.Control;
 
-    public override void Initialize() => AvaloniaXamlLoader.Load(this);
+    public override void Initialize()
+    {
+        AvaloniaXamlLoader.Load(this);
+        ScrollActivity.Register();
+    }
 
     /// <summary>
     /// Applies this device's theme before anything shows, then hands the view to <see cref="SessionView"/>, which signs
