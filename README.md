@@ -194,6 +194,7 @@ The project is described in `Docs/`, with an id on every rule, so code and docum
 | File | Contents |
 | --- | --- |
 | [Docs/architecture.md](Docs/architecture.md) | How the app is put together: projects, shell, storage, refresh, article rendering |
+| [Docs/architecture.html](Docs/architecture.html) | The same as diagrams, in English and Danish: projects, sync, start-up, the server |
 | [Docs/design-language.md](Docs/design-language.md) | The design: tokens, themes, typography, components, icons |
 | [Docs/pitfalls.md](Docs/pitfalls.md) | Failures that say nothing, with the fix and the measurement that proves it |
 | [Docs/todo.md](Docs/todo.md) | What is missing, and how to check it |
