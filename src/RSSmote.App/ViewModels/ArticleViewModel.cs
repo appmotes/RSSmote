@@ -50,9 +50,14 @@ public sealed partial class ArticleViewModel : ObservableObject
     partial void OnItemChanged(Item? oldValue, Item? newValue)
     {
         if (newValue is null || oldValue?.Id != newValue.Id)
+        {
             Document = null;
+        }
+
         if (newValue is not null && Document is null && newValue.Content.Length > 0)
+        {
             ShowContent(newValue);
+        }
     }
 
     /// <summary>Renders <paramref name="full"/> when it is still the article shown.</summary>

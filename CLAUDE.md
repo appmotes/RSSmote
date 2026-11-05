@@ -120,7 +120,8 @@ These stay on one line, as they are not blocks: `{ get; set; }`, property patter
 expressions (`feed with { Id = id }`).
 
 `.editorconfig` holds the rules and the build checks them (`EnforceCodeStyleInBuild`): a missing brace is IDE0011 and
-a misplaced one IDE0055. No analyzer sees a one-line initializer, so that part is on the writer. `dotnet format
+a misplaced one IDE0055. No analyzer sees a one-line initializer, and IDE0011 misses a braceless body inside a `partial void On…Changed`
+method, so those two are on the writer. `dotnet format
 RSSmote.slnx` fixes braces and layout.
 
 ## Code comments: minimal, English, and no archaeology

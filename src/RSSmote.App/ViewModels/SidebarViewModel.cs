@@ -96,7 +96,10 @@ public sealed partial class SidebarViewModel : ObservableObject
     partial void OnSelectedRowChanged(SidebarRowViewModel? oldValue, SidebarRowViewModel? newValue)
     {
         if (_reloading || newValue is null)
+        {
             return;
+        }
+
         if (newValue.Stream is null)
         {
             // Section headers toggle instead of selecting.
@@ -106,7 +109,10 @@ public sealed partial class SidebarViewModel : ObservableObject
         }
         // A stream row chooses the filter it is named after; a folder or feed keeps the filter it finds.
         if (newValue.Kind == SidebarRowKind.Smart && _settings.Current.Filter != newValue.Filter)
+        {
             _settings.Update(s => s.Filter = newValue.Filter);
+        }
+
         if (IsPhone)
         {
             // Every pick opens a list.
@@ -116,7 +122,10 @@ public sealed partial class SidebarViewModel : ObservableObject
             return;
         }
         if (newValue.Stream == SelectedStream)
+        {
             return;
+        }
+
         SelectedStream = newValue.Stream;
         StreamSelected?.Invoke(this, SelectedStream);
     }

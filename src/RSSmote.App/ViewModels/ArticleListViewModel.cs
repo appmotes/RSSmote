@@ -94,7 +94,9 @@ public sealed partial class ArticleListViewModel : ObservableObject
     partial void OnFilterChanged(StreamFilter value)
     {
         if (_settings.Current.Filter != value)
+        {
             _settings.Update(s => s.Filter = value);
+        }
     }
 
     /// <summary>Asks the view to move the keyboard into the filter box (Cmd/Ctrl+F).</summary>
@@ -130,7 +132,10 @@ public sealed partial class ArticleListViewModel : ObservableObject
     partial void OnSelectedRowChanged(object? oldValue, object? newValue)
     {
         if (_reloading)
+        {
             return;
+        }
+
         if (newValue is DateHeaderViewModel)
         {
             // Day headings are not selectable: keep the previous article.
