@@ -193,7 +193,7 @@ Projektet er beskrevet i `Docs/`, med en id på hver regel, så kode og dokument
 | Fil | Indhold |
 | --- | --- |
 | [Docs/architecture.md](Docs/architecture.md) | Hvordan appen er bygget op: projekter, shell, lagring, opdatering, artikelvisning |
-| [Docs/architecture.html](Docs/architecture.html) | Det samme som diagrammer, på engelsk og dansk: projekter, synkronisering, opstart, serveren |
+| [Docs/architecture.html](Docs/architecture.html) | Det samme som diagrammer, på engelsk: projekter, synkronisering, opstart, serveren |
 | [Docs/design-language.md](Docs/design-language.md) | Designet: tokens, temaer, typografi, komponenter, ikoner |
 | [Docs/pitfalls.md](Docs/pitfalls.md) | Fejl, der ikke siger noget, med rettelse og den måling der beviser den |
 | [Docs/todo.md](Docs/todo.md) | Hvad der mangler, og hvordan det tjekkes |

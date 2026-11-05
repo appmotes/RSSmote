@@ -27,7 +27,7 @@ description of how the control is meant to work; a defect written into a design 
 | Document | Carries | Never carries |
 |---|---|---|
 | `Docs/architecture.md` | How the app is put together: projects, shell, overlays, storage, refresh, platform seams | — |
-| `Docs/architecture.html` | The same, drawn: five diagrams, English text first, Danish after | Rules, defects |
+| `Docs/architecture.html` | The same, drawn: five diagrams, in English | Rules, defects |
 | `Docs/design-language.md` | Which shape to reach for and why: tokens, type roles, components, icons, layout metrics, copy | Defects |
 | `Docs/pitfalls.md` | What fails silently, the fix, and the measurement that proves it | Anything unmeasured stated as fact |
 | `Docs/todo.md` | What must be fixed, need-to-have / nice-to-have, and how to confirm each | Rules |
@@ -76,9 +76,8 @@ than drawing something plausible.
 
 The diagrams are hand-drawn SVG and go stale as silently as `templates.html`. **Update the page in the same change**
 when a project, a project reference, a class in a diagram (a rename too), an interface in Core, the sync path, the sign-in
-flow, the server pipeline, a rate limit or a test project's references change. Labels inside the diagrams are English.
-Every block of text comes in English first, then Danish (`lang="da"`), and the two always say the same thing.
-The page cites `A` ids rather than restating the rules.
+flow, the server pipeline, a rate limit or a test project's references change. The page is in English only, and it
+cites `A` ids rather than restating the rules.
 
 ## Working rules
 

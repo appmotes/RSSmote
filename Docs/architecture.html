@@ -41,7 +41,6 @@
   header { display: grid; gap: 8px; max-width: 68ch; }
   h1 { font: 600 30px/1.2 var(--sans); margin: 0; text-wrap: balance; }
   h2 { font: 600 20px/1.3 var(--sans); margin: 0; text-wrap: balance; }
-  h1 .da, h2 .da { color: var(--ink2); font-weight: 400; }
   p { margin: 0; max-width: 68ch; }
   .lede { color: var(--ink2); }
   section { display: grid; gap: 16px; }
@@ -50,16 +49,6 @@
   figure { margin: 0; display: grid; gap: 10px; }
   .frame { background: var(--card); border: 1px solid var(--line); border-radius: 10px; overflow-x: auto; padding: 12px; }
   figcaption { color: var(--ink2); font-size: 14px; max-width: 76ch; display: grid; gap: 8px; }
-  /* The Danish text follows the English, marked by a rule and a tag. */
-  .pair { display: grid; gap: 8px; }
-  .pair > [lang="da"], figcaption > [lang="da"] { border-left: 2px solid var(--line); padding-left: 12px; }
-  .pair > [lang="da"]::before, figcaption > [lang="da"]::before {
-    content: "DA";
-    font: 600 10px var(--sans);
-    letter-spacing: 0.08em;
-    color: var(--accent);
-    margin-right: 8px;
-  }
   .legend { display: flex; flex-wrap: wrap; gap: 8px 20px; font-size: 13px; color: var(--ink2); }
   .legend span { display: inline-flex; align-items: center; gap: 8px; }
   .legend svg { flex: none; }
@@ -68,7 +57,6 @@
   th, td { text-align: left; padding: 8px 12px 8px 0; border-bottom: 1px solid var(--line); vertical-align: top; }
   th { font: 600 11px var(--sans); letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink2); }
   td:first-child { white-space: nowrap; }
-  td .da { display: block; color: var(--ink2); }
 
   /* Diagram marks */
   .dg { display: block; width: 100%; min-width: 760px; height: auto; color: var(--ink); }
@@ -94,23 +82,18 @@
 <main>
   <header>
     <span class="eyebrow">RSSmote · server and WebAssembly</span>
-    <h1>How RSSmote fits together <span class="da" lang="da">Sådan hænger RSSmote sammen</span></h1>
-    <div class="pair">
-      <p class="lede">Five drawings: which projects reference which, how the view-models run over two different
-        libraries, how a "read" travels from the phone to the desktop, how the UI is built, and what a request meets on
-        the server. Ids such as <code>A20</code> point into <code>Docs/architecture.md</code>.</p>
-      <p class="lede" lang="da">Fem tegninger: hvilke projekter der refererer hvilke, hvordan view-modellerne kører over
-        to forskellige biblioteker, hvordan et "læst" når fra telefonen til skrivebordet, hvordan UI'et bygges, og hvad
-        en request møder på serveren. Id'er som <code>A20</code> peger ind i <code>Docs/architecture.md</code>.</p>
-    </div>
+    <h1>How RSSmote fits together</h1>
+    <p class="lede">Five drawings: which projects reference which, how the view-models run over two different
+      libraries, how a "read" travels from the phone to the desktop, how the UI is built, and what a request meets on
+      the server. Ids such as <code>A20</code> point into <code>Docs/architecture.md</code>.</p>
   </header>
 
   <!-- 1. Projects -->
   <section>
-    <h2>1. The projects <span class="da" lang="da">Projekterne</span></h2>
+    <h2>1. The projects</h2>
     <div class="legend">
-      <span><svg width="36" height="10" aria-hidden="true"><line x1="0" y1="5" x2="36" y2="5" stroke="var(--ink2)" stroke-width="1.5"/></svg>project reference · projektreference</span>
-      <span><svg width="36" height="10" aria-hidden="true"><line x1="0" y1="5" x2="36" y2="5" stroke="var(--accent)" stroke-width="1.75" stroke-dasharray="6 5"/></svg>over the network, at run time · over nettet, mens appen kører</span>
+      <span><svg width="36" height="10" aria-hidden="true"><line x1="0" y1="5" x2="36" y2="5" stroke="var(--ink2)" stroke-width="1.5"/></svg>project reference</span>
+      <span><svg width="36" height="10" aria-hidden="true"><line x1="0" y1="5" x2="36" y2="5" stroke="var(--accent)" stroke-width="1.75" stroke-dasharray="6 5"/></svg>over the network, at run time</span>
     </div>
     <figure>
       <div class="frame">
@@ -165,22 +148,19 @@
         <span>No reference crosses the middle. App never references Data, so SQLite never reaches the browser. The
           server never references Avalonia. App also references Core directly, for the models. The two halves meet only
           over the network and in the shared types in Core (A1).</span>
-        <span lang="da">Ingen reference krydser midten. App refererer aldrig Data, så SQLite kommer aldrig med til
-          browseren. Serveren refererer aldrig Avalonia. App refererer også Core direkte, for modellerne. De to halvdele
-          mødes kun over nettet og i de fælles typer i Core (A1).</span>
       </figcaption>
     </figure>
 
     <div class="tablewrap">
       <table>
-        <thead><tr><th>Test project</th><th>References</th><th>Tests · Tester</th></tr></thead>
+        <thead><tr><th>Test project</th><th>References</th><th>Tests</th></tr></thead>
         <tbody>
-          <tr><td><code>Core.Tests</code></td><td>Core</td><td>Parser, dates, HTML, feed discovery, OPML<span class="da" lang="da">Parser, datoer, HTML, feed-søgning, OPML</span></td></tr>
-          <tr><td><code>Data.Tests</code></td><td>Data</td><td>Store, refresh, pruning, migrations<span class="da" lang="da">Store, opdatering, oprydning, migrationer</span></td></tr>
-          <tr><td><code>Server.Tests</code></td><td>Server, Client</td><td>The API in process, and two devices syncing through it<span class="da" lang="da">API'et i processen, og to enheder der synkroniserer gennem det</span></td></tr>
-          <tr><td><code>App.Tests</code></td><td>App, Data</td><td>View-models over a real SQLite store, palettes, gallery<span class="da" lang="da">View-models over en rigtig SQLite-store, paletter, galleri</span></td></tr>
-          <tr><td><code>Desktop.Tests</code></td><td>App, Data</td><td>The columns drawn headless: Settings, menus, README images<span class="da" lang="da">Kolonnerne tegnet headless: Settings, menuer, README-billeder</span></td></tr>
-          <tr><td><code>Mobile.Tests</code></td><td>App, Data</td><td>The phone stack at 402 × 874, and MainView's switch at 900 px<span class="da" lang="da">Phone-stakken ved 402 × 874, og MainView's skift ved 900 px</span></td></tr>
+          <tr><td><code>Core.Tests</code></td><td>Core</td><td>Parser, dates, HTML, feed discovery, OPML</td></tr>
+          <tr><td><code>Data.Tests</code></td><td>Data</td><td>Store, refresh, pruning, migrations</td></tr>
+          <tr><td><code>Server.Tests</code></td><td>Server, Client</td><td>The API in process, and two devices syncing through it</td></tr>
+          <tr><td><code>App.Tests</code></td><td>App, Data</td><td>View-models over a real SQLite store, palettes, gallery</td></tr>
+          <tr><td><code>Desktop.Tests</code></td><td>App, Data</td><td>The columns drawn headless: Settings, menus, README images</td></tr>
+          <tr><td><code>Mobile.Tests</code></td><td>App, Data</td><td>The phone stack at 402 × 874, and MainView's switch at 900 px</td></tr>
         </tbody>
       </table>
     </div>
@@ -188,18 +168,13 @@
 
   <!-- 2. Contract -->
   <section>
-    <h2>2. The same view-models, two libraries <span class="da" lang="da">Samme view-models, to biblioteker</span></h2>
-    <div class="pair">
-      <p>The view-models know only four interfaces in Core. In the browser the <code>Remote*</code> classes stand behind
-        them. In the tests and on the server it is <code>Store</code> and its companions. So the tests can run the UI over
-        a real SQLite file with no server.</p>
-      <p lang="da">View-modellerne kender kun fire interfaces i Core. I browseren står <code>Remote*</code>-klasserne bag
-        dem. I testene og på serveren er det <code>Store</code> og dens venner. Derfor kan testene køre UI'et over en
-        rigtig SQLite-fil uden en server.</p>
-    </div>
+    <h2>2. The same view-models, two libraries</h2>
+    <p>The view-models know only four interfaces in Core. In the browser the <code>Remote*</code> classes stand behind
+      them. In the tests and on the server it is <code>Store</code> and its companions. So the tests can run the UI over
+      a real SQLite file with no server.</p>
     <div class="legend">
-      <span><svg width="36" height="12" aria-hidden="true"><line x1="0" y1="6" x2="28" y2="6" stroke="var(--ink2)" stroke-width="1.25" stroke-dasharray="4 4"/><path d="M28 1 L36 6 L28 11 z" fill="var(--card)" stroke="var(--ink2)"/></svg>implements · implementerer</span>
-      <span><svg width="36" height="10" aria-hidden="true"><line x1="0" y1="5" x2="36" y2="5" stroke="var(--ink2)" stroke-width="1.5"/></svg>calls · kalder</span>
+      <span><svg width="36" height="12" aria-hidden="true"><line x1="0" y1="6" x2="28" y2="6" stroke="var(--ink2)" stroke-width="1.25" stroke-dasharray="4 4"/><path d="M28 1 L36 6 L28 11 z" fill="var(--card)" stroke="var(--ink2)"/></svg>implements</span>
+      <span><svg width="36" height="10" aria-hidden="true"><line x1="0" y1="5" x2="36" y2="5" stroke="var(--ink2)" stroke-width="1.5"/></svg>calls</span>
     </div>
     <figure>
       <div class="frame">
@@ -255,22 +230,15 @@
         <span><code>RemoteLibrary</code> answers every read from memory: folders, feeds and articles without their
           content. So the view-models still read synchronously, as they did over SQLite. Only writes and article content
           go over the network (A20).</span>
-        <span lang="da"><code>RemoteLibrary</code> svarer alle læsninger fra hukommelsen: mapper, feeds og artikler uden
-          indhold. Derfor kan view-modellerne fortsat læse synkront, som de gjorde over SQLite. Kun skrivninger og
-          artikelindhold går over nettet (A20).</span>
       </figcaption>
     </figure>
   </section>
 
   <!-- 3. Sync -->
   <section>
-    <h2>3. A "read" from the phone to the desktop <span class="da" lang="da">Et "læst" fra telefonen til skrivebordet</span></h2>
-    <div class="pair">
-      <p>You read an article on the phone. These are the eight steps before it is read on the desktop. The phone updates
-        itself at once, before the server has answered.</p>
-      <p lang="da">Du læser en artikel på telefonen. Her er de otte skridt, før den er læst på skrivebordet. Telefonen
-        opdaterer sig selv med det samme, før serveren har svaret.</p>
-    </div>
+    <h2>3. A "read" from the phone to the desktop</h2>
+    <p>You read an article on the phone. These are the eight steps before it is read on the desktop. The phone updates
+      itself at once, before the server has answered.</p>
     <figure>
       <div class="frame">
         <svg class="dg" viewBox="0 0 920 360" role="img" aria-label="The phone's ShellViewModel calls RemoteLibrary, which changes the mirror and posts through ApiClient to the server's LibraryApi. Store writes to SQLite and raises Changed, LibraryEvents sends a flags event over SSE, and the desktop's RemoteSession puts the flags into its RemoteLibrary, which updates the UI.">
@@ -339,17 +307,13 @@
           change. Everything other than flags goes out as a short <code>library</code> event, and the client fetches the
           whole library again. The same happens each time the stream opens, so a phone that has slept misses nothing
           (A18, A20).</span>
-        <span lang="da">Telefonen får også selv eventet i skridt 6. Det koster intet: flag, der allerede står rigtigt,
-          rejser ingen ændring. Alt andet end flag sendes som et kort <code>library</code>-event, og så henter klienten
-          hele biblioteket igen. Det samme sker, hver gang strømmen åbner, så en telefon, der har sovet, ikke mister
-          noget (A18, A20).</span>
       </figcaption>
     </figure>
   </section>
 
   <!-- 4. UI tree -->
   <section>
-    <h2>4. From start-up to screen <span class="da" lang="da">Fra opstart til skærm</span></h2>
+    <h2>4. From start-up to screen</h2>
     <figure>
       <div class="frame">
         <svg class="dg" viewBox="0 0 920 470" role="img" aria-label="App creates SessionView. Before sign-in it shows SignInView; after sign-in it creates a RemoteSession and a ShellViewModel and shows MainView. MainView shows ShellView from 900 pixels and MobileShell below. ArticleHost shows the article in an iframe.">
@@ -417,17 +381,13 @@
           900 px, <code>MainView</code> swaps only the view, and what you are reading stays (A22). The article sits in an
           <code>&lt;iframe srcdoc&gt;</code>. Its script sends links, scrolling and keys to the app with
           <code>postMessage</code> (A23).</span>
-        <span lang="da">Både kolonnerne og phone-stakken binder til den samme <code>ShellViewModel</code>. Når vinduet
-          krydser 900 px, skifter <code>MainView</code> kun viewet, og det, du læser, bliver stående (A22). Artiklen
-          ligger i en <code>&lt;iframe srcdoc&gt;</code>. Dens script sender links, scroll og taster til appen med
-          <code>postMessage</code> (A23).</span>
       </figcaption>
     </figure>
   </section>
 
   <!-- 5. Server pipeline -->
   <section>
-    <h2>5. A request on the server <span class="da" lang="da">En request på serveren</span></h2>
+    <h2>5. A request on the server</h2>
     <figure>
       <div class="frame">
         <svg class="dg" viewBox="0 0 920 300" role="img" aria-label="A request passes WebApp, the rate limiter, cookie sign-in and an endpoint filter before the endpoints reach Store, Refresher, SettingsStore, FeedFinder, ImageProxy and LibraryEvents.">
@@ -494,9 +454,6 @@
         <span>Every service is a singleton, set up in <code>Program.cs</code>. <code>LibraryEvents</code> listens to
           <code>Store</code>, <code>SettingsStore</code> and <code>Refresher</code> and sends the changes out.
           <code>RequestOrigin</code> remembers which client wrote, so the event can say so (A17, A18, A24).</span>
-        <span lang="da">Alle tjenester er singletons, sat op i <code>Program.cs</code>. <code>LibraryEvents</code> lytter
-          på <code>Store</code>, <code>SettingsStore</code> og <code>Refresher</code> og sender ændringerne ud.
-          <code>RequestOrigin</code> husker, hvilken klient der skrev, så eventet kan sige det (A17, A18, A24).</span>
       </figcaption>
     </figure>
   </section>
