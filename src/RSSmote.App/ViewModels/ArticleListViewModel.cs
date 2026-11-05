@@ -44,7 +44,8 @@ public sealed partial class ArticleListViewModel : ObservableObject
 
     public IEnumerable<ArticleRowViewModel> Articles => Rows.OfType<ArticleRowViewModel>();
 
-    public ArticleStream Stream { get; private set; }
+    /// <summary>The stream listed; null lists nothing (see <see cref="Clear"/>).</summary>
+    public ArticleStream? Stream { get; private set; }
 
     /// <summary>Raised when the selected article changes, including to none.</summary>
     public event EventHandler<ArticleRowViewModel?>? ArticleSelected;
@@ -153,6 +154,13 @@ public sealed partial class ArticleListViewModel : ObservableObject
         Reload(keepSelection: false);
     }
 
+    /// <summary>Lists nothing and selects nothing until the next <see cref="Show"/>; the title stays.</summary>
+    public void Clear()
+    {
+        Stream = null;
+        Reload(keepSelection: false);
+    }
+
     /// <summary>No view shows the list any more; see <see cref="IsShown"/>.</summary>
     public void Hide() => IsShown = false;
 
@@ -180,7 +188,7 @@ public sealed partial class ArticleListViewModel : ObservableObject
         var settings = _builtWith = _settings.Current;
         Filter = settings.Filter;
         var selected = keepSelection ? SelectedArticle : null;
-        var items = _store.Items(Stream, settings.Filter, SearchText, settings.SortNewestFirst).ToList();
+        var items = Stream is { } stream ? _store.Items(stream, settings.Filter, SearchText, settings.SortNewestFirst).ToList() : [];
         if (selected is not null && filterChanged && items.All(i => i.Id != selected.Id))
         {
             selected = null;
@@ -256,7 +264,7 @@ public sealed partial class ArticleListViewModel : ObservableObject
     public void UpdateSubtitle()
     {
         var filter = _settings.Current.Filter == StreamFilter.Starred ? StreamFilter.Starred : StreamFilter.Unread;
-        var count = _store.Count(Stream, filter);
+        var count = Stream is { } stream ? _store.Count(stream, filter) : 0;
         Subtitle = ItemFormatting.CountText(count, filter);
         CountText = count > 0 ? count.ToString(System.Globalization.CultureInfo.CurrentCulture) : "";
         PhoneSubtitle = $"{count} {(filter == StreamFilter.Starred ? "starred" : "unread")} · "
@@ -268,6 +276,7 @@ public sealed partial class ArticleListViewModel : ObservableObject
         IsEmpty = empty;
         (EmptyTitle, EmptySubtitle) = (IsSearching, filter) switch
         {
+            _ when Stream is null => ("All caught up", "Everything here is marked as read."),
             (true, _) => ("No matches", $"Nothing here matches “{SearchText.Trim()}”."),
             (_, StreamFilter.Starred) => ("No starred articles", "Press s on an article to star it."),
             (_, StreamFilter.Unread) => ("All caught up", "Nothing unread here."),

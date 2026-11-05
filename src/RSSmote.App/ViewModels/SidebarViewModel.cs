@@ -75,7 +75,8 @@ public sealed partial class SidebarViewModel : ObservableObject
     /// <summary>Raised when the user picks another stream.</summary>
     public event EventHandler<ArticleStream>? StreamSelected;
 
-    public ArticleStream SelectedStream { get; private set; }
+    /// <summary>The chosen stream; null when nothing is chosen, as after Mark All as Read.</summary>
+    public ArticleStream? SelectedStream { get; private set; }
 
     /// <summary>The sidebar status bar: when the library was last refreshed and how many feeds it holds.</summary>
     [ObservableProperty]
@@ -100,7 +101,7 @@ public sealed partial class SidebarViewModel : ObservableObject
         {
             // Section headers toggle instead of selecting.
             Toggle(newValue);
-            SelectedRow = IsPhone ? null : Rows.FirstOrDefault(r => Shows(r, SelectedStream));
+            SelectedRow = IsPhone || SelectedStream is not { } chosen ? null : Rows.FirstOrDefault(r => Shows(r, chosen));
             return;
         }
         // A stream row chooses the filter it is named after; a folder or feed keeps the filter it finds.
@@ -118,6 +119,13 @@ public sealed partial class SidebarViewModel : ObservableObject
             return;
         SelectedStream = newValue.Stream;
         StreamSelected?.Invoke(this, SelectedStream);
+    }
+
+    /// <summary>Chooses nothing: no row is selected until the reader picks one.</summary>
+    public void ClearSelection()
+    {
+        SelectedStream = null;
+        Reload();
     }
 
     public void Select(ArticleStream stream)
@@ -167,10 +175,9 @@ public sealed partial class SidebarViewModel : ObservableObject
 
     /// <summary>
     /// Rebuilds the rows. The selected feed or folder stays listed while empty ones are hidden, so the one being read
-    /// does not vanish under the reader; <paramref name="keepSelected"/> false lets it go, and the selection moves to
-    /// what is still shown.
+    /// does not vanish under the reader.
     /// </summary>
-    public void Reload(bool keepSelected = true)
+    public void Reload()
     {
         var settings = _settings.Current;
         var phone = IsPhone;
@@ -183,7 +190,7 @@ public sealed partial class SidebarViewModel : ObservableObject
         var collapsedSections = settings.CollapsedSections.ToHashSet();
 
         int CountOf(Feed f) => counts.GetValueOrDefault(f.Id);
-        bool IsSelected(ArticleStream s) => keepSelected && s == SelectedStream;
+        bool IsSelected(ArticleStream s) => s == SelectedStream;
         bool Visible(Feed f) => showable is null || showable.GetValueOrDefault(f.Id) > 0 || (!phone && IsSelected(new ArticleStream.OfFeed(f.Id)));
 
         var unread = phone || filter == StreamFilter.Unread ? counts : _store.Counts(StreamFilter.Unread);
@@ -255,14 +262,14 @@ public sealed partial class SidebarViewModel : ObservableObject
                     Rows.Add(row);
                 }
             }
-            if (phone)
+            if (phone || SelectedStream is not { } chosen)
             {
                 SelectedRow = null;
                 return;
             }
             // A selected feed hidden by a collapsed folder or section hands the selection to what is still shown.
-            var parent = ParentOf(SelectedStream, feeds);
-            SelectedRow = rows.FirstOrDefault(r => Shows(r, SelectedStream))
+            var parent = ParentOf(chosen, feeds);
+            SelectedRow = rows.FirstOrDefault(r => Shows(r, chosen))
                           ?? (parent is null ? null : rows.FirstOrDefault(r => r.Stream == parent))
                           ?? rows.First(r => Shows(r, new ArticleStream.All()));
             SelectedStream = SelectedRow.Stream!;

@@ -141,34 +141,67 @@ public sealed class ShellViewModelTests : IDisposable
         Assert.Null(_f.Shell.Article.Item);
     }
 
+    /// <summary>Mark All as Read empties the list and chooses nothing, in the sidebar, the list or the article.</summary>
+    private void AssertNothingChosen()
+    {
+        Assert.Null(_f.Shell.Sidebar.SelectedStream);
+        Assert.Null(_f.Shell.Sidebar.SelectedRow);
+        Assert.Null(_f.Shell.List.Stream);
+        Assert.Empty(_f.Shell.List.Rows);
+        Assert.True(_f.Shell.List.IsEmpty);
+        Assert.Null(_f.Shell.List.SelectedRow);
+        Assert.Null(_f.Shell.Article.Item);
+    }
+
     [Fact]
-    public void A_feed_marked_read_leaves_the_sidebar_at_once_and_the_selection_moves_up()
+    public void A_feed_marked_read_leaves_the_sidebar_at_once_and_nothing_stays_chosen()
     {
         _f.Shell.Sidebar.SelectedRow = _f.Row("WIRED");
+        _f.Shell.List.SelectedRow = _f.Shell.List.Articles.Single();
         _f.Shell.MarkAllReadCommand.Execute(null);
 
         Assert.DoesNotContain("WIRED", _f.Shell.Sidebar.Rows.Select(r => r.Title));
-        Assert.Equal(new ArticleStream.All(), _f.Shell.Sidebar.SelectedStream);
-        Assert.Equal(new ArticleStream.All(), _f.Shell.List.Stream);
-    }
+        AssertNothingChosen();
 
-    [Fact]
-    public void A_folder_marked_read_leaves_the_sidebar_and_a_feed_in_a_folder_hands_over_to_the_folder()
-    {
-        _f.Settings.Update(s => s.ExpandedFolders = [_f.Apple.Id]);
         _f.Shell.FlushPendingReload();
-        _f.Shell.Sidebar.SelectedRow = _f.Row("Daring Fireball");
-        _f.Shell.MarkAllReadCommand.Execute(null);
-        Assert.DoesNotContain("Daring Fireball", _f.Shell.Sidebar.Rows.Select(r => r.Title));
-        Assert.Equal(new ArticleStream.InFolder(_f.Apple.Id), _f.Shell.Sidebar.SelectedStream);
-
-        _f.Shell.MarkAllReadCommand.Execute(null);
-        Assert.DoesNotContain("Apple", _f.Shell.Sidebar.Rows.Select(r => r.Title));
-        Assert.Equal(new ArticleStream.All(), _f.Shell.Sidebar.SelectedStream);
+        AssertNothingChosen();
     }
 
     [Fact]
-    public void Reading_the_last_article_keeps_the_feed_and_with_empty_feeds_shown_marking_read_keeps_it_too()
+    public void Marking_read_empties_the_list_under_every_filter_wherever_the_reader_stands()
+    {
+        foreach (var filter in new[] { StreamFilter.Unread, StreamFilter.All, StreamFilter.Starred })
+        {
+            _f.Shell.Sidebar.Select(new ArticleStream.All());
+            _f.Shell.ShowFilterCommand.Execute(filter);
+            _f.Store.SetStarred([.. _f.Store.Items(new ArticleStream.All(), StreamFilter.All).Select(i => i.Id)], true);
+            _f.Store.SetUnread([.. _f.Store.Items(new ArticleStream.All(), StreamFilter.All).Select(i => i.Id)], true);
+            _f.Shell.FlushPendingReload();
+            _f.Shell.List.SelectedRow = _f.Shell.List.Articles.Last();
+            Assert.NotNull(_f.Shell.Article.Item);
+
+            _f.Shell.MarkAllReadCommand.Execute(null);
+            AssertNothingChosen();
+            _f.Shell.FlushPendingReload();
+            AssertNothingChosen();
+        }
+    }
+
+    [Fact]
+    public void After_marking_read_a_picked_stream_lists_again_and_a_second_mark_does_nothing()
+    {
+        _f.Shell.MarkAllReadCommand.Execute(null);
+        _f.Shell.MarkAllReadCommand.Execute(null);
+        AssertNothingChosen();
+
+        _f.Shell.ShowFilterCommand.Execute(StreamFilter.All);
+        _f.Shell.Sidebar.SelectedRow = _f.Row("All Items");
+        Assert.Equal(new ArticleStream.All(), _f.Shell.List.Stream);
+        Assert.Equal(5, _f.Shell.List.Articles.Count());
+    }
+
+    [Fact]
+    public void Reading_the_last_article_keeps_the_feed_and_with_empty_feeds_shown_marking_read_keeps_it_unchosen()
     {
         _f.Shell.Sidebar.SelectedRow = _f.Row("WIRED");
         _f.Shell.List.SelectedRow = _f.Shell.List.Articles.Single();
@@ -177,7 +210,8 @@ public sealed class ShellViewModelTests : IDisposable
 
         _f.Shell.Settings.HideEmptyFeeds = false;
         _f.Shell.MarkAllReadCommand.Execute(null);
-        Assert.Equal(new ArticleStream.OfFeed(_f.Wired.Id), _f.Shell.Sidebar.SelectedStream);
+        Assert.Contains("WIRED", _f.Shell.Sidebar.Rows.Select(r => r.Title));
+        AssertNothingChosen();
     }
 
     [Fact]

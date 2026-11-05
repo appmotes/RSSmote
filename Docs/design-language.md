@@ -153,8 +153,9 @@ with all feeds shown, the selected stream row is the one the filter names. Colla
 folder, or to the stream row the filter names when the folder is hidden too. "Hide empty feeds" (on by default) lists only feeds with
 articles under the filter (any article under All Items), plus the selected one, and only folders with such a feed;
 off, every folder and feed is listed under every filter. The selected one stays while its last article is read, so
-it does not vanish under the reader, but Mark All as Read lets it go at once, and the selection moves to its folder
-or to the stream row the filter names.
+it does not vanish under the reader, but Mark All as Read lets it go at once. Mark All as Read then chooses nothing,
+under every filter: no sidebar row, an empty list and no article, until the reader picks a stream. An empty list
+means the work is done, so nothing new is offered in its place.
 
 **D11 — One line of title, two of source and summary.** The title is one `TextBlock` with `MaxLines=1` and an
 ellipsis (the full title is its tooltip), so every title starts at the same place and the eye can run down the

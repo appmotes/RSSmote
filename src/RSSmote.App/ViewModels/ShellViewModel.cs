@@ -122,10 +122,27 @@ public sealed partial class ShellViewModel : ObservableObject, IDisposable
 
     // MARK: Flow
 
-    private void ShowStream(ArticleStream stream)
+    private void ShowStream(ArticleStream? stream)
     {
-        List.Show(stream, Sidebar.Title(stream));
+        if (stream is null)
+        {
+            List.Clear();
+        }
+        else
+        {
+            List.Show(stream, Sidebar.Title(stream));
+        }
+
         UpdateEmptyState();
+    }
+
+    /// <summary>A renamed feed or folder renames the list; a cleared list keeps the title it had.</summary>
+    private void RetitleList()
+    {
+        if (List.Stream is { } stream)
+        {
+            List.Title = Sidebar.Title(stream);
+        }
     }
 
     private void OnArticleSelected(ArticleRowViewModel? row)
@@ -156,7 +173,7 @@ public sealed partial class ShellViewModel : ObservableObject, IDisposable
     private void ReloadAll()
     {
         Sidebar.Reload();
-        List.Title = Sidebar.Title(List.Stream);
+        RetitleList();
         List.Reload(keepSelection: true);
         UpdateEmptyState();
     }
@@ -164,7 +181,7 @@ public sealed partial class ShellViewModel : ObservableObject, IDisposable
     /// <summary>The article column's path ("3 of 9") and, with nothing selected, its empty state ("4 unread items in Unread").</summary>
     private void UpdateEmptyState()
     {
-        var stream = List.Stream;
+        var stream = List.Stream ?? new ArticleStream.All();
         var name = stream is ArticleStream.All ? ItemFormatting.FilterTitle(_settings.Current.Filter) : Sidebar.Title(stream);
         var filter = _settings.Current.Filter == StreamFilter.Starred ? StreamFilter.Starred : StreamFilter.Unread;
         var count = _store.Count(stream, filter);
@@ -209,7 +226,7 @@ public sealed partial class ShellViewModel : ObservableObject, IDisposable
             || !previous.CollapsedSections.SequenceEqual(settings.CollapsedSections))
         {
             Sidebar.Reload();
-            List.Title = Sidebar.Title(List.Stream);
+            RetitleList();
             // The phone's pick of Unread or Starred changes the filter and has already built the list for it.
             List.ApplySettings(settings);
             UpdateEmptyState();
@@ -252,12 +269,22 @@ public sealed partial class ShellViewModel : ObservableObject, IDisposable
         return true;
     }
 
-    /// <summary>A feed or folder marked read leaves the sidebar at once when empty ones are hidden (D10).</summary>
+    /// <summary>
+    /// Marks the listed stream read and chooses nothing: the list empties, no article shows, and a feed or folder
+    /// marked read leaves the sidebar at once when empty ones are hidden (D10).
+    /// </summary>
     [RelayCommand]
     private void MarkAllRead()
     {
-        _store.MarkAllRead(List.Stream);
-        Sidebar.Reload(keepSelected: false);
+        if (List.Stream is not { } stream)
+        {
+            return;
+        }
+
+        _store.MarkAllRead(stream);
+        Sidebar.ClearSelection();
+        List.Clear();
+        UpdateEmptyState();
     }
 
     [RelayCommand]
