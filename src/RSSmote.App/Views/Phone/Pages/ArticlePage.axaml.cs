@@ -22,8 +22,8 @@ public partial class ArticlePage : ContentPage
     public ArticlePage()
     {
         InitializeComponent();
-        // The bar is not inside the page, so its button takes the page's data context from here (P21).
-        TextButton.Bind(DataContextProperty, this.GetObservable(DataContextProperty));
+        // The bar is not inside the page, so its buttons take the page's data context from here (P21).
+        TopBar.Bind(DataContextProperty, this.GetObservable(DataContextProperty));
         Host.Scrolled += OnScrolled;
         Host.PageTapped += (_, _) => ShowBars(true);
         Host.PropertyChanged += (_, e) =>

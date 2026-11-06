@@ -227,3 +227,11 @@ reloaded, as seen by the user. The cause is inferred, not measured: the boolean 
 runtime's promise handling, where nothing catches it. *(to confirm with the fix in a browser)* `ArticleTemplate.ScrollPageScript`
 wraps the call in `String(…)`; the native engines answer it the same way, quoted or not, which `ScrollPageAsync`
 trims.
+
+**P33 — A style animation of `RenderTransform` throws as soon as the style is attached.** Avalonia 12 has no animator
+for the property as a whole, and it reads the key frames when the style first meets a control, not when the selector
+matches: `InvalidOperationException: No animator registered for the property RenderTransform`. That happened before
+the refresh button was ever refreshing, and a base value of `rotate(0deg)` did not help. Animate
+`RotateTransform.Angle` over a `RotateTransform` base. The animator then swaps the transform for a `TransformGroup`
+that holds the rotation, so a test reads the angle from the group. Measured with
+`Refresh_sits_in_the_middle_and_its_arrow_turns_only_while_a_refresh_runs`.

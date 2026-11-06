@@ -122,6 +122,17 @@
             <Setter Property="RenderTransform" Value="none" />
             <Setter Property="Opacity" Value="0.6" />
         </Style>
+        <Style Selector="^:disabled">
+            <Setter Property="Opacity" Value="0.4" />
+        </Style>
+        <Style Selector="^:disabled /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Foreground" Value="{DynamicResource Brush.Ink.Icon}" />
+        </Style>
+        <!-- A running refresh keeps full ink while its arrow turns, as on desktop (D33). -->
+        <Style Selector="^.refresh.refreshing:disabled">
+            <Setter Property="Opacity" Value="1" />
+        </Style>
     </Style>
     <Style Selector="Button.phoneIcon.on">
         <Setter Property="Foreground" Value="{DynamicResource Brush.Accent}" />

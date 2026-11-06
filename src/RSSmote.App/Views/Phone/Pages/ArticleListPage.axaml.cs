@@ -18,6 +18,8 @@ public partial class ArticleListPage : ContentPage
     public ArticleListPage()
     {
         InitializeComponent();
+        // The bar is not inside the page, so its buttons take the page's data context from here (P21).
+        TopBar.Bind(DataContextProperty, this.GetObservable(DataContextProperty));
         Rows.ContainerPrepared += OnContainerPrepared;
         DataContextChanged += (_, _) => Attach(Shell?.List);
         NavigatedTo += (_, _) => KeepPlace();

@@ -96,7 +96,7 @@ skrivebordsvindue, der gøres så smalt, bliver det samme. Billederne herunder v
   systemets tekststørrelse.
 - **Feeds** tilføjes, rettes, fjernes, importeres og eksporteres under Indstillinger, som på skrivebordet. Fjern
   spørger i et ark nedefra.
-- **Opdatering:** serveren opdaterer selv; træk ned på Feeds for at opdatere nu.
+- **Opdatering:** serveren opdaterer selv; tryk på pilen øverst på Feeds, eller træk ned, for at opdatere nu.
 - **Det samme bibliotek** som på skrivebordet: det, du læser på telefonen, er læst alle steder.
 
 Skærmbillederne er tegnet uden skærm i iPhone 17 Pro-størrelse (402 × 874 pt), så de har ingen statuslinje.
@@ -104,7 +104,7 @@ Skærmbillederne er tegnet uden skærm i iPhone 17 Pro-størrelse (402 × 874 pt
 ## Temaer
 
 Du vælger ét lyst og ét mørkt tema i menuen (**Theme**) eller under Indstillinger ▸ Appearance. Vælger du et tema,
-skifter appen til det med det samme. Du kan sætte den til at følge systemet; så skifter den selv mellem dit lyse og dit
+skifter appen til det med det samme. Månen eller solen øverst i sidebaren, eller ved siden af Aa på telefonen, skifter mellem dine to. Du kan sætte den til at følge systemet; så skifter den selv mellem dit lyse og dit
 mørke tema, når enheden går fra lyst til mørkt. Hver enhed beholder sit eget valg.
 
 | Lyse | Mørke |

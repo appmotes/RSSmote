@@ -97,7 +97,7 @@ desktop window narrowed that far turns into the same. The screens below show an 
   follow the system's text size.
 - **Feeds** are added, edited, removed, imported and exported under Settings, as on the desktop. Removing asks in a
   sheet from the bottom.
-- **Refresh:** the server refreshes on its own; pull down on Feeds for a refresh now.
+- **Refresh:** the server refreshes on its own; tap the arrow at the top of Feeds, or pull down, for a refresh now.
 - **The same library** as on the desktop: what you read on the phone is read everywhere.
 
 The screenshots are drawn without a screen at iPhone 17 Pro size (402 × 874 pt), so they have no status bar.
@@ -105,7 +105,7 @@ The screenshots are drawn without a screen at iPhone 17 Pro size (402 × 874 pt)
 ## Themes
 
 You choose one light and one dark theme in the menu (**Theme**) or under Settings ▸ Appearance. Picking a theme
-switches the app to it at once. You can set it to follow the system; it then switches by itself between your light and
+switches the app to it at once. The moon or sun at the top of the sidebar, or beside Aa on the phone, switches between your two. You can set it to follow the system; it then switches by itself between your light and
 your dark theme when the device goes from light to dark. Each device keeps its own choice.
 
 | Light | Dark |

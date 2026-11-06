@@ -48,6 +48,8 @@ code { font: 12.5px ui-monospace, Menlo, monospace; background: #f3f3f3; padding
 /* mocks */
 .strip { height: var(--Size-TitleBar); display: flex; align-items: center; justify-content: space-between; padding: 0 8px; background: var(--Bg-Sidebar); border-radius: 8px; width: 320px; }
 .strip .slot { display: flex; gap: 14px; padding: 0 6px; }
+.strip { position: relative; }
+.strip .center { position: absolute; left: 50%; transform: translateX(-50%); }
 .strip.card-strip { height: var(--Size-CardStrip); background: var(--Bg-Article); border-bottom: 1px solid var(--Line-Separator); border-radius: var(--Radius-Card) var(--Radius-Card) 0 0; box-shadow: var(--Shadow-Card); }
 .ebox { width: 300px; padding: 20px 22px 18px; border-radius: var(--Radius-Card); background: var(--Bg-Pill); display: flex; flex-direction: column; gap: 2px; }
 .ebox b { font-size: 15px; font-weight: 600; } .ebox small, .ecompact small { font-size: 12.5px; color: var(--Ink-Secondary); }
@@ -103,15 +105,18 @@ with the Sand token values, not screenshots.</p></header>
   <h3>TitleStrip</h3>
   <p>The strip on top of a column: 52 pt on the sidebar, 44 pt inside a card (style class <code>card</code>), where 8 pt
   of canvas above it complete the title bar. It acts as the window's title bar (drag, double-click to zoom) and has a
-  leading and a trailing slot for icon buttons. The article card's strip draws a hairline under itself.</p>
+  leading and a trailing slot for icon buttons, and a centre slot that is centred on the whole strip. The sidebar's
+strip holds Refresh in the centre and the theme toggle and menu on the right. The article card's strip draws a hairline
+under itself.</p>
   <table><tr><th>Property</th><th>Type</th><th>Description</th></tr>
     <tr><td>Leading</td><td>object? (null)</td><td>Content docked left.</td></tr>
     <tr><td>Trailing</td><td>object? (null)</td><td>Content docked right.</td></tr>
+    <tr><td>Center</td><td>object? (null)</td><td>Content centred on the whole strip, over the room between the sides.</td></tr>
     <tr><td>Padding</td><td>Thickness (8,0)</td><td>Keeps clear of the window's own caption buttons.</td></tr>
     <tr><td>BorderThickness / BorderBrush</td><td>Thickness (0) / IBrush? (null)</td><td>A hairline, e.g. <code>0,0,0,1</code> in <code>Line.Separator</code> under the article strip.</td></tr>
     <tr><td>Classes <code>card</code></td><td>—</td><td>Height <code>Size.CardStrip.Height</code> (44) instead of <code>Size.TitleBar.Height</code> (52).</td></tr>
   </table>
-  <div class="preview"><div class="strip"><span class="slot"></span><span class="slot"><i class="ico"></i><i class="ico"></i></span></div>
+  <div class="preview"><div class="strip"><span class="slot"></span><span class="slot center"><i class="ico"></i></span><span class="slot"><i class="ico"></i><i class="ico"></i></span></div>
     <div class="strip card-strip"><span class="slot"><i class="ico"></i></span><span class="slot"><i class="ico"></i><i class="ico"></i><i class="ico"></i></span></div></div>
   <div class="note">Buttons inside the strip take input normally; only empty strip area drags the window.</div>
 </article>
@@ -245,6 +250,7 @@ with the Sand token values, not screenshots.</p></header>
   <table><tr><th>Control</th><th>What it does</th></tr>
     <tr><td>Icon</td><td>Strokes a geometry from <code>Assets/Icons.axaml</code> at a constant on-screen stroke; <code>IsFilled</code> also fills it. Foreground inherits like text.</td></tr>
     <tr><td>Favicon</td><td>Rounded favicon bitmap, optionally greyscale, or a letter tile when there is no bitmap.</td></tr>
+    <tr><td>ThemeToggle</td><td>A <code>Button</code> that shows a moon while a light palette shows and a sun while a dark one does, with the tooltip "Dark Theme" or "Light Theme". Its <code>CommandParameter</code> is whether a dark palette shows; the call site binds <code>Command</code>. Styled as a <code>Button</code>, so it takes the bar's classes (<code>icon</code>, <code>phoneIcon</code>).</td></tr>
   </table>
 </article>
 </body>

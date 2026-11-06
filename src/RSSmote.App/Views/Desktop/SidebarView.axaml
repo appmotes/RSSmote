@@ -9,11 +9,16 @@
     <Border Background="{DynamicResource Brush.Bg.Sidebar}">
         <DockPanel>
             <c:TitleStrip DockPanel.Dock="Top" Padding="{x:Static v:Chrome.SidebarStripPadding}">
+                <!-- Refresh in the middle; the theme toggle beside the menu (D33). -->
+                <c:TitleStrip.Center>
+                    <Button Classes="icon refresh" Classes.refreshing="{Binding IsRefreshing}" ToolTip.Tip="Refresh (R)"
+                            Command="{Binding RefreshCommand}">
+                        <c:Icon Data="{StaticResource Icon.Refresh}" />
+                    </Button>
+                </c:TitleStrip.Center>
                 <c:TitleStrip.Trailing>
                     <StackPanel Orientation="Horizontal">
-                        <Button Classes="icon" ToolTip.Tip="Refresh (R)" Command="{Binding RefreshCommand}">
-                            <c:Icon Data="{StaticResource Icon.Refresh}" />
-                        </Button>
+                        <c:ThemeToggle Classes="icon" Command="{Binding Settings.ToggleThemeCommand}" />
                         <Button Classes="icon" ToolTip.Tip="Menu">
                             <c:Icon Data="{StaticResource Icon.Menu}" />
                             <Button.Flyout>

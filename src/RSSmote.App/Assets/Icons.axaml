@@ -2,6 +2,8 @@
      controls:Icon. -->
 <ResourceDictionary xmlns="https://github.com/avaloniaui"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <StreamGeometry x:Key="Icon.Moon">M 12 3 a 6 6 0 0 0 9 9 a 9 9 0 1 1 -9 -9 Z</StreamGeometry>
+    <StreamGeometry x:Key="Icon.Sun">M 8 12 A 4 4 0 1 0 16 12 A 4 4 0 1 0 8 12 Z M 12 2 v 2 M 12 20 v 2 M 4.93 4.93 l 1.41 1.41 M 17.66 17.66 l 1.41 1.41 M 2 12 h 2 M 20 12 h 2 M 6.34 17.66 l -1.41 1.41 M 19.07 4.93 l -1.41 1.41</StreamGeometry>
     <StreamGeometry x:Key="Icon.Refresh">M 21 12 a 9 9 0 1 1 -9 -9 c 2.52 0 4.93 1 6.74 2.74 L 21 8 M 21 3 v 5 h -5</StreamGeometry>
     <StreamGeometry x:Key="Icon.Plus">M 5 12 h 14 M 12 5 v 14</StreamGeometry>
     <StreamGeometry x:Key="Icon.CheckCircle">M 2 12 A 10 10 0 1 0 22 12 A 10 10 0 1 0 2 12 Z M 16 9 l -5.5 5.5 L 8 12</StreamGeometry>

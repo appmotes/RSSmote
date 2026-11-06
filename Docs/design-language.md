@@ -180,6 +180,7 @@ Licence notice in `Assets/Icons/LICENSE-lucide.txt`.
 | Use | Key | Lucide name |
 |---|---|---|
 | Refresh | `Icon.Refresh` | rotate-cw |
+| Theme toggle | `Icon.Moon`, `Icon.Sun` | moon, sun |
 | Add | `Icon.Plus` | plus |
 | Mark all read | `Icon.CheckCircle` | circle-check |
 | Filter/search | `Icon.Search` | search |
@@ -285,6 +286,18 @@ changes (`PlatformSettings.ColorValuesChanged`). Picking a palette also shows it
 then uses both slots. Two slots rather than one list, so Automatic never has to guess what dark means. `Theming/ThemeCatalogue` lists the palettes; an id this build does not know resolves to the slot's
 default, and a stored `Black` from older settings becomes Dark with the Black palette. Adding a palette is a file
 under `Assets/Themes/`, its `ThemeDictionaries` entry and one catalogue line.
+
+**D33 — The top bars: Refresh in the middle, the theme toggle beside the last control.** On desktop the sidebar's
+strip holds Refresh in its centre slot and the theme toggle left of the menu. On the phone the Feeds root's top bar
+holds Refresh in the middle, and pulling down still refreshes. The theme toggle sits left of Aa on every phone page
+that has Aa (Feeds, the list and the article), so it stays in the same place as the reader moves down the stack.
+It flips between the two slots of D22, and its icon names where it goes, not where you are: a moon while a light
+palette shows, a sun while a dark one does, with the tooltip "Dark Theme" or "Light Theme". `ThemeToggle` keeps both
+icons and hides one, so it never changes size, and reads the shown variant from itself (`ActualThemeVariant`),
+because only the view knows what Automatic resolved to. A click sets `Theme` to Light or Dark, so it also leaves
+Automatic: the reader asked for the other one, and the OS should not take it back. Which palette fills each slot stays
+under Theme and Appearance. Refresh's arrow turns once a second for as long as a refresh runs. The command is off
+meanwhile, but a running refresh keeps full ink, because the turning arrow is the point.
 
 Light: Sand (default; warm), Newsprint (sepia paper and ink-blue links, for long reading), Fern (green-leaning),
 Harbor (blue accent and brown danger, apart in lightness as well as hue, so they hold under colour blindness) and

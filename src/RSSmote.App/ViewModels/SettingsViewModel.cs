@@ -359,6 +359,10 @@ public sealed partial class SettingsViewModel : ObservableObject
     [RelayCommand]
     private void SetTheme(AppTheme theme) => _settings.Update(s => s.Theme = theme);
 
+    /// <summary>Shows the other slot's palette (D33): Dark while a light one shows, Light while a dark one does.</summary>
+    [RelayCommand]
+    private void ToggleTheme(bool showingDark) => _settings.Update(s => s.Theme = showingDark ? AppTheme.Light : AppTheme.Dark);
+
     /// <summary>Picks the light slot's palette and shows it: the appearance leaves Automatic for Light (D22).</summary>
     [RelayCommand]
     private void SetLightTheme(string id) => _settings.Update(s =>

@@ -14,8 +14,12 @@
         <c:Icon Data="{StaticResource Icon.ChevronLeft}" Size="24" Foreground="{DynamicResource Brush.Ink.Icon}" />
     </NavigationPage.BackButtonContent>
     <NavigationPage.TopCommandBar>
-        <Button x:Name="TextButton" Classes="phoneBarText" Content="Aa" FontWeight="SemiBold" Margin="0,0,6,0"
-                Foreground="{DynamicResource Brush.Ink.Icon}" Click="OnTextClick" ToolTip.Tip="Text" />
+        <!-- The theme toggle beside Aa, as on every phone page with Aa (D33). -->
+        <StackPanel x:Name="TopBar" Orientation="Horizontal" Margin="0,0,6,0">
+            <c:ThemeToggle Classes="phoneIcon" Command="{Binding Settings.ToggleThemeCommand}" />
+            <Button Classes="phoneBarText" Content="Aa" FontWeight="SemiBold"
+                    Foreground="{DynamicResource Brush.Ink.Icon}" Click="OnTextClick" ToolTip.Tip="Text" />
+        </StackPanel>
     </NavigationPage.TopCommandBar>
     <ContentPage.BottomCommandBar>
         <Border x:Name="BottomBar" Padding="{Binding $parent[ContentPage].SafeAreaPadding, Converter={x:Static v:PhoneConverters.BottomInset}}" Background="{DynamicResource Brush.Bg.Article}"

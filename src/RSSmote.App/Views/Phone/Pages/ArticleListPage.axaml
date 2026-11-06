@@ -16,8 +16,12 @@
         </StackPanel>
     </NavigationPage.BackButtonContent>
     <NavigationPage.TopCommandBar>
-        <Button x:Name="TextButton" Classes="phoneBarText" Content="Aa" FontWeight="SemiBold" Margin="0,0,6,0"
-                Click="OnTextClick" ToolTip.Tip="Text" />
+        <!-- The theme toggle beside Aa, as on every phone page with Aa (D33). -->
+        <StackPanel x:Name="TopBar" Orientation="Horizontal" Margin="0,0,6,0">
+            <c:ThemeToggle Classes="phoneIcon" Command="{Binding Settings.ToggleThemeCommand}" />
+            <Button Classes="phoneBarText" Content="Aa" FontWeight="SemiBold"
+                    Click="OnTextClick" ToolTip.Tip="Text" />
+        </StackPanel>
     </NavigationPage.TopCommandBar>
     <ContentPage.BottomCommandBar>
         <Border Padding="{Binding $parent[ContentPage].SafeAreaPadding, Converter={x:Static v:PhoneConverters.BottomInset}}" Background="{DynamicResource Brush.Bg.List}"

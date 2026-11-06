@@ -16,6 +16,29 @@
         <Setter Property="Fill" Value="{DynamicResource Brush.Ink.Secondary}" />
     </Style>
 
+    <!-- The refresh arrow turns while a refresh runs (D33). Only the angle animates; the whole transform cannot (P33). -->
+    <Style Selector="Button.refresh c|Icon">
+        <Setter Property="RenderTransform">
+            <RotateTransform />
+        </Setter>
+    </Style>
+    <!-- The command is off while it runs, but the turning arrow is the point, so it keeps full ink. -->
+    <Style Selector="Button.refresh.refreshing:disabled">
+        <Setter Property="Opacity" Value="1" />
+    </Style>
+    <Style Selector="Button.refresh.refreshing c|Icon">
+        <Style.Animations>
+            <Animation Duration="0:0:1" IterationCount="Infinite">
+                <KeyFrame Cue="0%">
+                    <Setter Property="RotateTransform.Angle" Value="0" />
+                </KeyFrame>
+                <KeyFrame Cue="100%">
+                    <Setter Property="RotateTransform.Angle" Value="360" />
+                </KeyFrame>
+            </Animation>
+        </Style.Animations>
+    </Style>
+
     <!-- The count next to the list title. -->
     <Style Selector="Border.listBadge">
         <Setter Property="Height" Value="{StaticResource Size.Badge.Height}" />

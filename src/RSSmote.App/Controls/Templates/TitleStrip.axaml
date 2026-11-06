@@ -11,13 +11,18 @@
                         BorderBrush="{TemplateBinding BorderBrush}"
                         BorderThickness="{TemplateBinding BorderThickness}"
                         WindowDecorationProperties.ElementRole="TitleBar">
-                    <DockPanel Margin="{TemplateBinding Padding}">
-                        <ContentPresenter DockPanel.Dock="Left" VerticalAlignment="Center"
-                                          Content="{TemplateBinding Leading}" />
-                        <ContentPresenter DockPanel.Dock="Right" VerticalAlignment="Center"
-                                          Content="{TemplateBinding Trailing}" />
-                        <Panel />
-                    </DockPanel>
+                    <Panel Margin="{TemplateBinding Padding}">
+                        <DockPanel>
+                            <ContentPresenter DockPanel.Dock="Left" VerticalAlignment="Center"
+                                              Content="{TemplateBinding Leading}" />
+                            <ContentPresenter DockPanel.Dock="Right" VerticalAlignment="Center"
+                                              Content="{TemplateBinding Trailing}" />
+                            <Panel />
+                        </DockPanel>
+                        <!-- Centred on the whole strip, not on the room the sides leave. -->
+                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"
+                                          Content="{TemplateBinding Center}" />
+                    </Panel>
                 </Border>
             </ControlTemplate>
         </Setter>

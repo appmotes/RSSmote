@@ -26,4 +26,5 @@ public static class Chrome
 
     /// <summary>The Add Feed shortcut as the empty state shows it.</summary>
     public static string AddFeedShortcut => IsApple ? "⌘N" : "Ctrl+N";
+
 }

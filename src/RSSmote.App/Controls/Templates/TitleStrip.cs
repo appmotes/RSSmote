@@ -15,6 +15,9 @@ public class TitleStrip : TemplatedControl
     public static readonly StyledProperty<object?> TrailingProperty =
         AvaloniaProperty.Register<TitleStrip, object?>(nameof(Trailing));
 
+    public static readonly StyledProperty<object?> CenterProperty =
+        AvaloniaProperty.Register<TitleStrip, object?>(nameof(Center));
+
     public object? Leading
     {
         get => GetValue(LeadingProperty);
@@ -25,5 +28,12 @@ public class TitleStrip : TemplatedControl
     {
         get => GetValue(TrailingProperty);
         set => SetValue(TrailingProperty, value);
+    }
+
+    /// <summary>Content centred on the whole strip, over the room between the sides.</summary>
+    public object? Center
+    {
+        get => GetValue(CenterProperty);
+        set => SetValue(CenterProperty, value);
     }
 }
