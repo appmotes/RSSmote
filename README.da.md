@@ -157,7 +157,8 @@ dotnet test RSSmote.slnx
 ```
 
 Testene starter den rigtige app uden skærm (Avalonias headless-platform) og tegner den med Skia, så de også fanger
-fejl i layout, temaer og kontrast. Serverens tests kører den i processen og lader to enheder synkronisere gennem den.
+fejl i layout, temaer og kontrast. Serverens tests kører den i processen, lader to enheder synkronisere gennem den
+og afprøver Reader-API'et.
 
 ### Hvor dine data ligger
 
@@ -173,6 +174,22 @@ i `keys/`, side om side:
 
 Sæt `RSSMOTE_DATA_DIR` for at bruge en anden mappe. Et bibliotek fra den tidligere skrivebordsapp kan kopieres ind,
 som det er. Hver enhed gemmer sit tema og sine tekststørrelser i browserens eget lager.
+
+### I en native læser
+
+Serveren taler også det Google Reader-kompatible API, som mange native læsere synkroniserer med. I Reeder tilføjer du
+en **FreshRSS**-konto:
+
+| Felt | Værdi |
+| --- | --- |
+| Host | `https://<din server>`, som du åbner den i browseren; Reeder tilføjer selv `/api/greader.php` |
+| Brugernavn | hvad som helst |
+| Adgangskode | din `RSSMOTE_KEY` |
+
+Læseren viser dine mapper med deres feeds. Læst og stjernemarkeret går begge veje: det, du markerer i læseren, ses i
+browseren med det samme, og det, du markerer i browseren, når frem til læseren ved dens næste synkronisering. Feeds og
+mapper tilføjes, flyttes og fjernes kun i browser-appen. En ny nøgle logger også læseren ud. Brug HTTPS: læseren
+sender nøglen, når den logger ind.
 
 ## Hvad appen henter fra nettet
 

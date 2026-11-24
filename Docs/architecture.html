@@ -122,7 +122,7 @@
 
           <rect class="box" x="630" y="110" width="240" height="64" rx="8"/>
           <text class="name" x="646" y="136">RSSmote.Server</text>
-          <text class="sub" x="646" y="156">API, sign-in, events, image proxy</text>
+          <text class="sub" x="646" y="156">API, Reader API, sign-in, events</text>
 
           <rect class="box" x="630" y="260" width="240" height="64" rx="8"/>
           <text class="name" x="646" y="286">RSSmote.Data</text>
@@ -157,7 +157,7 @@
         <tbody>
           <tr><td><code>Core.Tests</code></td><td>Core</td><td>Parser, dates, HTML, feed discovery, OPML</td></tr>
           <tr><td><code>Data.Tests</code></td><td>Data</td><td>Store, refresh, pruning, migrations</td></tr>
-          <tr><td><code>Server.Tests</code></td><td>Server, Client</td><td>The API in process, and two devices syncing through it</td></tr>
+          <tr><td><code>Server.Tests</code></td><td>Server, Client</td><td>The API in process, two devices syncing through it, and the Reader API</td></tr>
           <tr><td><code>App.Tests</code></td><td>App, Data</td><td>View-models over a real SQLite store, palettes, gallery</td></tr>
           <tr><td><code>Desktop.Tests</code></td><td>App, Data</td><td>The columns drawn headless: Settings, menus, README images</td></tr>
           <tr><td><code>Mobile.Tests</code></td><td>App, Data</td><td>The phone stack at 402 × 874, and MainView's switch at 900 px</td></tr>
@@ -390,70 +390,90 @@
     <h2>5. A request on the server</h2>
     <figure>
       <div class="frame">
-        <svg class="dg" viewBox="0 0 920 300" role="img" aria-label="A request passes WebApp, the rate limiter, cookie sign-in and an endpoint filter before the endpoints reach Store, Refresher, SettingsStore, FeedFinder, ImageProxy and LibraryEvents.">
+        <svg class="dg" viewBox="0 0 920 390" role="img" aria-label="A request passes WebApp, the rate limiter, cookie sign-in and an endpoint filter before the endpoints. A request to the Reader API leaves after the rate limiter, passes token sign-in and reaches ReaderApi without the filter. Both reach Store, Refresher, SettingsStore, FeedFinder, ImageProxy and LibraryEvents.">
           <defs>
             <marker id="r-ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path class="ah" d="M0 0 L10 5 L0 10 z"/></marker>
           </defs>
 
-          <rect class="box" x="20" y="30" width="150" height="72" rx="8"/>
-          <text class="name" x="95" y="56" text-anchor="middle">WebApp</text>
-          <text class="sub" x="95" y="74" text-anchor="middle">static files, brotli</text>
-          <text class="sub" x="95" y="90" text-anchor="middle">fingerprinted: cached</text>
+          <rect class="box" x="20" y="30" width="150" height="88" rx="8"/>
+          <text class="name" x="95" y="58" text-anchor="middle">WebApp</text>
+          <text class="sub" x="95" y="78" text-anchor="middle">static files, brotli</text>
+          <text class="sub" x="95" y="96" text-anchor="middle">fingerprinted: cached</text>
 
-          <rect class="box" x="195" y="30" width="150" height="72" rx="8"/>
-          <text class="name" x="270" y="56" text-anchor="middle">RateLimiter</text>
-          <text class="sub" x="270" y="74" text-anchor="middle">login: 5 / min</text>
-          <text class="sub" x="270" y="90" text-anchor="middle">/api: 600, 60 / s</text>
+          <rect class="box" x="195" y="30" width="150" height="88" rx="8"/>
+          <text class="name" x="270" y="58" text-anchor="middle">RateLimiter</text>
+          <text class="sub" x="270" y="78" text-anchor="middle">login: 5 / min</text>
+          <text class="sub" x="270" y="96" text-anchor="middle">/api: 600, 60 / s</text>
+          <text class="sub" x="270" y="112" text-anchor="middle">Reader API: its own</text>
 
-          <rect class="box" x="370" y="30" width="150" height="72" rx="8"/>
-          <text class="name" x="445" y="56" text-anchor="middle">Cookie sign-in</text>
-          <text class="sub" x="445" y="74" text-anchor="middle">AccessKey stamp</text>
-          <text class="sub" x="445" y="90" text-anchor="middle">otherwise 401</text>
+          <rect class="box" x="370" y="30" width="150" height="88" rx="8"/>
+          <text class="name" x="445" y="58" text-anchor="middle">Cookie sign-in</text>
+          <text class="sub" x="445" y="78" text-anchor="middle">AccessKey stamp</text>
+          <text class="sub" x="445" y="96" text-anchor="middle">otherwise 401</text>
 
-          <rect class="box" x="545" y="30" width="150" height="72" rx="8"/>
-          <text class="name" x="620" y="56" text-anchor="middle">Filter</text>
-          <text class="sub" x="620" y="74" text-anchor="middle">X-RSSmote-Client</text>
-          <text class="sub" x="620" y="90" text-anchor="middle">→ RequestOrigin</text>
+          <rect class="box" x="545" y="30" width="150" height="88" rx="8"/>
+          <text class="name" x="620" y="58" text-anchor="middle">Filter</text>
+          <text class="sub" x="620" y="78" text-anchor="middle">X-RSSmote-Client</text>
+          <text class="sub" x="620" y="96" text-anchor="middle">→ RequestOrigin</text>
 
-          <rect class="box key" x="720" y="30" width="180" height="72" rx="8"/>
-          <text class="name" x="810" y="56" text-anchor="middle">Endpoints</text>
-          <text class="sub" x="810" y="74" text-anchor="middle">Access · LibraryApi</text>
-          <text class="sub" x="810" y="90" text-anchor="middle">/api/*</text>
+          <rect class="box key" x="720" y="30" width="180" height="88" rx="8"/>
+          <text class="name" x="810" y="58" text-anchor="middle">Endpoints</text>
+          <text class="sub" x="810" y="78" text-anchor="middle">Access · LibraryApi</text>
+          <text class="sub" x="810" y="96" text-anchor="middle">/api/*</text>
 
-          <line class="ref" x1="170" y1="66" x2="193" y2="66" marker-end="url(#r-ah)"/>
-          <line class="ref" x1="345" y1="66" x2="368" y2="66" marker-end="url(#r-ah)"/>
-          <line class="ref" x1="520" y1="66" x2="543" y2="66" marker-end="url(#r-ah)"/>
-          <line class="ref" x1="695" y1="66" x2="718" y2="66" marker-end="url(#r-ah)"/>
-          <text class="lbl" x="95" y="124" text-anchor="middle">not /api: answers itself</text>
+          <line class="ref" x1="170" y1="74" x2="193" y2="74" marker-end="url(#r-ah)"/>
+          <line class="ref" x1="345" y1="74" x2="368" y2="74" marker-end="url(#r-ah)"/>
+          <line class="ref" x1="520" y1="74" x2="543" y2="74" marker-end="url(#r-ah)"/>
+          <line class="ref" x1="695" y1="74" x2="718" y2="74" marker-end="url(#r-ah)"/>
+          <text class="lbl" x="95" y="138" text-anchor="middle">not /api: answers itself</text>
 
-          <polyline class="ref" points="810,102 810,150 95,150" />
-          <line class="ref" x1="95" y1="150" x2="95" y2="188" marker-end="url(#r-ah)"/>
-          <line class="ref" x1="270" y1="150" x2="270" y2="188" marker-end="url(#r-ah)"/>
-          <line class="ref" x1="445" y1="150" x2="445" y2="188" marker-end="url(#r-ah)"/>
-          <line class="ref" x1="620" y1="150" x2="620" y2="188" marker-end="url(#r-ah)"/>
-          <line class="ref" x1="810" y1="150" x2="810" y2="188" marker-end="url(#r-ah)"/>
+          <!-- The Reader API: its own sign-in, no filter (A25) -->
+          <polyline class="ref" points="270,118 270,186 368,186" marker-end="url(#r-ah)"/>
+          <text class="lbl" x="282" y="144">/api/greader.php</text>
+          <text class="lbl" x="282" y="160">/api/reader</text>
+          <rect class="box" x="370" y="150" width="150" height="72" rx="8"/>
+          <text class="name" x="445" y="176" text-anchor="middle">Token sign-in</text>
+          <text class="sub" x="445" y="194" text-anchor="middle">ReaderAuthHandler</text>
+          <text class="sub" x="445" y="210" text-anchor="middle">AccessKey stamp</text>
+          <line class="ref" x1="520" y1="186" x2="718" y2="186" marker-end="url(#r-ah)"/>
+          <text class="lbl" x="620" y="178" text-anchor="middle">no client header</text>
+          <rect class="box key" x="720" y="150" width="150" height="72" rx="8"/>
+          <text class="name" x="795" y="176" text-anchor="middle">ReaderApi</text>
+          <text class="sub" x="795" y="194" text-anchor="middle">ids via ReaderIds</text>
+          <text class="sub" x="795" y="210" text-anchor="middle">read and starred only</text>
+          <line class="ref" x1="795" y1="222" x2="795" y2="262"/>
 
-          <rect class="box" x="20" y="190" width="150" height="64" rx="8"/>
-          <text class="name" x="95" y="216" text-anchor="middle">Store</text>
-          <text class="sub" x="95" y="236" text-anchor="middle">rssmote.sqlite</text>
-          <rect class="box" x="195" y="190" width="150" height="64" rx="8"/>
-          <text class="name" x="270" y="216" text-anchor="middle">Refresher</text>
-          <text class="sub" x="270" y="236" text-anchor="middle">timer in RefreshService</text>
-          <rect class="box" x="370" y="190" width="150" height="64" rx="8"/>
-          <text class="name" x="445" y="216" text-anchor="middle">SettingsStore</text>
-          <text class="sub" x="445" y="236" text-anchor="middle">settings.json</text>
-          <rect class="box" x="545" y="190" width="150" height="64" rx="8"/>
-          <text class="name" x="620" y="216" text-anchor="middle">FeedFinder</text>
-          <text class="sub" x="620" y="236" text-anchor="middle">and ImageProxy</text>
-          <rect class="box" x="720" y="190" width="180" height="64" rx="8"/>
-          <text class="name" x="810" y="216" text-anchor="middle">LibraryEvents</text>
-          <text class="sub" x="810" y="236" text-anchor="middle">SSE to every device</text>
+          <polyline class="ref" points="885,118 885,262 95,262"/>
+          <line class="ref" x1="95" y1="262" x2="95" y2="298" marker-end="url(#r-ah)"/>
+          <line class="ref" x1="270" y1="262" x2="270" y2="298" marker-end="url(#r-ah)"/>
+          <line class="ref" x1="445" y1="262" x2="445" y2="298" marker-end="url(#r-ah)"/>
+          <line class="ref" x1="620" y1="262" x2="620" y2="298" marker-end="url(#r-ah)"/>
+          <line class="ref" x1="810" y1="262" x2="810" y2="298" marker-end="url(#r-ah)"/>
+
+          <rect class="box" x="20" y="300" width="150" height="64" rx="8"/>
+          <text class="name" x="95" y="326" text-anchor="middle">Store</text>
+          <text class="sub" x="95" y="346" text-anchor="middle">rssmote.sqlite</text>
+          <rect class="box" x="195" y="300" width="150" height="64" rx="8"/>
+          <text class="name" x="270" y="326" text-anchor="middle">Refresher</text>
+          <text class="sub" x="270" y="346" text-anchor="middle">timer in RefreshService</text>
+          <rect class="box" x="370" y="300" width="150" height="64" rx="8"/>
+          <text class="name" x="445" y="326" text-anchor="middle">SettingsStore</text>
+          <text class="sub" x="445" y="346" text-anchor="middle">settings.json</text>
+          <rect class="box" x="545" y="300" width="150" height="64" rx="8"/>
+          <text class="name" x="620" y="326" text-anchor="middle">FeedFinder</text>
+          <text class="sub" x="620" y="346" text-anchor="middle">and ImageProxy</text>
+          <rect class="box" x="720" y="300" width="180" height="64" rx="8"/>
+          <text class="name" x="810" y="326" text-anchor="middle">LibraryEvents</text>
+          <text class="sub" x="810" y="346" text-anchor="middle">SSE to every device</text>
         </svg>
       </div>
       <figcaption>
         <span>Every service is a singleton, set up in <code>Program.cs</code>. <code>LibraryEvents</code> listens to
           <code>Store</code>, <code>SettingsStore</code> and <code>Refresher</code> and sends the changes out.
           <code>RequestOrigin</code> remembers which client wrote, so the event can say so (A17, A18, A24).</span>
+        <span>The Reader API is the second way in, for native clients. It has its own token and rate limit but the same
+          key, and it uses only <code>Store</code>. A write from it reaches the browser app as a <code>flags</code>
+          event like any other (A25).</span>
       </figcaption>
     </figure>
   </section>

@@ -1,6 +1,5 @@
 using System.Collections.Concurrent;
 using Avalonia.Media.Imaging;
-using RSSmote.Core.Models;
 
 namespace RSSmote.App.Services;
 
@@ -51,10 +50,6 @@ public sealed class ImageCache(HttpClient http, Func<string, string>? route = nu
 
 public static class Favicons
 {
-    /// <summary>Favicon source for a feed: the site's host through a public favicon service.</summary>
-    public static string? Url(Feed feed) =>
-        feed.Host is { } host ? $"https://www.google.com/s2/favicons?sz=64&domain={Uri.EscapeDataString(host)}" : null;
-
     /// <summary>Pixel width favicons are decoded to: 19 pt at 2x.</summary>
     public const int DecodeWidth = 38;
 }

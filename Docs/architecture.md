@@ -13,7 +13,8 @@ Dockerfile                   the server with the browser app beside it (A24)
 src/RSSmote.Core             models, feed parsing, OPML, HTML helpers, the library contract (ILibrary, ISettingsStore,
                              IRefresher) and the API's types and JSON context (Api/) — no Avalonia
 src/RSSmote.Data             SQLite store, settings store, refresher, data folder — the server's only
-src/RSSmote.Server           ASP.NET Core: the API, sign-in, rate limits, events, image proxy, the browser app's files
+src/RSSmote.Server           ASP.NET Core: the API, sign-in, rate limits, events, image proxy, the browser app's files,
+                             and the Reader API for native clients (A25)
 src/RSSmote.Client           the API from a device: ApiClient, RemoteLibrary (the mirror), RemoteSettings,
                              RemoteRefresher, RemoteSession — plain .NET, no Avalonia, no SQLite
 src/RSSmote.App              the Avalonia UI: view-models, controls, styles, themes, assets, services, and every
@@ -23,7 +24,8 @@ src/RSSmote.Browser          the WebAssembly head: Program.cs, BrowserStorage, w
 tests/RSSmote.App.Tests      headless tests: view-models, palette key sets, gallery snapshots per theme (xUnit v3)
 tests/RSSmote.Desktop.Tests  headless tests of the desktop columns: shell renders, Settings, menus, captures
 tests/RSSmote.Mobile.Tests   headless tests of the phone stack, rendered at 402 × 874 in Sand and Ember, and MainView
-tests/RSSmote.Server.Tests   the API in process (WebApplicationFactory), and two RemoteSessions syncing through it
+tests/RSSmote.Server.Tests   the API in process (WebApplicationFactory), two RemoteSessions syncing through it, and
+                             the Reader API
 tests/RSSmote.Core.Tests     parser, dates, HTML helpers, feed discovery (fake HTTP), OPML
 tests/RSSmote.Data.Tests     store: upsert, filters, counts, retention, migrations, macOS-library compatibility
 build/                       run-local.sh, publish.sh, icons.sh (A24)
@@ -201,7 +203,8 @@ the key, so a new key signs every device out. Data protection keeps its keys in 
 nobody out. Every other endpoint needs the cookie and answers 401 without it. A write must also carry
 `X-RSSmote-Client` (a random id per loaded app), which a cross-site form cannot send. Rate limits: five sign-in
 attempts a minute per address, and a token bucket of 600 (60 a second) per address over `/api`. Behind a reverse
-proxy, `ASPNETCORE_FORWARDEDHEADERS_ENABLED=true` gives the limits the client's address.
+proxy, `ASPNETCORE_FORWARDEDHEADERS_ENABLED=true` gives the limits the client's address. The Reader API for native
+clients stands apart from all of this, with a token of its own and no client header (A25).
 
 | Endpoint | Does |
 |---|---|
@@ -271,3 +274,23 @@ runs the server on port 5000 (`--lan` for a phone on the same network); `build/p
 `artifacts/server`; the `Dockerfile` builds both (the SDK image needs `wasm-tools`) and keeps the library in `/data`.
 A server reached from outside belongs behind a reverse proxy with HTTPS, so the cookie is `Secure`.
 
+
+**A25 — The Reader API.** Native readers sign in and sync over the Google Reader-compatible protocol (`ReaderApi`),
+under `/api/greader.php` and `/api/reader` alike, as a client may or may not add the first to the address it is given.
+It writes read and starred only: feeds and folders are kept in the browser app, and their writes answer 403.
+`accounts/ClientLogin` takes `RSSMOTE_KEY` as the password, ignores the user name, and answers a token that is
+`AccessKey.Stamp` protected with the data protection keys (`ReaderTokens`), so a new key signs clients out as it signs
+devices out. `ReaderAuthHandler` reads it from the protocol's `Authorization` header: a scheme beside the cookie, and
+neither opens the other's endpoints. The Reader group has no `X-RSSmote-Client` filter, as a cross-site form cannot
+send that header either. `ClientLogin` shares the login limit; the rest has a token bucket of its own per address, so a
+first sync does not hold back the browser app on the same address.
+
+The protocol's ids map as folder → label by title, feed → `feed/<id>`, item → its id, in decimal or as 16 hex digits in
+the long form. A client may send an item id back in either form or as bare hex: only digits without a leading zero
+are decimal, so a zero-padded 16-digit id is hex. An id the server cannot read is logged as a warning with an example.
+A feed without a folder has no label. A feed's icon is `Feed.FaviconUrl`, the source the app uses. There is no fetch time, so `ot`, `nt` and `mark-all-as-read`'s
+`ts` compare with `published`; a new item with an old date is still unread, so a client that syncs the unread ids gets
+it. Streams are read from `Store.Refs()` (no text) and paged by keyset: the continuation is the last item's date and
+id. Content is sanitized (A9) and falls back to the summary. Writes go through `Store`, so the browser app gets them
+at once as `flags` events with no origin (A18); a native client sees the browser app's writes on its next sync. The
+protocol's strings live only in `ReaderIds`.

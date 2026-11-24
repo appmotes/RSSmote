@@ -9,7 +9,13 @@ https server, which the browser blocks or upgrades (A19 covers favicons and thum
 Seen so far in the in-app browser (Chromium): the page renders in an `<iframe srcdoc>`, `j` inside the page moves to
 the next article.
 
-**W1 — Sync services** (Feedbin, Fever, …). Deliberately out of scope for now.
+**N25 — Sync with Reeder by hand (A25).** The Reader API is covered by `ReaderTests`, not by a real client. In Reeder
+Classic on iOS and macOS, with a FreshRSS account whose host is the server's address (Reeder adds `/api/greader.php`):
+sign in, folders with their feeds, unread counts, read and starred both ways (Reeder → browser app at once, browser app
+→ Reeder on the next sync), mark all read, a feed removed in the browser app leaving Reeder, and a new key signing
+Reeder out. Watch the server for 429s during the first sync of a large library: the Reader bucket is 600, 60 a second,
+as `/api`. Done when each is seen. Seen so far, against `http://localhost:5000`: Reeder signs in and loads the
+articles.
 
 **N12 — Check Automatic theme switching in each browser.** Switch the OS between light and dark while RSSmote runs,
 with Automatic and with non-default palettes in both slots: the page repaints, and the menu button shows the checked

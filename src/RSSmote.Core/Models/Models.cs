@@ -8,6 +8,11 @@ public sealed record Feed(long Id, string Title, string Url, string? SiteUrl, lo
 {
     [JsonIgnore]
     public string? Host => Uri.TryCreate(SiteUrl ?? Url, UriKind.Absolute, out var uri) ? uri.Host : null;
+
+    /// <summary>Favicon source for the feed: the site's host through a public favicon service.</summary>
+    [JsonIgnore]
+    public string? FaviconUrl =>
+        Host is { } host ? $"https://www.google.com/s2/favicons?sz=64&domain={Uri.EscapeDataString(host)}" : null;
 }
 
 public sealed record Item(

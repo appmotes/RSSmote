@@ -3,7 +3,10 @@
 RSSmote is a self-hosted RSS reader: an ASP.NET Core server (.NET 10) that keeps one library behind a single key,
 and an Avalonia 12 app that runs in the browser as WebAssembly, with desktop columns and a phone stack (A22).
 It is distributed as source, so every dependency must be free and permissively licensed (see
-`Docs/dependencies.md`), and no code may reference other products by name.
+`Docs/dependencies.md`), and no code may reference other products by name. The one exception is a protocol string a
+third-party client requires verbatim — the Reader API's identifiers and path prefixes (A25) — and it lives only as a
+constant in `ReaderIds` or `ReaderApi.Prefixes`, never in UI text, type or member names, or comments. The README may
+name the account type a client offers for it.
 
 ## Communication and Coding Do's and Dont's
 - Do not overdo abstractions when a simpler and more readable solution suffice

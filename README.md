@@ -158,7 +158,7 @@ dotnet test RSSmote.slnx
 ```
 
 The tests start the real app without a screen (Avalonia's headless platform) and draw it with Skia, so they also catch
-mistakes in layout, themes and contrast. The server's tests run it in process and let two devices sync through it.
+mistakes in layout, themes and contrast. The server's tests run it in process, let two devices sync through it, and drive the Reader API.
 
 ### Where your data lives
 
@@ -174,6 +174,22 @@ sit in `keys/`, side by side:
 
 Set `RSSMOTE_DATA_DIR` to use another folder. A library from the earlier desktop app can be copied in as it is. Each
 device keeps its theme and text sizes in the browser's own storage.
+
+### In a native reader
+
+The server also speaks the Google Reader-compatible API that many native readers sync with. In Reeder, add a
+**FreshRSS** account:
+
+| Field | Value |
+| --- | --- |
+| Host | `https://<your server>`, as you open it in the browser; Reeder adds `/api/greader.php` itself |
+| User name | anything |
+| Password | your `RSSMOTE_KEY` |
+
+The reader shows your folders with their feeds. Read and starred go both ways: what you mark in the reader shows in the
+browser at once, and what you mark in the browser reaches the reader on its next sync. Feeds and folders are added,
+moved and removed in the browser app only. A new key signs the reader out too. Use HTTPS: the reader sends the key
+when it signs in.
 
 ## What the app fetches from the network
 

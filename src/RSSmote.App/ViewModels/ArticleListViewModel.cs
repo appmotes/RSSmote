@@ -335,7 +335,7 @@ public sealed partial class ArticleListViewModel : ObservableObject
             return;
         }
 
-        if (_settings.Current.DisplayFavicons && _feedLookup(row.Item.FeedId) is { } feed && Favicons.Url(feed) is { } favicon)
+        if (_settings.Current.DisplayFavicons && _feedLookup(row.Item.FeedId) is { } feed && feed.FaviconUrl is { } favicon)
         {
             _ = LoadAsync(favicon, Favicons.DecodeWidth, b => row.Favicon = b);
         }

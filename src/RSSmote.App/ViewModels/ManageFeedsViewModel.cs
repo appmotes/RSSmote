@@ -106,7 +106,7 @@ public sealed partial class ManageFeedsViewModel : ObservableObject, IDisposable
         return [.. feeds.Select(feed =>
         {
             var row = new ManagedFeedViewModel(feed, settings.GrayscaleFavicons);
-            if (_favicons.TryGetValue(feed.Id, out var cached)) { row.Favicon = cached; } else if (settings.DisplayFavicons && Favicons.Url(feed) is { } url) { _ = LoadFaviconAsync(feed.Id, url); } return row;
+            if (_favicons.TryGetValue(feed.Id, out var cached)) { row.Favicon = cached; } else if (settings.DisplayFavicons && feed.FaviconUrl is { } url) { _ = LoadFaviconAsync(feed.Id, url); } return row;
         })];
     }
 

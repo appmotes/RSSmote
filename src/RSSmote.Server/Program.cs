@@ -12,6 +12,7 @@ var data = builder.Configuration["RSSMOTE_DATA_DIR"] is { Length: > 0 } configur
 Directory.CreateDirectory(data);
 
 builder.Services.AddAccess(AccessKey.From(builder.Configuration));
+builder.Services.AddReader();
 builder.Services.AddDataProtection()
     .SetApplicationName("RSSmote")
     .PersistKeysToFileSystem(new DirectoryInfo(Path.Combine(data, "keys")));
@@ -26,10 +27,11 @@ builder.Services.AddRateLimiter(o =>
             PermitLimit = 5,
             Window = TimeSpan.FromMinutes(1),
         }));
-    // Every API call, per address: bursts of favicons pass, a flood does not.
+    // Every API call, per address: bursts of favicons pass, a flood does not. The Reader API has a bucket of its
+    // own, so a native client's first sync does not hold back the browser app on the same address (A25).
     o.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(http =>
         http.Request.Path.StartsWithSegments("/api")
-            ? RateLimitPartition.GetTokenBucketLimiter(ClientAddress(http), _ => new TokenBucketRateLimiterOptions
+            ? RateLimitPartition.GetTokenBucketLimiter(ApiBucket(http), _ => new TokenBucketRateLimiterOptions
             {
                 TokenLimit = 600,
                 TokensPerPeriod = 60,
@@ -78,10 +80,13 @@ api.AddEndpointFilter(async (context, next) =>
 });
 api.MapAccess();
 api.MapLibrary();
+app.MapReader();
 
 app.Run();
 
 static string ClientAddress(HttpContext http) => http.Connection.RemoteIpAddress?.ToString() ?? "";
+
+static string ApiBucket(HttpContext http) => (ReaderApi.Owns(http.Request.Path) ? "reader " : "") + ClientAddress(http);
 
 namespace RSSmote.Server
 {

@@ -345,7 +345,7 @@ public sealed partial class SidebarViewModel : ObservableObject
         {
             row.Favicon = cached;
         }
-        else if (_settings.Current.DisplayFavicons && Favicons.Url(feed) is { } url)
+        else if (_settings.Current.DisplayFavicons && feed.FaviconUrl is { } url)
         {
             _ = LoadFaviconAsync(feed.Id, url);
         }
@@ -370,7 +370,7 @@ public sealed partial class SidebarViewModel : ObservableObject
     /// <summary>Fetches the feed's favicon again, bypassing the cache.</summary>
     public void ReloadFavicon(Feed feed)
     {
-        if (Favicons.Url(feed) is not { } url)
+        if (feed.FaviconUrl is not { } url)
         {
             return;
         }

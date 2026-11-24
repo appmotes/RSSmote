@@ -346,6 +346,36 @@ public sealed class Store : ILibrary, IDisposable
         }
     }
 
+    /// <summary>The stored items among <paramref name="ids"/>, content included, in no set order.</summary>
+    public IReadOnlyList<Item> Items(IReadOnlyCollection<long> ids)
+    {
+        var result = new List<Item>(ids.Count);
+        lock (_gate)
+        {
+            foreach (var chunk in ids.Chunk(500))
+            {
+                result.AddRange(Query($"""
+                    SELECT {ItemColumns} FROM items i JOIN feeds f ON f.id = i.feed_id
+                    WHERE i.id IN ({string.Join(',', chunk)})
+                    """, [], ReadItem));
+            }
+        }
+
+        return result;
+    }
+
+    /// <summary>Every item's id, feed, date and flags, newest first, without its text.</summary>
+    public IReadOnlyList<ItemRef> Refs()
+    {
+        lock (_gate)
+        {
+            return Query("SELECT id, feed_id, published, unread, starred FROM items ORDER BY published DESC, id DESC", [],
+                r => new ItemRef(r.GetInt64(0), r.GetInt64(1),
+                    DateTimeOffset.FromUnixTimeMilliseconds((long)Math.Round(r.GetDouble(2) * 1000)),
+                    r.GetInt64(3) != 0, r.GetInt64(4) != 0));
+        }
+    }
+
     /// <summary>Number of items in a stream matching the filter, without loading them.</summary>
     public int Count(ArticleStream stream, StreamFilter filter)
     {
