@@ -6,6 +6,7 @@
 
 En RSS-læser, du selv hoster og læser i browseren: på skrivebordet, tabletten og telefonen. Tre kolonner på en bred
 skærm, én stak på en telefon, tastaturet i centrum og ét bibliotek på din egen server, som alle enheder deler.
+Serveren tilbyder desuden et **Google Reader-kompatibelt API**, så native læsere som Reeder kan synkronisere med den.
 
 **Denne app er skrevet af en maskinintelligens.** Al kode, alle kommentarer, designet, de ti farvetemaer,
 app-ikonet, testene, dokumentationen og denne README er lavet af Claude Opus 5.5 (Anthropic, med *reasoning effort*
@@ -33,6 +34,8 @@ se [Docs/dependencies.md](Docs/dependencies.md).
   før siden vises.
 - **Ét bibliotek, alle enheder.** Læst, stjernemarkeret, mapper og feeds følger dig fra skrivebordet til telefonen med
   det samme; hver enhed beholder sit eget tema og sine egne tekststørrelser.
+- **Et Google Reader-kompatibelt API** til native læsere som Reeder: dine mapper med deres feeds, og læst og
+  stjernemarkeret begge veje. Feeds og mapper styres i browser-appen. Se [I en native læser](#i-en-native-læser).
 - **Import og eksport af OPML**, så du kan flytte dine feeds ind og ud.
 - **Opdatering** hver halve time på serveren, også når ingen enhed er åben, og med `r`, når du vil. Læste, ikke-stjernemarkerede artikler ryddes
   efter 30 dage.
@@ -175,7 +178,7 @@ i `keys/`, side om side:
 Sæt `RSSMOTE_DATA_DIR` for at bruge en anden mappe. Et bibliotek fra den tidligere skrivebordsapp kan kopieres ind,
 som det er. Hver enhed gemmer sit tema og sine tekststørrelser i browserens eget lager.
 
-### I en native læser
+## I en native læser
 
 Serveren taler også det Google Reader-kompatible API, som mange native læsere synkroniserer med. I Reeder tilføjer du
 en **FreshRSS**-konto:

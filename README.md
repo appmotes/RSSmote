@@ -6,6 +6,7 @@
 
 An RSS reader you host yourself and read in the browser: on the desktop, the tablet and the phone. Three columns on a
 wide screen, one stack on a phone, keyboard first, and one library on your own server that every device shares.
+The server also offers a **Google Reader-compatible API**, so native readers such as Reeder can sync with it too.
 
 **This app was written by a machine intelligence.** All the code, the comments, the design, the ten colour themes, the
 app icon, the tests, the documentation and this README were made by Claude Opus 5.5 (Anthropic, with *reasoning
@@ -35,6 +36,9 @@ Built with .NET 10, ASP.NET Core and [Avalonia](https://avaloniaui.net) 12, whic
   removed before the page is shown.
 - **One library, every device.** Read, starred, folders and feeds follow you from the desktop to the phone at once;
   each device keeps its own theme and text sizes.
+- **A Google Reader-compatible API** for native readers such as Reeder: your folders with their feeds, and read and
+  starred in both directions. Feeds and folders are managed in the browser app. See
+  [In a native reader](#in-a-native-reader).
 - **OPML import and export**, so you can move your feeds in and out.
 - **Refresh** every half hour on the server, also while no device is open, and with `r` whenever you like. Read, unstarred articles are cleared
   after 30 days.
@@ -175,7 +179,7 @@ sit in `keys/`, side by side:
 Set `RSSMOTE_DATA_DIR` to use another folder. A library from the earlier desktop app can be copied in as it is. Each
 device keeps its theme and text sizes in the browser's own storage.
 
-### In a native reader
+## In a native reader
 
 The server also speaks the Google Reader-compatible API that many native readers sync with. In Reeder, add a
 **FreshRSS** account:
