@@ -130,7 +130,7 @@ Article body typography is CSS in the HTML template (D14), not a type role.
 | Article row | `ArticleRow`: favicon · title · time, then "Feed — summary" (2 lines) · 44 pt thumbnail (D11) | `Grid` + two `TextBlock`s |
 | Filter bar | `FilterBar` (templated): starred · unread · all as icon segments in a track, the active one raised; looks in `Button.filter-segment` | `Border` + 3 buttons |
 | Filter box | Always visible under the list strip: search icon, placeholder "Filter", a ⌘F / Ctrl+F chip or a clear button; ⌘/Ctrl+F focuses it, Escape clears it and returns to the list | `TextBox.filter` with inner content |
-| Article | `ArticleHost`: `NativeWebView` with HTML template; falls back to `HtmlPanel` (A9) | WebView / HtmlRenderer |
+| Article | `ArticleHost`: the HTML template in an `<iframe>`; `HtmlLabel` in the headless tests (A9) | WebView / HtmlRenderer |
 | Text size | Each row of a pane inside `Scaled`, which lays it out at the pane's factor; the factor set once on the list (D31) | `LayoutTransformControl` |
 | Empty states | `EmptyState` (templated): a soft box with title, subtitle and shortcut chips in the article card; `.compact` an icon tile, title and subtitle in an empty list | `Panel` + `StackPanel` |
 | Overlays | `PanelFrame` (templated): scrim that catches clicks + a sheet as tall as its content (`.narrow` for the Settings question, D30) | `ContentControl` over the window (A6) |
@@ -222,7 +222,7 @@ Licence notice in `Assets/Icons/LICENSE-lucide.txt`.
 - Empty states use Lucide icons and type, not an illustration (D9).
 - Favicons: fetched at runtime through the server (A19), shown greyscale when "Grayscale Favicons" is on (BGRA or
   RGBA, P26); a letter tile when missing.
-- Font: Inter via `Avalonia.Fonts.Inter` on every OS, so the measured metrics hold everywhere.
+- Font: Inter via `Avalonia.Fonts.Inter` in every browser, so the measured metrics hold everywhere.
 
 **D14 — Article typography is CSS.** The HTML template sets the date at 12.5 px with tabular figures, the title at
 28 px SemiBold, and the byline on one line, "Author · Source", with the source in the accent; the column is 620 px
@@ -270,7 +270,7 @@ gallery entry in the same change as its `templates.html` article.
 (`CornerRadius.Card`, `Thickness.Card.Margin`, `BoxShadows.Card`); the sidebar sits on the canvas. Elevation is a
 palette key, not a neutral one, because a shadow that reads on sand reads as nothing on black: Sand and Ember use a
 soft two-layer shadow, Black a 1 px light ring. Only the two cards, the selected sidebar row and the active filter
-segment (`BoxShadows.Raised`) and the panels (`BoxShadows.Panel`) are raised — never a list row. The native web view
+segment (`BoxShadows.Raised`) and the panels (`BoxShadows.Panel`) are raised — never a list row. The article's iframe
 sits between the card's strip and its status bar, so the card's rounded corners are always drawn by Avalonia (L9).
 `BoxShadows` resources resolve through `DynamicResource` on `Border.BoxShadow`; measured with `ElevationTests`.
 
@@ -349,8 +349,8 @@ and come back on 24 pt up, a tap, near the top or on a new article, leaving a 3 
 (`Bg.Pill` track, `Accent` fill) under the status bar. They go without a slide: the article takes their room. Previous and next are
 buttons, never a horizontal swipe: a swipe from the edge is back (`NavigationPage`), and the two would fight. Aa opens
 the text sheet (D31) with Article chosen; the panes are segments on a `Bg.Pill` track, the chosen one raised on
-`Bg.Segment` in the `Accent`. The theme is chosen under Appearance only. The sheet closes like D29's, so it has no grabber; while it is open the native article ends where
-the sheet begins (P29).
+`Bg.Segment` in the `Accent`. The theme is chosen under Appearance only. The sheet closes like D29's, so it has no grabber; while it is open the article's iframe ends
+where the sheet begins (P29).
 
 **D27 — Settings are plain pushed pages.** The Settings root lists Feeds (Add Feed, Manage Feeds, Import Feeds,
 Export Feeds), Display (Appearance, Text, D31), Articles (Read when opened, Newest first, Group by date, Hide empty feeds as
@@ -370,8 +370,8 @@ chevron; pages have a back button and a centred title, no large title.
   M5's up-down chevron says; every other row that opens something pushes a page.
 - Import Feeds shows what a file will add before anything is saved: the file, its folders with their feed counts,
   how many feeds already exist and are skipped, then "Import N Feeds" ("Nothing to Import" when all are). It opens
-  on its intro and "Choose File…", which brings up the system's file picker; Change picks another. Export Feeds
-  shows what the file holds and hands it to the system's save sheet, then says "Saved.".
+  on its intro and "Choose File…", which brings up the browser's file picker; Change picks another. Export Feeds
+  shows what the file holds and hands it to the browser's save dialog, then says "Saved.".
 
 **D28 — Touch metrics.** Rows are at least 44 pt (56 with a subtitle, 60 for radio rows with one); icon buttons
 are 44 pt targets around 22 pt icons; bars are 44 pt at the top and 49 pt plus the home-indicator inset at the
@@ -408,7 +408,7 @@ The pages are drawn as HTML recreations, not screenshots, on the design canvas
 menus and the gear (`Icon.Settings`) in the sidebar's status bar turn the whole window into Settings; Escape and
 "‹ Back to Feeds" turn it back. It opens on Articles & Refresh. A mode, so feeds are added, edited and removed in one
 place on both form factors, with the phone's pages and view-models (D27), and nothing floats over the article's
-native view (L9).
+iframe (L9).
 - The left column is as wide as the sidebar, on the canvas, with a hairline on its right, and holds only the menu:
   "Settings" (`largeTitle`), then Feeds (Add Feed, Manage Feeds, Import Feeds, Export Feeds), Display (Appearance, Text) and
   Reading (Articles & Refresh), 32 pt items with a 15 pt icon. The chosen item is raised like a selected sidebar row
@@ -448,15 +448,13 @@ favicon, thumbnail, icon and padding — so a row keeps its proportions: each ro
 `LayoutTransformControl` that takes the factor the list sets. Bars, strips, large titles and buttons keep their size.
 The article is CSS: its body is 16 px × the step. No platform offers a choice of typeface.
 - Settings ▸ Text, under Display after Appearance, on both form factors: Feeds, Article list and Article, each a
-  slider between a small and a large A that stops on the steps, Reset to Standard, and no preview. On the phone the
-  page starts with "Follow system text size" (on): the steps then apply on top of a system text size a head passes
-  in; a browser passes none, so it stays at 1.
+  slider between a small and a large A that stops on the steps, Reset to Standard, and no preview.
 - While reading on desktop: one Aa, left of the gear in the sidebar's status bar, opens a popover upward: "Text size"
   and the value, Feeds | List | Article as segments, the slider, and Standard. No scrim, so the panes change as the
-  slider moves; it hangs over the sidebar and the list, never over the article column, so nothing covers the native
-  view (L9). ⌘/Ctrl + / − / 0 step the article, or the pane chosen while the popover is open; focus usually sits in
+  slider moves; it hangs over the sidebar and the list, never over the article column, so nothing covers the
+  iframe (L9). ⌘/Ctrl + / − / 0 step the article, or the pane chosen while the popover is open; focus usually sits in
   the list while reading, so following focus would size the wrong pane. No menu item: Aa and Settings cover it.
-- While reading on the phone, the same on iOS and Android: Aa on the Feeds root, the list and the article opens one
+- While reading on the phone: Aa on the Feeds root, the list and the article opens one
   sheet with that page's pane chosen. No scrim, so the page above is the preview, and a tap on it closes the sheet.
   The sheet sizes text only; the theme stays under Appearance. No pinch.
 - The slider: the accent up to the knob, `Ink.Secondary` at 30 % after it, which shows on a card and on a panel in

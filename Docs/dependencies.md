@@ -9,11 +9,11 @@ The server runs on ASP.NET Core (MIT), part of the .NET 10 shared framework, so 
 | Avalonia | 12.1.4 | MIT | App | UI framework |
 | Avalonia.Browser | 12.1.4 | MIT | Browser | WebAssembly head (A23); brings Avalonia.Skia and Avalonia.HarfBuzz (MIT) |
 | Avalonia.Themes.Fluent | 12.1.4 | MIT | App | Base theme, restyled by our tokens |
-| Avalonia.Fonts.Inter | 12.1.4 | MIT (font: OFL) | App | Same font on every OS (D13) |
+| Avalonia.Fonts.Inter | 12.1.4 | MIT (font: OFL) | App | Same font in every browser (D13) |
 | CommunityToolkit.Mvvm | 8.4.2 | MIT | App | View-models (A7) |
 | Microsoft.Data.Sqlite | 10.0.13 | MIT | Data | SQLite (A8), on the server only; native `e_sqlite3` for every RID via SQLitePCLRaw (Apache-2.0) |
-| Avalonia.Controls.WebView | 12.1.1 | MIT | App | Article view: an `<iframe srcdoc>` in a browser (A23), the OS web engine elsewhere (A9) |
-| Avalonia.HtmlRenderer | 12.0.0 | MIT | App | Article fallback where no web engine is installed (A9) |
+| Avalonia.Controls.WebView | 12.1.1 | MIT | App | Article view: an `<iframe srcdoc>` in the browser (A9, A23) |
+| Avalonia.HtmlRenderer | 12.0.0 | MIT | App | Article fallback, used by the headless tests (A9) |
 | HtmlSanitizer | 9.2.1039 | MIT | Core | Strips active content from feed HTML (A9); brings AngleSharp and AngleSharp.Css (MIT) |
 | Avalonia.Skia | 12.1.4 | MIT | App, Desktop and Mobile tests | Real drawing in headless tests |
 | Avalonia.Headless.XUnit | 12.1.4 | MIT | App, Desktop and Mobile tests | Headless platform for xUnit v3 |

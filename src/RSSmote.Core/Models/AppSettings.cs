@@ -41,7 +41,6 @@ public sealed record AppSettings
 
     public bool SortNewestFirst { get; set; } = true;
     public bool MarkAsReadOnSelect { get; set; } = true;
-    public bool OpenLinksInBackground { get; set; }
     public bool DisplayFavicons { get; set; } = true;
     public bool GrayscaleFavicons { get; set; } = true;
     public bool GroupByDate { get; set; } = true;
@@ -65,9 +64,6 @@ public sealed record AppSettings
 
     /// <summary>Text size of the article, one of <see cref="TextSizes"/>.</summary>
     public int ArticleTextSize { get; set; } = StandardTextSize;
-
-    /// <summary>On the phone the three sizes apply on top of the system's text size.</summary>
-    public bool FollowSystemTextSize { get; set; } = true;
 
     /// <summary>Read from older settings only: the article's size in points, normalised into <see cref="ArticleTextSize"/>.</summary>
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]

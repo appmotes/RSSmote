@@ -14,7 +14,7 @@ src/RSSmote.Core             models, feed parsing, OPML, HTML helpers, the libra
                              IRefresher) and the API's types and JSON context (Api/) — no Avalonia
 src/RSSmote.Data             SQLite store, settings store, refresher, data folder — the server's only
 src/RSSmote.Server           ASP.NET Core: the API, sign-in, rate limits, events, image proxy, the browser app's files,
-                             and the Reader API for native clients (A25)
+                             and the Reader API for reader apps (A25)
 src/RSSmote.Client           the API from a device: ApiClient, RemoteLibrary (the mirror), RemoteSettings,
                              RemoteRefresher, RemoteSession — plain .NET, no Avalonia, no SQLite
 src/RSSmote.App              the Avalonia UI: view-models, controls, styles, themes, assets, services, and every
@@ -27,7 +27,7 @@ tests/RSSmote.Mobile.Tests   headless tests of the phone stack, rendered at 402 
 tests/RSSmote.Server.Tests   the API in process (WebApplicationFactory), two RemoteSessions syncing through it, and
                              the Reader API
 tests/RSSmote.Core.Tests     parser, dates, HTML helpers, feed discovery (fake HTTP), OPML
-tests/RSSmote.Data.Tests     store: upsert, filters, counts, retention, migrations, macOS-library compatibility
+tests/RSSmote.Data.Tests     store: upsert, filters, counts, retention, migrations, opening a version-0 library
 build/                       run-local.sh, publish.sh, icons.sh (A24)
 Docs/
 ```
@@ -57,8 +57,7 @@ OS in plain .NET; `RSSMOTE_DATA_DIR` overrides it, and the Docker image sets it 
 | Windows | `%LOCALAPPDATA%\RSSmote\` |
 | Linux | `$XDG_DATA_HOME/rssmote/` (fallback `~/.local/share/rssmote/`) |
 
-A device's seams are `ILauncher` (`TopLevelLauncher`, the top level's launcher: a new browser tab, so "open in
-background" is ignored), `IFilePicker` (`StorageFilePicker`, the top level's storage provider) and `IDeviceStorage`
+A device's seams are `ILauncher` (`TopLevelLauncher`, the top level's launcher: a new browser tab), `IFilePicker` (`StorageFilePicker`, the top level's storage provider) and `IDeviceStorage`
 (`BrowserStorage`, local storage). `IFilePicker.OpenTextAsync` returns the chosen file's name with its text
 (`PickedText`), which Import Feeds shows.
 
@@ -82,7 +81,7 @@ Under Manage Feeds the mode stacks Edit Feed, Edit Folder and New Folder (`Panel
 one closing (Save) pops it and any page above it, a menu item replaces the whole stack, and each page removed is
 disposed, so Manage Feeds stops following the store when it goes. `Confirm` holds a `ConfirmViewModel` from
 `ShellViewModel.Confirm*`, shown in a `PanelFrame` over the window; a click on its scrim or Escape cancels it. The
-article's native web view would draw over Settings, so `ArticleHost.IsObscured` follows `IsSettingsOpen` (L9).
+article's iframe would draw over Settings, so `ArticleHost.IsObscured` follows `IsSettingsOpen` (L9).
 While Settings show the window's single-key shortcuts are off; Escape cancels the question or leaves, ⌘/Ctrl+N moves
 to Add Feed. Right-clicking a sidebar row opens its menu without selecting it: feeds get Open site
 and Reload Icon; folders and the smart rows have none. Right-clicking an article row opens its menu the same way:
@@ -99,9 +98,8 @@ change updates rows in place and recounts the sidebar, a structural change (refr
 into one full reload (300 ms). Rows load favicons and thumbnails only when their container is realised.
 
 **A8 — Storage.** One SQLite file (`rssmote.sqlite`): `folders`, `feeds`, `items`, versioned with
-`PRAGMA user_version` and forward-only migration steps. Version 1 is exactly the macOS app's tables, created
-with `IF NOT EXISTS`, so a library that app wrote (at version 0) opens as-is and is stamped 1. `published` is
-REAL Unix seconds, as there. All access goes through `Store` on one connection guarded by a lock; writes raise
+`PRAGMA user_version` and forward-only migration steps. Version 1 creates its tables with `IF NOT EXISTS`, so a
+library with the same tables at version 0 opens as-is and is stamped 1. `published` is REAL Unix seconds. All access goes through `Store` on one connection guarded by a lock; writes raise
 `Changed` after the lock is released (with item ids for flag-only changes) so lists update in place. The
 `TimeProvider` passed to `Store` is the clock for retention and undated items. Settings (`AppSettings` in Core)
 are a JSON file next to it, written by `SettingsStore` with source-generated `System.Text.Json`: enums as text,
@@ -114,16 +112,15 @@ files forward: a stored `Black` theme becomes Dark with the `black` palette in t
 their real source; iframes kept only for YouTube/Vimeo, others become links). `ArticleViewModel` rebuilds the
 document only when another article is selected, so flag changes do not reload the page. `ArticleHost` renders it
 through `ArticleTemplate` (embedded `article.css` and `article.js`) with the palette and the body's size (D31), and
-renders again when either or the theme changes. It uses `NativeWebView` (`NavigateToString`, no base address) in a
-browser, where it is an iframe (A23), and where `WebViewAdapterInfo` reports an installed engine; otherwise an `HtmlLabel` (Avalonia.HtmlRenderer) in a
-`ScrollViewer`, which gets the same page without the script and with video frames as links.
-`RSSMOTE_ARTICLE_RENDERER=fallback` forces the fallback; tests always use it. The page never navigates: its
-script posts link clicks and shortcut keys through `invokeCSharpAction`, or to the parent page in a browser (L9), any other top-level navigation after
-the initial load is cancelled, and both arrive as routed events (`LinkClickedEvent`, `ShortcutEvent`). Space
+renders again when either or the theme changes. In the browser it uses `NativeWebView` (`NavigateToString`, no base
+address), which is an `<iframe srcdoc>` there (A23). The fallback is an `HtmlLabel` (Avalonia.HtmlRenderer) in a
+`ScrollViewer`, which gets the same page without the script and with video frames as links; anywhere but a browser,
+which means the headless tests, uses it (`ArticleHost.UsesWebView`). The page never navigates: its script posts link clicks and
+shortcut keys to the app around it (L9), any other top-level navigation after the initial load is cancelled, and both arrive as routed events (`LinkClickedEvent`, `ShortcutEvent`). Space
 scrolls through `rssmote.scrollPage`, which answers false at the end so the shell moves to the next article.
 
 `ArticleHost` reports the reader's scroll position (`Scrolled`, offset and 0–1 progress) and taps off links
-(`PageTapped`): the fallback from its `ScrollViewer`, the native view through `scroll` and `tap` messages from
+(`PageTapped`): the fallback from its `ScrollViewer`, the iframe through `scroll` and `tap` messages from
 `article.js`, sent at most once a frame.
 
 **A10 — Feed pipeline.** `FeedFinder` (HTTP + `<link rel="alternate">` discovery, then common feed paths; takes an
@@ -189,9 +186,9 @@ for a panel, the panel closing (Save, Add Feed) pops it and a page that goes any
 confirmation only after the sheet is gone (P24). The system back closes a sheet before it pops a page.
 Import and Export Feeds are pages too (`ImportFeedsViewModel` previews a file before anything is saved), and Aa
 on the Feeds root, the list and the article opens `TextSheet` through `MobileShell.ShowTextSheet` with that page's
-pane chosen (D31); from the article it narrows the native view to the space above the sheet. The article page hides
+pane chosen (D31); from the article it narrows the iframe to the space above the sheet. The article page hides
 both bars on a scroll down and shows them on a scroll up, a tap or a new article, from `ArticleHost.Scrolled` and
-`PageTapped` (D26). An article whose host is native is pushed without a slide (P29). Back from the background
+`PageTapped` (D26). An article shown in the iframe is pushed without a slide (P29). Back from the background
 (`IActivatableLifetime.Activated`, where the platform has it), `MobileShell` calls `ShellViewModel.RefreshIfStale`,
 which refreshes when automatic refresh is on and the last pass is older than its interval. The server refreshes on its
 own timer either way.
@@ -203,8 +200,8 @@ the key, so a new key signs every device out. Data protection keeps its keys in 
 nobody out. Every other endpoint needs the cookie and answers 401 without it. A write must also carry
 `X-RSSmote-Client` (a random id per loaded app), which a cross-site form cannot send. Rate limits: five sign-in
 attempts a minute per address, and a token bucket of 600 (60 a second) per address over `/api`. Behind a reverse
-proxy, `ASPNETCORE_FORWARDEDHEADERS_ENABLED=true` gives the limits the client's address. The Reader API for native
-clients stands apart from all of this, with a token of its own and no client header (A25).
+proxy, `ASPNETCORE_FORWARDEDHEADERS_ENABLED=true` gives the limits the client's address. The Reader API for reader
+apps stands apart from all of this, with a token of its own and no client header (A25).
 
 | Endpoint | Does |
 |---|---|
@@ -261,10 +258,9 @@ server as the folder the page was loaded from (so the app also works under a pat
 relative), and starts `App` with `BrowserStorage` and `AppleKeyboard` from `navigator.platform` (P31). Globalization is
 invariant: no ICU data is downloaded, and dates format the same in every browser. `SessionView` asks
 `GET /api/session`: signed in, it opens a `RemoteSession` and shows `MainView`; otherwise `SignInView`. A 401 anywhere
-closes the session and asks for the key again. The article is the same `ArticleHost` as on the desktop:
-`Avalonia.Controls.WebView` shows it in an `<iframe srcdoc>` there, and `article.js` posts to the app around it with
-`parent.postMessage` where no `invokeCSharpAction` exists. The iframe is a DOM element over the canvas, so it covers
-anything drawn over it, as a native web view does (L9).
+closes the session and asks for the key again. `Avalonia.Controls.WebView` shows the article in an
+`<iframe srcdoc>`, and `article.js` posts to the app around it with `parent.postMessage`. The iframe is a DOM element
+over the canvas, so it covers anything drawn over it (L9).
 
 **A24 — Hosting and running.** The server serves the published browser app from `RSSMOTE_WEB_DIR` or `wwwroot` beside
 it (`WebApp`); without that folder it is the API alone. A file the publish compressed with brotli is sent compressed;
@@ -275,7 +271,7 @@ runs the server on port 5000 (`--lan` for a phone on the same network); `build/p
 A server reached from outside belongs behind a reverse proxy with HTTPS, so the cookie is `Secure`.
 
 
-**A25 — The Reader API.** Native readers sign in and sync over the Google Reader-compatible protocol (`ReaderApi`),
+**A25 — The Reader API.** Reader apps sign in and sync over the Google Reader-compatible protocol (`ReaderApi`),
 under `/api/greader.php` and `/api/reader` alike, as a client may or may not add the first to the address it is given.
 It writes read and starred only: feeds and folders are kept in the browser app, and their writes answer 403.
 `accounts/ClientLogin` takes `RSSMOTE_KEY` as the password, ignores the user name, and answers a token that is
@@ -292,5 +288,5 @@ A feed without a folder has no label. A feed's icon is `Feed.FaviconUrl`, the so
 `ts` compare with `published`; a new item with an old date is still unread, so a client that syncs the unread ids gets
 it. Streams are read from `Store.Refs()` (no text) and paged by keyset: the continuation is the last item's date and
 id. Content is sanitized (A9) and falls back to the summary. Writes go through `Store`, so the browser app gets them
-at once as `flags` events with no origin (A18); a native client sees the browser app's writes on its next sync. The
+at once as `flags` events with no origin (A18); a reader app sees the browser app's writes on its next sync. The
 protocol's strings live only in `ReaderIds`.

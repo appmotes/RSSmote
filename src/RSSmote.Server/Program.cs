@@ -28,7 +28,7 @@ builder.Services.AddRateLimiter(o =>
             Window = TimeSpan.FromMinutes(1),
         }));
     // Every API call, per address: bursts of favicons pass, a flood does not. The Reader API has a bucket of its
-    // own, so a native client's first sync does not hold back the browser app on the same address (A25).
+    // own, so a reader app's first sync does not hold back the browser app on the same address (A25).
     o.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(http =>
         http.Request.Path.StartsWithSegments("/api")
             ? RateLimitPartition.GetTokenBucketLimiter(ApiBucket(http), _ => new TokenBucketRateLimiterOptions

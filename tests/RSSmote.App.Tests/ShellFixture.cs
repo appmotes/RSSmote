@@ -76,8 +76,8 @@ public sealed class ShellFixture : IDisposable
 
     public sealed class RecordingLauncher : ILauncher
     {
-        public List<(Uri Url, bool Background)> Opened { get; } = [];
-        public void Open(Uri url, bool inBackground) => Opened.Add((url, inBackground));
+        public List<Uri> Opened { get; } = [];
+        public void Open(Uri url) => Opened.Add(url);
     }
 
     /// <summary>Runs posted actions only when asked, as the UI thread does after the current one returns.</summary>

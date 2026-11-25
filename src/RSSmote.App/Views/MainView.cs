@@ -12,7 +12,7 @@ using RSSmote.Core.Models;
 namespace RSSmote.App.Views;
 
 /// <summary>
-/// The root on every head (A22): the desktop columns from <see cref="DesktopMinWidth"/> up, the phone stack below.
+/// The root view (A22): the desktop columns from <see cref="DesktopMinWidth"/> up, the phone stack below.
 /// Both show the one <see cref="ShellViewModel"/> in its <see cref="Control.DataContext"/>, so a resize keeps what is
 /// being read. The keyboard shortcuts (D15) belong to the desktop columns and are taken from the top level, which
 /// receives the keys when nothing has focus.

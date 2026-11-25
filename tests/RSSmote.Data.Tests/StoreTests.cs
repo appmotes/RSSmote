@@ -221,14 +221,14 @@ public sealed class StoreTests : IDisposable
     }
 
     [Fact]
-    public void Opens_a_library_written_by_the_macOS_app()
+    public void Opens_a_version_0_library_with_the_same_tables()
     {
         var path = Path.Combine(_folder, "legacy.sqlite");
         using (var db = new SqliteConnection($"Data Source={path};Pooling=False"))
         {
             db.Open();
             using var cmd = db.CreateCommand();
-            // Tables exactly as the macOS app creates them, at user_version 0.
+            // The version-1 tables at user_version 0.
             cmd.CommandText = """
                 CREATE TABLE folders (id INTEGER PRIMARY KEY, title TEXT NOT NULL);
                 CREATE TABLE feeds (id INTEGER PRIMARY KEY, folder_id INTEGER REFERENCES folders(id) ON DELETE SET NULL,

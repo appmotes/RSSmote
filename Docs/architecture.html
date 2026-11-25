@@ -471,7 +471,7 @@
         <span>Every service is a singleton, set up in <code>Program.cs</code>. <code>LibraryEvents</code> listens to
           <code>Store</code>, <code>SettingsStore</code> and <code>Refresher</code> and sends the changes out.
           <code>RequestOrigin</code> remembers which client wrote, so the event can say so (A17, A18, A24).</span>
-        <span>The Reader API is the second way in, for native clients. It has its own token and rate limit but the same
+        <span>The Reader API is the second way in, for reader apps. It has its own token and rate limit but the same
           key, and it uses only <code>Store</code>. A write from it reaches the browser app as a <code>flags</code>
           event like any other (A25).</span>
       </figcaption>

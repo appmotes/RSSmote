@@ -72,25 +72,7 @@ public sealed partial class SettingsViewModel : ObservableObject
     /// <summary>The last step of the scale; sliders run from 0 to here.</summary>
     public int MaxTextStep => AppSettings.TextSizes.Length - 1;
 
-    /// <summary>The system's text size as a factor, which the phone heads set (iOS Larger Text, Android font size).</summary>
-    [ObservableProperty]
-    public partial double SystemTextScale { get; set; } = 1;
-
-    partial void OnSystemTextScaleChanged(double value)
-    {
-        ApplyTextSizes(_settings.Current);
-        OnPropertyChanged(nameof(SystemSizeText));
-    }
-
-    /// <summary>"System text size: 120 %", under the switch that follows it.</summary>
-    public string SystemSizeText => $"System text size: {Math.Round(SystemTextScale * 100)} %";
-
-    [ObservableProperty]
-    public partial bool FollowSystemTextSize { get; set; }
-
-    partial void OnFollowSystemTextSizeChanged(bool value) => Write(s => s.FollowSystemTextSize = value);
-
-    /// <summary>How much larger the sidebar or Feeds root lays out its rows; the system's size included.</summary>
+    /// <summary>How much larger the sidebar or Feeds root lays out its rows.</summary>
     [ObservableProperty]
     public partial double FeedsScale { get; private set; } = 1;
 
@@ -215,7 +197,6 @@ public sealed partial class SettingsViewModel : ObservableObject
             DisplayFavicons = settings.DisplayFavicons;
             GrayscaleFavicons = settings.GrayscaleFavicons;
             HideEmptyFeeds = settings.HideEmptyFeeds;
-            FollowSystemTextSize = settings.FollowSystemTextSize;
             ApplyTextSizes(settings);
         }
         finally
@@ -258,10 +239,9 @@ public sealed partial class SettingsViewModel : ObservableObject
             FeedsSizeText = SizeText(settings.FeedsTextSize);
             ListSizeText = SizeText(settings.ListTextSize);
             ArticleSizeText = SizeText(settings.ArticleTextSize);
-            var system = settings.FollowSystemTextSize ? SystemTextScale : 1;
-            FeedsScale = settings.FeedsTextSize / 100.0 * system;
-            ListScale = settings.ListTextSize / 100.0 * system;
-            ArticleFontSize = ArticleTemplate.StandardFontSize * settings.ArticleTextSize / 100.0 * system;
+            FeedsScale = settings.FeedsTextSize / 100.0;
+            ListScale = settings.ListTextSize / 100.0;
+            ArticleFontSize = ArticleTemplate.StandardFontSize * settings.ArticleTextSize / 100.0;
             ShowSelectedPane();
         }
         finally

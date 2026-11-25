@@ -27,7 +27,7 @@
             <v:ArticleView Grid.Column="4" />
         </Grid>
 
-        <!-- Settings take the whole window (D30); the article hides its native web view meanwhile (L9). -->
+        <!-- Settings take the whole window (D30); the article hides its iframe meanwhile (L9). -->
         <Panel IsVisible="{Binding IsSettingsOpen}">
             <s:SettingsView DataContext="{Binding SettingsMode}" />
         </Panel>

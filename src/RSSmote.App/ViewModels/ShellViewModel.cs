@@ -331,7 +331,7 @@ public sealed partial class ShellViewModel : ObservableObject, IDisposable
     {
         if (Article.Link is { } link)
         {
-            _launcher.Open(link, _settings.Current.OpenLinksInBackground);
+            _launcher.Open(link);
         }
     }
 
@@ -354,13 +354,13 @@ public sealed partial class ShellViewModel : ObservableObject, IDisposable
     {
         if (ArticleSanitizer.Resolve(row.Item.Url, null) is { } link)
         {
-            _launcher.Open(link, _settings.Current.OpenLinksInBackground);
+            _launcher.Open(link);
         }
     }
 
     /// <summary>A link clicked inside the article.</summary>
     [RelayCommand]
-    private void OpenLink(Uri url) => _launcher.Open(url, _settings.Current.OpenLinksInBackground);
+    private void OpenLink(Uri url) => _launcher.Open(url);
 
     /// <summary>Closes the article (".").</summary>
     [RelayCommand]
@@ -441,7 +441,7 @@ public sealed partial class ShellViewModel : ObservableObject, IDisposable
                   ?? ArticleSanitizer.Resolve(feed.Host is { } host ? "https://" + host : null, null);
         if (url is not null)
         {
-            _launcher.Open(url, _settings.Current.OpenLinksInBackground);
+            _launcher.Open(url);
         }
     }
 

@@ -12,15 +12,6 @@ using TheArtOfDev.HtmlRenderer.Avalonia;
 
 namespace RSSmote.App.Controls.Headless;
 
-public enum ArticleRenderer
-{
-    /// <summary>The native web view when the OS has one, otherwise the fallback.</summary>
-    Auto,
-    Native,
-    /// <summary>Avalonia.HtmlRenderer: no scripts, no iframes, drawn by Avalonia itself.</summary>
-    Fallback,
-}
-
 /// <summary>A shortcut pressed while the web view had keyboard focus (D15).</summary>
 public sealed class ArticleShortcutEventArgs(Key key, KeyModifiers modifiers) : RoutedEventArgs(ArticleHost.ShortcutEvent)
 {
@@ -41,19 +32,14 @@ public sealed class ArticleLinkEventArgs(Uri url) : RoutedEventArgs(ArticleHost.
 }
 
 /// <summary>
-/// Shows an <see cref="ArticleDocument"/> through the article template (A9): in <see cref="NativeWebView"/> where
-/// the OS provides one, otherwise in an <see cref="HtmlLabel"/> inside a scroll viewer. The page never navigates;
+/// Shows an <see cref="ArticleDocument"/> through the article template (A9): in the browser in
+/// <see cref="NativeWebView"/>, which is an iframe there; elsewhere, as in the headless tests, in an
+/// <see cref="HtmlLabel"/> inside a scroll viewer. The page never navigates;
 /// clicked links are raised as <see cref="LinkClickedEvent"/>, and shortcuts typed into the web view as
 /// <see cref="ShortcutEvent"/>. Colours come from the theme palette and follow theme changes.
 /// </summary>
 public sealed class ArticleHost : Decorator
 {
-    /// <summary>Process-wide choice; tests and the RSSMOTE_ARTICLE_RENDERER variable set it before the first host.</summary>
-    public static ArticleRenderer DefaultRenderer { get; set; } = ArticleRenderer.Auto;
-
-    private static readonly WebViewAdapterType[] NativeAdapters =
-        [WebViewAdapterType.WkWebView, WebViewAdapterType.WebView2, WebViewAdapterType.WpeWebKit, WebViewAdapterType.WebKitGtk];
-
     public static readonly StyledProperty<ArticleDocument?> DocumentProperty =
         AvaloniaProperty.Register<ArticleHost, ArticleDocument?>(nameof(Document));
 
@@ -61,7 +47,7 @@ public sealed class ArticleHost : Decorator
     public static readonly StyledProperty<double> ArticleFontSizeProperty =
         AvaloniaProperty.Register<ArticleHost, double>(nameof(ArticleFontSize), ArticleTemplate.StandardFontSize);
 
-    /// <summary>Something is drawn over the article (an overlay panel); the native view hides, as it would cover it (L9).</summary>
+    /// <summary>Something is drawn over the article (an overlay panel); the iframe hides, as it would cover it (L9).</summary>
     public static readonly StyledProperty<bool> IsObscuredProperty =
         AvaloniaProperty.Register<ArticleHost, bool>(nameof(IsObscured));
 
@@ -82,7 +68,7 @@ public sealed class ArticleHost : Decorator
     public ArticleHost()
     {
         ActualThemeVariantChanged += (_, _) => Render();
-        if (UsesNative(DefaultRenderer))
+        if (UsesWebView)
         {
             _web = new NativeWebView();
             _web.AdapterCreated += (_, _) =>
@@ -165,28 +151,8 @@ public sealed class ArticleHost : Decorator
     /// <summary>The reader tapped the article anywhere but on a link.</summary>
     public event EventHandler? PageTapped;
 
-    public bool IsNative => _web is not null;
-
-    public static bool UsesNative(ArticleRenderer renderer) => renderer switch
-    {
-        ArticleRenderer.Native => true,
-        ArticleRenderer.Fallback => false,
-        // A browser shows the page in an iframe, which the package drives without an adapter query.
-        _ => OperatingSystem.IsBrowser() || NativeAdapters.Any(IsAvailable),
-    };
-
-    /// <summary>An adapter built for another OS throws from its type initializer when asked (P17).</summary>
-    private static bool IsAvailable(WebViewAdapterType type)
-    {
-        try
-        {
-            return WebViewAdapterInfo.GetAdapterInfo(type) is { IsSupported: true, IsInstalled: true };
-        }
-        catch (TypeInitializationException)
-        {
-            return false;
-        }
-    }
+    /// <summary>The article shows in the browser's iframe; anywhere else in the fallback.</summary>
+    public static bool UsesWebView => OperatingSystem.IsBrowser();
 
     /// <summary>Space: scrolls a page; false at the end of the article so the caller can move on.</summary>
     public async Task<bool> ScrollPageAsync(bool up)
@@ -308,12 +274,12 @@ public sealed class ArticleHost : Decorator
         return string.Create(CultureInfo.InvariantCulture, $"#{Mix(c.R, bg.R):x2}{Mix(c.G, bg.G):x2}{Mix(c.B, bg.B):x2}");
     }
 
-    // MARK: Native
+    // MARK: Web view
 
     private void OnNavigationStarted(object? sender, WebViewNavigationStartingEventArgs e)
     {
-        // Only the page set by NavigateToString may load; anything else goes to the browser. Engines differ in
-        // the address they report for that page, so the load in progress is allowed whatever it says.
+        // Only the page set by NavigateToString may load; anything else goes to a new tab. The load in progress is
+        // allowed whatever address it reports.
         if (_loading || e.Request is not { } url || url.Scheme is "about" or "data")
         {
             return;

@@ -137,7 +137,7 @@ public sealed class ShellViewModelTests : IDisposable
         Assert.True(row.IsUnread);
 
         _f.Shell.OpenRowInBrowserCommand.Execute(row);
-        Assert.Equal(row.Item.Url, Assert.Single(_f.Launcher.Opened).Url.AbsoluteUri);
+        Assert.Equal(row.Item.Url, Assert.Single(_f.Launcher.Opened).AbsoluteUri);
         Assert.Null(_f.Shell.Article.Item);
     }
 
@@ -341,14 +341,11 @@ public sealed class ShellViewModelTests : IDisposable
     }
 
     [Fact]
-    public void Open_in_browser_honours_the_background_setting()
+    public void Open_in_browser_opens_the_article()
     {
-        _f.Settings.Update(s => s.OpenLinksInBackground = true);
         _f.Shell.List.SelectedRow = _f.Shell.List.Articles.First();
         _f.Shell.OpenInBrowserCommand.Execute(null);
-        var (url, background) = Assert.Single(_f.Launcher.Opened);
-        Assert.Equal("https://example.com/w1", url.AbsoluteUri);
-        Assert.True(background);
+        Assert.Equal("https://example.com/w1", Assert.Single(_f.Launcher.Opened).AbsoluteUri);
     }
 
     [Fact]
@@ -396,11 +393,10 @@ public sealed class ShellViewModelTests : IDisposable
     }
 
     [Fact]
-    public void Links_in_the_article_open_with_the_background_setting()
+    public void Links_in_the_article_open_in_the_browser()
     {
-        _f.Settings.Update(s => s.OpenLinksInBackground = true);
         _f.Shell.OpenLinkCommand.Execute(new Uri("https://example.com/elsewhere"));
-        Assert.Equal((new Uri("https://example.com/elsewhere"), true), Assert.Single(_f.Launcher.Opened));
+        Assert.Equal(new Uri("https://example.com/elsewhere"), Assert.Single(_f.Launcher.Opened));
     }
 
     [Theory]

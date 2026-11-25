@@ -26,9 +26,11 @@ phone's layout at a larger size, and from 900 the three desktop columns. A table
 two (list and article side by side). Done when it is drawn and recorded as a D entry.
 
 **W4 — Check the phone stack on a phone.** Served with `build/run-local.sh --lan` and opened in Safari on an iPhone:
-safe-area insets (P15) and the home-screen icon, the back gesture and the browser's own back (P18), the list keeping
-its top row across a refresh (P25), the article page's bars hiding on scroll (D26), and the event stream coming back
-after the phone sleeps (A20). Done when each is seen.
+safe-area insets and the strips under them (P14, P15, P28) and the home-screen icon, the back gesture and the
+browser's own back (P18), the switch knob's travel (P23), the slider in the palette's accent (P27), the article
+arriving without a slide and ending above the text sheet (P29), the list keeping its top row across a refresh (P25),
+the article page's bars hiding on scroll (D26), and the event stream coming back after the phone sleeps (A20). Each
+pitfall marked *(W4)* loses the mark once seen. Done when each is seen.
 
 **W7 — Conditional GET on refresh.** `Refresher` downloads every feed in full on each pass. Store `ETag` and
 `Last-Modified` per feed (schema version 2, two nullable columns on `feeds`, A8), send `If-None-Match` and

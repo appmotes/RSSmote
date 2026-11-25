@@ -143,8 +143,8 @@ public partial class MobileShell : NavigationPage
 
     /// <summary>
     /// As the view's root nobody hands this page the safe-area insets or the system back, so it takes both from its
-    /// top level: without the insets the top bar sits under the status bar (P15), and without the back Android's
-    /// back closes the app from any page (P18).
+    /// top level: without the insets the top bar sits under the status bar (P15), and without the back the browser's
+    /// back leaves the app from any page (P18).
     /// </summary>
     protected override void OnAttachedToVisualTree(Avalonia.VisualTreeAttachmentEventArgs e)
     {
@@ -175,14 +175,13 @@ public partial class MobileShell : NavigationPage
         }
     }
 
-    /// <summary>On Android the value read during the event is still in device pixels; it settles afterwards (P15).</summary>
-    private void OnSafeAreaChanged(object? sender, EventArgs e) => Avalonia.Threading.Dispatcher.UIThread.Post(() =>
+    private void OnSafeAreaChanged(object? sender, EventArgs e)
     {
         if (_topLevel?.InsetsManager is { } insets)
         {
             SafeAreaPadding = insets.SafeAreaPadding;
         }
-    }, Avalonia.Threading.DispatcherPriority.Background);
+    }
 
     protected override void OnPropertyChanged(Avalonia.AvaloniaPropertyChangedEventArgs change)
     {
@@ -261,9 +260,9 @@ public partial class MobileShell : NavigationPage
         {
             return;
         }
-        // A native web view takes the page's place when it attaches, partway through a slide, and stays there (P16, P29):
-        // an article shown in one appears in place.
-        await PushAsync(new ArticlePage(_shell), ArticleHost.UsesNative(ArticleHost.DefaultRenderer) ? null : PageTransition);
+        // The iframe takes the page's place when it attaches, partway through a slide, and stays there (P29): an
+        // article shown in it appears in place.
+        await PushAsync(new ArticlePage(_shell), ArticleHost.UsesWebView ? null : PageTransition);
     }
 
     private void OnPopped(object? sender, NavigationEventArgs e)

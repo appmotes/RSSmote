@@ -96,19 +96,6 @@ public sealed class ImportExportTests : IDisposable
     }
 
     [Fact]
-    public void The_system_size_applies_on_top_only_while_followed()
-    {
-        var settings = _f.Shell.Settings;
-        _f.Settings.Update(s => s.FeedsTextSize = 120);
-        settings.SystemTextScale = 1.5;
-        Assert.Equal(1.8, settings.FeedsScale, 3);
-        Assert.Equal(24, settings.ArticleFontSize, 3);
-        settings.FollowSystemTextSize = false;
-        Assert.Equal(1.2, settings.FeedsScale, 3);
-        Assert.Equal(16, settings.ArticleFontSize, 3);
-    }
-
-    [Fact]
     public void Coming_back_refreshes_only_when_the_last_pass_is_older_than_the_interval()
     {
         _f.Settings.Update(s => s.LastRefresh = ShellFixture.Now.AddMinutes(-10));

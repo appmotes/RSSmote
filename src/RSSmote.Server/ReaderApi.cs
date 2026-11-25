@@ -7,7 +7,7 @@ using RSSmote.Data;
 namespace RSSmote.Server;
 
 /// <summary>
-/// The library for native readers over the Reader API (A25): folders, feeds and articles to read, and read and
+/// The library for reader apps over the Reader API (A25): folders, feeds and articles to read, and read and
 /// starred to write. Feeds and folders are kept in the browser app, so their writes answer 403.
 /// </summary>
 public static class ReaderApi

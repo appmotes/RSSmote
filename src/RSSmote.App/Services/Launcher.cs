@@ -1,7 +1,7 @@
 namespace RSSmote.App.Services;
 
-/// <summary>Opens links in the user's browser (A4). Each head supplies its own.</summary>
+/// <summary>Opens links in a new browser tab (A4).</summary>
 public interface ILauncher
 {
-    void Open(Uri url, bool inBackground);
+    void Open(Uri url);
 }

@@ -31,7 +31,7 @@ public sealed class SidebarMenuTests : IDisposable
     public void Open_site_and_reload_icon_reach_their_services()
     {
         _f.Shell.OpenSiteCommand.Execute(_f.Wired);
-        Assert.Equal("https://wired.example/", Assert.Single(_f.Launcher.Opened).Url.AbsoluteUri);
+        Assert.Equal("https://wired.example/", Assert.Single(_f.Launcher.Opened).AbsoluteUri);
 
         _f.Shell.ReloadIconCommand.Execute(_f.Wired);
         Assert.Contains(_f.Images.Forgotten, url => url.Contains("wired.example", StringComparison.Ordinal));

@@ -217,7 +217,7 @@ public sealed class SettingsModeTests : IDisposable
     {
         var mode = Open(SettingsSection.ManageFeeds);
         mode.OpenSiteCommand.Execute(_f.Wired);
-        Assert.Equal("https://wired.example/", Assert.Single(_f.Launcher.Opened).Url.AbsoluteUri);
+        Assert.Equal("https://wired.example/", Assert.Single(_f.Launcher.Opened).AbsoluteUri);
 
         mode.ReloadIconCommand.Execute(_f.Wired);
         Assert.Contains(_f.Images.Forgotten, url => url.Contains("wired.example", StringComparison.Ordinal));

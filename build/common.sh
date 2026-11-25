@@ -13,7 +13,7 @@ web() {
   dotnet publish "$ROOT/src/RSSmote.Browser/RSSmote.Browser.csproj" -c Release -o "$WEB" -v q -clp:ErrorsOnly
 }
 
-# Renders the app icon from its SVG master (D13) into $ICONS: PNGs from 16 to 1024 and RSSmote.ico.
+# Renders the app icon from its SVG master (D13) into $ICONS: PNGs from 16 to 1024.
 icons() {
   mkdir -p "$ICONS"
   dotnet run "$ROOT/build/AppIcons.cs" -- "$ROOT/src/RSSmote.App/Assets/AppIcon/AppIcon.svg" "$ICONS"

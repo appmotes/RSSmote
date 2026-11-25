@@ -16,13 +16,13 @@ public partial class App : Application
 {
     private RemoteSettings? _settings;
 
-    /// <summary>The server, as the base address of a client the head made (A23).</summary>
+    /// <summary>The server, as the base address of a client the browser head made (A23).</summary>
     public HttpClient? Http { get; init; }
 
     /// <summary>Where this device keeps its own preferences.</summary>
     public IDeviceStorage? Storage { get; init; }
 
-    /// <summary>The head knows the keyboard is Apple's, which a browser does not tell Avalonia.</summary>
+    /// <summary>The browser head knows the keyboard is Apple's, which a browser does not tell Avalonia (P31).</summary>
     public bool AppleKeyboard { get; init; }
 
     /// <summary>⌘ on an Apple keyboard, Ctrl elsewhere: the modifier of every command shortcut (D15).</summary>

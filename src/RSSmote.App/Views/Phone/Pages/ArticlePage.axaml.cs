@@ -87,7 +87,7 @@ public partial class ArticlePage : ContentPage
     }
 
     /// <summary>
-    /// A native web view is drawn over everything (L9), so while the sheet is open the article ends where the sheet
+    /// The iframe is drawn over everything (L9), so while the sheet is open the article ends where the sheet
     /// begins: the reader sees the size change, and nothing covers the sheet (D31).
     /// </summary>
     private void OnTextClick(object? sender, RoutedEventArgs e)

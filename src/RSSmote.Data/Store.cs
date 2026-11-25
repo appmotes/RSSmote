@@ -13,7 +13,7 @@ namespace RSSmote.Data;
 /// </summary>
 public sealed class Store : ILibrary, IDisposable
 {
-    /// <summary>Schema version written to <c>PRAGMA user_version</c>. Version 1 matches the macOS app's tables.</summary>
+    /// <summary>Schema version written to <c>PRAGMA user_version</c>. Version 1 creates its tables only if missing.</summary>
     public const int SchemaVersion = 1;
 
     private const string ItemColumns = """
@@ -79,7 +79,7 @@ public sealed class Store : ILibrary, IDisposable
             {
                 InTransaction(() =>
                 {
-                    // IF NOT EXISTS: a library written by the macOS app already has these tables at version 0.
+                    // IF NOT EXISTS: a version-0 library with these tables opens as-is.
                     Exec("""
                         CREATE TABLE IF NOT EXISTS folders (
                             id INTEGER PRIMARY KEY,
