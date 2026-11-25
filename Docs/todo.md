@@ -7,7 +7,8 @@
 shortcuts forwarded from the page (L9), space scrolling, YouTube embeds, and an article with an http image on an
 https server, which the browser blocks or upgrades (A19 covers favicons and thumbnails, not the article's own images).
 Seen so far in the in-app browser (Chromium): the page renders in an `<iframe srcdoc>`, `j` inside the page moves to
-the next article.
+the next article. In Safari on macOS: `j`, `k` and space inside the page, links to a new tab, the iframe hidden under
+Settings (L9), and in a narrow window the bars hiding on scroll (D26) and the article arriving without a slide (P29).
 
 **N25 — Sync with Reeder by hand (A25).** The Reader API is covered by `ReaderTests`, not by a real client. In Reeder
 Classic on iOS and macOS, with a FreshRSS account whose host is the server's address (Reeder adds `/api/greader.php`):
@@ -55,6 +56,13 @@ serves the app, and the library survives a container restart.
 builds on the File System Access API that only Chromium has. Check that Import opens a file and Export saves one in
 Safari and Firefox; if not, Export can link to `GET /api/opml` (A17) and Import take a plain file input. Done when
 both work in all three.
+
+**N26 — A new deploy must reach Safari on a reload (A24).** After `build/run-local.sh` published a new app, a Safari
+tab on `localhost:5000` kept showing the previous build across reloads, while a private window showed the new one.
+The server answered right: `dotnet.js` (and its brotli copy) with `no-cache`, naming the new hashed `RSSmote.App` wasm.
+Find which cache held the old build — Safari's HTTP cache, its back-forward cache, or the .NET runtime's Cache Storage
+— and whether a reload that the app's canvas swallows (⌘R, ⌘⌥R) ever reaches Safari. Done when a normal reload in
+Safari loads a new deploy.
 
 **W8 — Install as an app.** A web manifest and a service worker would let the phone keep RSSmote on its home screen
 as a standalone app, with its own icon sizes. Today `index.html` names `icon.png` as the touch icon only.
